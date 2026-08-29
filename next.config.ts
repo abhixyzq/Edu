@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'export',
+  images: {
+    unoptimized: true,
+  },
   allowedDevOrigins: [
     "10.148.20.243:3000",
     "10.148.20.243",
