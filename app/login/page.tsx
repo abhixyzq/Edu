@@ -32,12 +32,12 @@ export default function LoginPage() {
       {/* Centered Borderless Card with Top Illustration Image */}
       <main className="w-full max-w-sm bg-white rounded-3xl p-5 shadow-xl shadow-[#9b4500]/5 flex flex-col my-auto border-none">
         
-        {/* Top Illustration Image */}
-        <div className="w-full h-32 sm:h-40 mb-3 rounded-2xl overflow-hidden bg-[#f4fafd] shrink-0 border-none">
+        {/* Top Flat Vector Illustration Image */}
+        <div className="w-full h-32 sm:h-36 mb-3 rounded-2xl overflow-hidden bg-[#f4fafd] shrink-0 border-none">
           <img
-            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=600"
-            alt="EduStride Learning Illustration"
-            className="w-full h-full object-cover"
+            src="/images/login_vector.jpg"
+            alt="EduStride Learning Vector Illustration"
+            className="w-full h-full object-cover object-center"
           />
         </div>
 
