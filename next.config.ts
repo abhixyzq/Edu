@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
+const isCapacitor = process.env.CAPACITOR_BUILD === 'true';
+
 const nextConfig: NextConfig = {
-  output: 'export',
+  ...(isCapacitor ? { output: 'export' } : {}),
   images: {
     unoptimized: true,
   },

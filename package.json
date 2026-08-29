@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "cap:sync": "next build && npx cap sync",
+    "cap:sync": "CAPACITOR_BUILD=true next build && npx @capacitor/cli sync",
     "cap:open": "npx cap open android"
   },
   "dependencies": {
@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.0",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20.17.0",
     "@types/react": "^19.0.0",
