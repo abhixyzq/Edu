@@ -32,13 +32,17 @@ export default function LoginPage() {
       {/* Centered Borderless Card with Top Illustration Image */}
       <main className="w-full max-w-sm bg-white rounded-3xl p-5 shadow-xl shadow-[#9b4500]/5 flex flex-col my-auto border-none">
         
-        {/* Top Flat Vector Illustration Image */}
-        <div className="w-full h-32 sm:h-36 mb-3 rounded-2xl overflow-hidden bg-[#f4fafd] shrink-0 border-none">
-          <img
-            src="/images/login_vector.jpg"
-            alt="EduStride Learning Vector Illustration"
-            className="w-full h-full object-cover object-center"
-          />
+        {/* Top Animated Video Header */}
+        <div className="w-full h-36 sm:h-40 mb-3 rounded-2xl overflow-hidden bg-[#f4fafd] shrink-0 border-none relative">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover object-center pointer-events-none"
+          >
+            <source src="/videos/login_character.mp4" type="video/mp4" />
+          </video>
         </div>
 
         {/* Header Text */}

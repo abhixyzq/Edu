@@ -36,17 +36,8 @@ export default function SignupPage() {
         </Link>
       </header>
 
-      {/* Centered Borderless Card with Top Illustration Image */}
-      <main className="w-full max-w-sm bg-white rounded-3xl p-5 shadow-xl shadow-[#9b4500]/5 flex flex-col my-auto border-none">
-        
-        {/* Top Flat Vector Illustration Image */}
-        <div className="w-full h-24 sm:h-32 mb-2 rounded-2xl overflow-hidden bg-[#f4fafd] shrink-0 border-none">
-          <img
-            src="/images/signup_vector.jpg"
-            alt="EduStride Signup Vector Illustration"
-            className="w-full h-full object-cover object-center"
-          />
-        </div>
+      {/* Centered Borderless Card (No Image or Video) */}
+      <main className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-xl shadow-[#9b4500]/5 flex flex-col my-auto border-none">
 
         {/* Header Text */}
         <div className="text-center mb-2.5">
