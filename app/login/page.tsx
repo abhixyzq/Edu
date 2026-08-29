@@ -29,17 +29,17 @@ export default function LoginPage() {
         </Link>
       </header>
 
-      {/* Centered Borderless Card with Top Illustration Image */}
-      <main className="w-full max-w-sm bg-white rounded-3xl p-5 shadow-xl shadow-[#9b4500]/5 flex flex-col my-auto border-none">
+      {/* Centered Borderless Card with Top Illustration Video */}
+      <main className="w-full max-w-[420px] bg-white rounded-3xl p-5 sm:p-6 shadow-xl shadow-[#9b4500]/5 flex flex-col my-auto border-none">
         
-        {/* Top Animated Video Header (Uncropped) */}
-        <div className="w-full h-36 sm:h-44 mb-3 rounded-2xl overflow-hidden bg-[#f4fafd] shrink-0 border-none relative flex items-center justify-center">
+        {/* Top Animated Video Header (Full Width Seamless) */}
+        <div className="w-full h-44 sm:h-52 mb-4 rounded-2xl overflow-hidden bg-[#e8ddcd] shrink-0 border-none relative flex items-center justify-center shadow-xs">
           <video
             autoPlay
             loop
             muted
             playsInline
-            className="w-full h-full object-contain object-center pointer-events-none"
+            className="w-full h-full object-cover object-center pointer-events-none scale-105"
           >
             <source src="/videos/login_character.mp4" type="video/mp4" />
           </video>
