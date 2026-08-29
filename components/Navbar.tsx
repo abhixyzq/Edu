@@ -191,8 +191,26 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Sidebar Footer */}
-          <div className="p-4 border-t border-[#dde4e6] bg-[#f4fafd] flex flex-col gap-3">
-            <div className="flex items-center justify-between text-xs text-[#564338]">
+          <div className="p-4 border-t border-[#dde4e6] bg-[#f4fafd] flex flex-col gap-2.5">
+            {/* Download Mobile App Button */}
+            <a
+              href="/EduStride_Class12.apk"
+              download="EduStride_Class12.apk"
+              className="w-full py-2.5 px-3.5 rounded-2xl bg-[#9b4500] hover:bg-[#ff8c42] text-white font-bold text-xs transition-all shadow-md flex items-center justify-between group active:scale-[0.98] cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center text-white">
+                  <span className="material-symbols-outlined text-[18px]">android</span>
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="leading-tight font-extrabold text-[12px]">Download App</span>
+                  <span className="text-[10px] text-[#ffdbc9] font-normal">Android APK (v1.0)</span>
+                </div>
+              </div>
+              <span className="material-symbols-outlined text-[18px] group-hover:translate-y-0.5 transition-transform">download</span>
+            </a>
+
+            <div className="flex items-center justify-between text-xs text-[#564338] px-1 pt-1">
               <span>Class 12 Board Exam Prep</span>
               <span className="font-bold text-[#3a6a00]">2026 Batch</span>
             </div>
@@ -200,7 +218,7 @@ export const Navbar: React.FC = () => {
             <Link
               href="/login"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full py-2.5 rounded-full border border-[#ba1a1a] text-[#ba1a1a] font-bold text-xs hover:bg-[#ffdad6] transition-colors flex items-center justify-center gap-1.5"
+              className="w-full py-2 rounded-full border border-[#ba1a1a]/80 text-[#ba1a1a] font-bold text-xs hover:bg-[#ffdad6] transition-colors flex items-center justify-center gap-1.5"
             >
               <span className="material-symbols-outlined text-[16px]">logout</span> Log Out / Switch Account
             </Link>
