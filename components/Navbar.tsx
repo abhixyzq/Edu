@@ -10,8 +10,8 @@ export const Navbar: React.FC = () => {
   const { user } = useUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Hide navbars on test taking page for focused test environment
-  if (pathname?.startsWith('/test')) {
+  // Hide navbars on focused auth pages (login/signup) & exam environment
+  if (pathname?.startsWith('/test') || pathname === '/login' || pathname === '/signup') {
     return null;
   }
 
