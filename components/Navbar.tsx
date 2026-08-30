@@ -197,8 +197,8 @@ export const Navbar: React.FC = () => {
           <div className="p-4 border-t border-[#dde4e6] bg-[#f4fafd] flex flex-col gap-2.5">
             {/* Download Mobile App Button */}
             <a
-              href="/EduStride_Class12.apk"
-              download="EduStride_Class12.apk"
+              href="/EduStride_Class12_v1.0.2.apk?v=1.0.2"
+              download="EduStride_Class12_v1.0.2.apk"
               className="w-full py-2.5 px-3.5 rounded-2xl bg-gradient-to-r from-[#9b4500] to-[#ba5600] hover:from-[#ba5600] hover:to-[#9b4500] text-white font-bold text-xs transition-all shadow-md hover:shadow-lg flex items-center justify-between group active:scale-[0.98] cursor-pointer border border-[#ff8c42]/30"
             >
               <div className="flex items-center gap-2.5">
@@ -207,7 +207,7 @@ export const Navbar: React.FC = () => {
                 </div>
                 <div className="flex flex-col text-left">
                   <span className="leading-tight font-extrabold text-[12px]">Download Official App</span>
-                  <span className="text-[10px] text-[#ffdbc9] font-medium">NAINIX EDU · Android APK</span>
+                  <span className="text-[10px] text-[#ffdbc9] font-medium">v1.0.2 (Latest Update)</span>
                 </div>
               </div>
               <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors shrink-0">
