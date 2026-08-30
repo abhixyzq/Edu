@@ -58,8 +58,11 @@ export const Navbar: React.FC = () => {
             />
           </button>
 
-          {/* Text-Only Logo */}
-          <Link href="/" className="flex items-center">
+          {/* Brand Logo & Name */}
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#ff8c42]/40 p-0.5 shadow-xs overflow-hidden group-hover:scale-105 transition-transform bg-white">
+              <img src="/logo.png" alt="NAINIX EDU Logo" className="w-full h-full object-contain rounded-full" />
+            </div>
             <span className="font-heading text-2xl md:text-3xl text-[#9b4500] font-extrabold tracking-tight">
               EduStride <span className="hidden sm:inline-block text-xs text-[#564338] font-normal px-2 py-0.5 bg-[#ffdbc9] rounded-md ml-1 border border-[#ff8c42]/30 align-middle">Class 12</span>
             </span>
