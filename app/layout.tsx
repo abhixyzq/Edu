@@ -1,9 +1,17 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { UserProvider } from '@/context/UserContext';
 import { TestProvider } from '@/context/TestContext';
 import { Navbar } from '@/components/Navbar';
 import { SecurityGuard } from '@/components/SecurityGuard';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  minimumScale: 1,
+  userScalable: false,
+};
 
 export const metadata: Metadata = {
   title: 'EduStride Class 12 Prep | PrepMaster',
