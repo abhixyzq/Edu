@@ -7,7 +7,7 @@ import { useUser } from '@/context/UserContext';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
-  const { user } = useUser();
+  const { user, logout } = useUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Hide navbars on focused auth pages (login/signup) & exam environment
@@ -214,13 +214,15 @@ export const Navbar: React.FC = () => {
               <span className="font-bold text-[#3a6a00]">2026 Batch</span>
             </div>
 
-            <Link
-              href="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full py-2 rounded-full border border-[#ba1a1a]/80 text-[#ba1a1a] font-bold text-xs hover:bg-[#ffdad6] transition-colors flex items-center justify-center gap-1.5"
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                logout();
+              }}
+              className="w-full py-2 rounded-full border border-[#ba1a1a]/80 text-[#ba1a1a] font-bold text-xs hover:bg-[#ffdad6] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <span className="material-symbols-outlined text-[16px]">logout</span> Log Out / Switch Account
-            </Link>
+            </button>
           </div>
         </div>
       </div>

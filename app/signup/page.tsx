@@ -7,7 +7,7 @@ import { useUser } from '@/context/UserContext';
 
 export default function SignupPage() {
   const router = useRouter();
-  const { setTargetBoard } = useUser();
+  const { setTargetBoard, login } = useUser();
 
   const [fullName, setFullName] = useState('');
   const [contact, setContact] = useState('');
@@ -19,6 +19,7 @@ export default function SignupPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setTargetBoard(board);
+    login(fullName || 'Abhishek', contact);
     router.push('/');
   };
 
