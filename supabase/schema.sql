@@ -120,7 +120,7 @@ INSERT INTO public.subjects (id, title, category, icon, total_chapters) VALUES
 ('chemistry', 'Chemistry (Class 12)', 'Science Stream', 'science', 16),
 ('maths', 'Mathematics (Class 12)', 'Science Stream', 'functions', 13),
 ('biology', 'Biology (Class 12)', 'Science Stream', 'eco', 16),
-('english', 'English Core (Class 12)', 'Language & Arts', 'menu_book')
+('english', 'English Core (Class 12)', 'Language & Arts', 'menu_book', 12)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.tests (id, title, subject_id, duration_minutes, total_questions, total_marks, passing_marks) VALUES
