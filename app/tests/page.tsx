@@ -11,7 +11,7 @@ export default function TestsPage() {
 
   const testsList = [
     {
-      id: 'physics-mock',
+      id: '1',
       title: 'Class 12 Physics Full Syllabus Mock Test',
       subject: 'Physics',
       questions: 30,
@@ -20,7 +20,7 @@ export default function TestsPage() {
       badge: 'High Yield',
     },
     {
-      id: 'chemistry-mock',
+      id: '2',
       title: 'Chemistry Organic & Inorganic Chapter Test',
       subject: 'Chemistry',
       questions: 25,
@@ -29,7 +29,7 @@ export default function TestsPage() {
       badge: 'Recommended',
     },
     {
-      id: 'maths-mock',
+      id: '3',
       title: 'Mathematics Calculus & Vectors Practice Exam',
       subject: 'Mathematics',
       questions: 35,
@@ -38,7 +38,7 @@ export default function TestsPage() {
       badge: 'Advanced',
     },
     {
-      id: 'biology-mock',
+      id: '4',
       title: 'Genetics & Biotechnology Unit Evaluation',
       subject: 'Biology',
       questions: 30,

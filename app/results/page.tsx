@@ -17,7 +17,7 @@ export default function AllResultsPage() {
       </div>
 
       <div className="flex flex-col gap-4">
-        {RECENT_TESTS.map((test) => (
+        {RECENT_TESTS.map((test, index) => (
           <div
             key={test.id}
             className="card-outline rounded-2xl p-5 md:p-6 bg-white flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-[#e0e0e0] hover:border-[#9b4500] transition-all"
@@ -43,7 +43,7 @@ export default function AllResultsPage() {
                 <p className="text-xs text-[#564338]">{test.score} Marks</p>
               </div>
 
-              <Link href={`/results/${test.id}`}>
+              <Link href={`/results/${index + 1}`}>
                 <button className="px-5 py-2.5 rounded-full border border-[#9b4500] text-[#9b4500] font-bold text-xs hover:bg-[#ffdbc9]/40 transition-colors flex items-center gap-1">
                   View Solutions <span className="material-symbols-outlined text-[16px]">chevron_right</span>
                 </button>

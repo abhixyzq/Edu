@@ -14,15 +14,29 @@ export function TestClient() {
     currentQuestionIndex,
     selectedAnswers,
     markedForReview,
+    isSubmitted,
     selectAnswer,
     toggleMarkForReview,
     nextQuestion,
     prevQuestion,
     submitTest,
+    resetTest,
   } = useTest();
 
   const [mobilePaletteOpen, setMobilePaletteOpen] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
+
+  // Reset test state every time a new test page is mounted
+  useEffect(() => {
+    resetTest();
+  }, []);
+
+  // Auto-redirect to results when timer auto-submits
+  useEffect(() => {
+    if (isSubmitted) {
+      router.push('/results/1');
+    }
+  }, [isSubmitted]);
 
   const currentQ = questions[currentQuestionIndex];
   const qNumber = currentQuestionIndex + 1;
@@ -40,7 +54,7 @@ export function TestClient() {
   const confirmFinalSubmit = () => {
     submitTest();
     setShowSubmitModal(false);
-    router.push('/results/physics-mock');
+    router.push('/results/1');
   };
 
   // Keyboard navigation hotkeys for exam taking
@@ -229,7 +243,7 @@ export function TestClient() {
             <div className="p-4 rounded-xl bg-[#f4fafd] border border-[#ddc1b3] text-xs text-[#564338] flex flex-col gap-1.5">
               <div className="flex justify-between">
                 <span>Questions Answered:</span>
-                <span className="font-bold text-[#3a6a00]">{Object.keys(selectedAnswers).length || 1} / 30</span>
+                <span className="font-bold text-[#3a6a00]">{Object.keys(selectedAnswers).length} / {questions.length}</span>
               </div>
               <div className="flex justify-between">
                 <span>Marked for Review:</span>

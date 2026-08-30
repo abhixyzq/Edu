@@ -60,7 +60,7 @@ export default function HomePage() {
               <p className="text-sm md:text-base text-[#564338]">
                 Evaluate your readiness with our AI-curated Class 12 practice exam.
               </p>
-              <Link href="/test/physics-mock" className="w-full md:w-auto mt-2">
+              <Link href="/test/1" className="w-full md:w-auto mt-2">
                 <button className="w-full md:w-auto bg-[#9b4500] text-white font-bold text-sm md:text-base px-7 py-3.5 rounded-full hover:bg-[#ff8c42] transition-colors shadow-md flex items-center justify-center gap-2 group">
                   <span className="material-symbols-outlined text-[20px]">play_arrow</span>
                   Start Test Now
@@ -146,7 +146,7 @@ export default function HomePage() {
 
             <div className="flex flex-col gap-3">
               {RECENT_TESTS.map((test) => (
-                <Link key={test.id} href={`/results/${test.id}`}>
+                <Link key={test.id} href={`/results/${RECENT_TESTS.indexOf(test) + 1}`}>
                   <div className="p-3 rounded-xl border border-[#e0e0e0] hover:border-[#9b4500] hover:bg-[#f4fafd] transition-all flex items-center justify-between group">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-[#e8eff1] flex items-center justify-center text-[#564338] group-hover:bg-[#ffdbc9] group-hover:text-[#6a2d00] transition-colors">

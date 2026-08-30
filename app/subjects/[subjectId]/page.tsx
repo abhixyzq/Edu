@@ -5,9 +5,11 @@ export function generateStaticParams() {
   return [
     { subjectId: 'physics' },
     { subjectId: 'chemistry' },
+    { subjectId: 'mathematics' },
     { subjectId: 'maths' },
     { subjectId: 'biology' },
-    { subjectId: 'english' }
+    { subjectId: 'english' },
+    { subjectId: 'hindi' },
   ];
 }
 

@@ -51,6 +51,7 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setTimeRemaining((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
+          setIsSubmitted(true); // Auto-submit when time expires
           return 0;
         }
         return prev - 1;
