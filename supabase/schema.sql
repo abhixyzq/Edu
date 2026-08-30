@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
-  avatar_url TEXT DEFAULT 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80',
   target_board TEXT DEFAULT 'CBSE Board (Class 12)',
   streak_days INT DEFAULT 1,
   xp_points INT DEFAULT 240,

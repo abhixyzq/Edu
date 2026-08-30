@@ -99,12 +99,8 @@ export const Navbar: React.FC = () => {
           </div>
 
           <Link href="/profile" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-[#ff8c42] overflow-hidden p-0.5 transition-transform group-hover:scale-105">
-              <img
-                src={user.avatarUrl}
-                alt={user.name}
-                className="w-full h-full rounded-full object-cover"
-              />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-[#ff8c42] bg-[#ffdbc9] text-[#6a2d00] font-bold text-sm flex items-center justify-center transition-transform group-hover:scale-105 shadow-xs">
+              {user.name.charAt(0)}
             </div>
           </Link>
         </div>
@@ -127,11 +123,9 @@ export const Navbar: React.FC = () => {
           <div>
             <div className="p-5 bg-gradient-to-br from-[#ffdbc9]/60 to-white border-b border-[#ddc1b3] flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <img
-                  src={user.avatarUrl}
-                  alt={user.name}
-                  className="w-12 h-12 rounded-full border-2 border-[#ff8c42] object-cover"
-                />
+                <div className="w-11 h-11 rounded-full border-2 border-[#ff8c42] bg-[#ffdbc9] text-[#6a2d00] font-extrabold text-lg flex items-center justify-center shadow-xs">
+                  {user.name.charAt(0)}
+                </div>
                 <div>
                   <h3 className="font-heading text-lg font-bold text-[#161d1f]">{user.name}</h3>
                   <span className="text-xs font-bold text-[#9b4500] uppercase bg-white px-2 py-0.5 rounded border border-[#ff8c42]/30">

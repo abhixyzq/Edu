@@ -12,12 +12,10 @@ export default function ProfilePage() {
       {/* Profile Header Card */}
       <div className="card-outline rounded-3xl p-6 md:p-8 bg-white border-[#ddc1b3] shadow-md flex flex-col sm:flex-row items-center gap-6 mb-8 text-center sm:text-left">
         <div className="relative">
-          <img
-            src={user.avatarUrl}
-            alt={user.name}
-            className="w-24 h-24 rounded-full border-4 border-[#ff8c42] object-cover shadow-md"
-          />
-          <span className="absolute bottom-0 right-0 bg-[#ff8c42] text-white p-1 rounded-full border-2 border-white flex items-center justify-center">
+          <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-[#ff8c42] bg-gradient-to-br from-[#ffdbc9] to-[#ff8c42] text-[#6a2d00] font-extrabold text-3xl md:text-4xl flex items-center justify-center shadow-md">
+            {user.name.charAt(0)}
+          </div>
+          <span className="absolute bottom-0 right-0 bg-[#ff8c42] text-white p-1 rounded-full border-2 border-white flex items-center justify-center shadow-xs">
             <span className="material-symbols-outlined text-[16px]">local_fire_department</span>
           </span>
         </div>
