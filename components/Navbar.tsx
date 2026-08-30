@@ -103,7 +103,19 @@ export const Navbar: React.FC = () => {
         </nav>
 
         {/* User Badge & Profile */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Download Latest App Button */}
+          <a
+            href="/EduStride_Class12_v1.0.2.apk?v=1.0.2"
+            download="EduStride_Class12_v1.0.2.apk"
+            className="flex items-center gap-1.5 bg-gradient-to-r from-[#9b4500] to-[#ba5600] hover:from-[#ba5600] hover:to-[#9b4500] text-white px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-xs hover:shadow-md active:scale-95 cursor-pointer border border-[#ff8c42]/30"
+            title="Download EduStride Class 12 Latest App (v1.0.2)"
+          >
+            <span className="material-symbols-outlined text-[18px]">android</span>
+            <span className="hidden sm:inline">Get App</span>
+            <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-md font-extrabold ml-0.5">v1.0.2</span>
+          </a>
+
           <div className="flex items-center gap-1.5 bg-[#ffdbc9] text-[#6a2d00] px-3 py-1.5 rounded-full text-xs font-bold border border-[#ff8c42]">
             <span className="material-symbols-outlined text-[18px] text-[#9b4500]">local_fire_department</span>
             <span>{user.streakDays}d</span>
