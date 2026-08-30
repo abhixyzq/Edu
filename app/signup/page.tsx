@@ -9,6 +9,7 @@ export default function SignupPage() {
   const router = useRouter();
   const { setTargetBoard, signup } = useUser();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const [fullName, setFullName] = useState('');
   const [contact, setContact] = useState('');
@@ -19,11 +20,19 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    if (!fullName.trim()) return setError('Please enter your full name.');
+    if (!contact.includes('@')) return setError('Please enter a valid email address.');
+    if (password.length < 6) return setError('Password must be at least 6 characters.');
     setLoading(true);
-    setTargetBoard(board);
-    await signup(fullName || 'Abhishek', contact, password, board);
+    const result = await signup(fullName.trim(), contact.trim().toLowerCase(), password, board);
     setLoading(false);
-    router.push('/');
+    if (result.success) {
+      setTargetBoard(board);
+      router.push('/');
+    } else {
+      setError(result.error || 'Account creation failed. Please try again.');
+    }
   };
 
   return (
@@ -151,13 +160,22 @@ export default function SignupPage() {
             </label>
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="bg-[#ffdad6] border border-[#ba1a1a]/40 text-[#93000a] text-xs font-bold px-3.5 py-2.5 rounded-xl flex items-center gap-2">
+              <span className="material-symbols-outlined text-[16px]">error</span>
+              {error}
+            </div>
+          )}
+
           {/* Signup Button */}
           <button
             type="submit"
-            disabled={!agreedTerms}
-            className="w-full bg-[#9b4500] hover:bg-[#ff8c42] disabled:opacity-50 text-white font-bold text-xs py-3 rounded-full transition-all shadow-md active:scale-[0.98] mt-1 cursor-pointer"
+            disabled={!agreedTerms || loading}
+            className="w-full bg-[#9b4500] hover:bg-[#ff8c42] disabled:opacity-50 text-white font-bold text-xs py-3 rounded-full transition-all shadow-md active:scale-[0.98] mt-1 cursor-pointer flex items-center justify-center gap-2"
           >
-            Create Account
+            {loading && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+            {loading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
 

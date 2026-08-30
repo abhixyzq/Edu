@@ -11,11 +11,20 @@ export default function LoginPage() {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(identifier || 'abhishek@edustride.prep', identifier.includes('@') ? identifier.split('@')[0] : identifier);
-    router.push('/');
+    setError('');
+    setLoading(true);
+    const result = await login(identifier.trim(), password);
+    setLoading(false);
+    if (result.success) {
+      router.push('/');
+    } else {
+      setError(result.error || 'Invalid email or password. Please try again.');
+    }
   };
 
   return (
@@ -116,12 +125,22 @@ export default function LoginPage() {
             </div>
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="bg-[#ffdad6] border border-[#ba1a1a]/40 text-[#93000a] text-xs font-bold px-3.5 py-2.5 rounded-xl flex items-center gap-2">
+              <span className="material-symbols-outlined text-[16px]">error</span>
+              {error}
+            </div>
+          )}
+
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-[#9b4500] hover:bg-[#ff8c42] text-white font-bold text-xs py-3 rounded-full transition-all shadow-md active:scale-[0.98] mt-1 cursor-pointer"
+            disabled={loading}
+            className="w-full bg-[#9b4500] hover:bg-[#ff8c42] disabled:opacity-60 text-white font-bold text-xs py-3 rounded-full transition-all shadow-md active:scale-[0.98] mt-1 cursor-pointer flex items-center justify-center gap-2"
           >
-            Login
+            {loading && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+            {loading ? 'Signing In...' : 'Login'}
           </button>
 
           {/* Divider */}

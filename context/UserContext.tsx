@@ -15,8 +15,8 @@ interface UserContextType {
   };
   setTargetBoard: (boardId: string) => void;
   incrementStreak: () => void;
-  login: (email: string, name?: string) => Promise<{ success: boolean; error?: string }>;
-  signup: (name: string, email: string, password?: string, targetBoard?: string) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signup: (name: string, email: string, password: string, targetBoard?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
 }
 
@@ -25,88 +25,92 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState({
     id: '',
-    name: 'Abhishek',
-    email: 'abhishek@edustride.prep',
+    name: '',
+    email: '',
     classLevel: 'Class 12',
     streakDays: 7,
     targetBoard: 'cbse',
     isLoggedIn: false,
   });
 
-  // Sync Supabase Auth & Profiles table
+  // ─── On mount: restore session from localStorage + listen to Supabase auth state ───
   useEffect(() => {
-    // 1. LocalStorage Fallback Initialization
+    // 1. Restore from localStorage immediately (so AuthGuard doesn't flash)
     const storedAuth = localStorage.getItem('edustride_logged_in');
     const storedName = localStorage.getItem('edustride_user_name');
     const storedEmail = localStorage.getItem('edustride_user_email');
     const storedBoard = localStorage.getItem('edustride_user_board');
 
-    if (storedAuth === 'true') {
+    if (storedAuth === 'true' && storedEmail) {
       setUser((prev) => ({
         ...prev,
         isLoggedIn: true,
-        name: storedName || prev.name,
-        email: storedEmail || prev.email,
-        targetBoard: storedBoard || prev.targetBoard,
+        name: storedName || '',
+        email: storedEmail,
+        targetBoard: storedBoard || 'cbse',
       }));
     }
 
-    // 2. Supabase Real-Time Auth Listener
-    if (isSupabaseConfigured) {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session?.user) {
-          fetchSupabaseProfile(session.user.id, session.user.email || '');
-        }
-      });
+    if (!isSupabaseConfigured) return;
 
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-        if (session?.user) {
-          await fetchSupabaseProfile(session.user.id, session.user.email || '');
-        } else if (_event === 'SIGNED_OUT') {
-          clearLocalSession();
-        }
-      });
+    // 2. Check existing Supabase session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        fetchAndSyncProfile(session.user.id, session.user.email || '');
+      }
+    });
 
-      return () => subscription.unsubscribe();
-    }
+    // 3. Listen for auth state changes (login/logout/token refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        await fetchAndSyncProfile(session.user.id, session.user.email || '');
+      } else if (event === 'SIGNED_OUT') {
+        clearLocalSession();
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const fetchSupabaseProfile = async (userId: string, email: string) => {
+  // ─── Fetch profile from Supabase and sync state ───
+  const fetchAndSyncProfile = async (userId: string, email: string) => {
     try {
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle(); // maybeSingle won't throw if row missing
 
-      const name = profile?.name || email.split('@')[0] || 'Abhishek';
+      const name = profile?.name || email.split('@')[0] || 'Student';
       const board = profile?.target_board || 'cbse';
+      const streak = profile?.streak_days || 7;
 
-      persistLocalSession(true, name, email, board);
+      if (error && error.code !== 'PGRST116') {
+        // PGRST116 = row not found (expected for new users)
+        console.warn('[Auth] Profile fetch warning:', error.message);
+      }
 
+      persistLocalSession(name, email, board);
       setUser((prev) => ({
         ...prev,
         id: userId,
         name,
         email,
         targetBoard: board,
-        streakDays: profile?.streak_days || prev.streakDays,
+        streakDays: streak,
         isLoggedIn: true,
       }));
     } catch (err) {
-      console.warn('Supabase profile fetch error, using cached session:', err);
+      console.warn('[Auth] Profile sync error:', err);
     }
   };
 
-  const persistLocalSession = (isLoggedIn: boolean, name: string, email: string, board: string) => {
-    if (isLoggedIn) {
-      localStorage.setItem('edustride_logged_in', 'true');
-      localStorage.setItem('edustride_user_name', name);
-      localStorage.setItem('edustride_user_email', email);
-      localStorage.setItem('edustride_user_board', board);
-    } else {
-      clearLocalSession();
-    }
+  // ─── LocalStorage helpers ───
+  const persistLocalSession = (name: string, email: string, board: string) => {
+    localStorage.setItem('edustride_logged_in', 'true');
+    localStorage.setItem('edustride_user_name', name);
+    localStorage.setItem('edustride_user_email', email);
+    localStorage.setItem('edustride_user_board', board);
   };
 
   const clearLocalSession = () => {
@@ -114,96 +118,99 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('edustride_user_name');
     localStorage.removeItem('edustride_user_email');
     localStorage.removeItem('edustride_user_board');
-    setUser((prev) => ({ ...prev, isLoggedIn: false }));
+    setUser((prev) => ({ ...prev, isLoggedIn: false, id: '', name: '', email: '' }));
   };
 
-  // Real Supabase Signup with Auth & Profiles Table Insert
-  const signup = async (name: string, email: string, password = 'Password@123', targetBoard = 'cbse') => {
+  // ─── SIGNUP ───
+  const signup = async (name: string, email: string, password: string, targetBoard = 'cbse') => {
+    if (!name.trim()) return { success: false, error: 'Name is required.' };
+    if (!email.includes('@')) return { success: false, error: 'Invalid email address.' };
+    if (password.length < 6) return { success: false, error: 'Password must be at least 6 characters.' };
+
     try {
-      if (isSupabaseConfigured) {
-        // 1. Supabase Auth SignUp
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { name, targetBoard },
-          },
-        });
-
-        if (error) {
-          console.warn('Supabase Auth error, saving to local profile:', error.message);
-        }
-
-        const userId = data?.user?.id;
-
-        // 2. Insert into Supabase 'profiles' table
-        if (userId) {
-          const { error: profileError } = await supabase.from('profiles').upsert({
-            id: userId,
-            name,
-            email,
-            target_board: targetBoard,
-          });
-
-          if (profileError) {
-            console.error('Error saving profile to Supabase:', profileError.message);
-          }
-        }
+      if (!isSupabaseConfigured) {
+        // Offline / dev mode: just persist locally
+        persistLocalSession(name, email, targetBoard);
+        setUser((prev) => ({ ...prev, name, email, targetBoard, isLoggedIn: true }));
+        return { success: true };
       }
 
-      // Update State & LocalStorage
-      persistLocalSession(true, name, email, targetBoard);
+      // 1. Supabase Auth — create account
+      const { data, error: authError } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password,
+        options: { data: { name, targetBoard } },
+      });
+
+      if (authError) {
+        return { success: false, error: authError.message };
+      }
+
+      const userId = data?.user?.id;
+
+      // 2. Insert profile row (auth trigger may handle this too, but we upsert for safety)
+      if (userId) {
+        await supabase.from('profiles').upsert({
+          id: userId,
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
+          target_board: targetBoard,
+        }, { onConflict: 'id' });
+      }
+
+      // 3. Persist locally + update state (onAuthStateChange will also fire)
+      persistLocalSession(name.trim(), email.trim().toLowerCase(), targetBoard);
       setUser((prev) => ({
         ...prev,
-        name,
-        email,
+        id: userId || '',
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
         targetBoard,
         isLoggedIn: true,
       }));
 
       return { success: true };
     } catch (err: any) {
-      console.error('Signup Exception:', err);
-      return { success: false, error: err.message };
+      return { success: false, error: err.message || 'Signup failed. Try again.' };
     }
   };
 
-  // Real Supabase Login
-  const login = async (email: string, name?: string) => {
+  // ─── LOGIN ───
+  const login = async (email: string, password: string) => {
+    if (!email.trim()) return { success: false, error: 'Email is required.' };
+    if (!password) return { success: false, error: 'Password is required.' };
+
     try {
-      let userName = name || email.split('@')[0] || 'Abhishek';
-
-      if (isSupabaseConfigured) {
-        // Fetch profile from Supabase profiles table
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('email', email);
-
-        if (profiles && profiles.length > 0) {
-          userName = profiles[0].name;
-        } else {
-          // Insert profile if doesn't exist yet
-          await supabase.from('profiles').insert([
-            { name: userName, email, target_board: 'cbse' }
-          ]);
-        }
+      if (!isSupabaseConfigured) {
+        // Offline / dev mode: just persist locally
+        const name = email.split('@')[0] || 'Student';
+        persistLocalSession(name, email, 'cbse');
+        setUser((prev) => ({ ...prev, name, email, isLoggedIn: true }));
+        return { success: true };
       }
 
-      persistLocalSession(true, userName, email, 'cbse');
-      setUser((prev) => ({
-        ...prev,
-        name: userName,
-        email,
-        isLoggedIn: true,
-      }));
+      // 1. Supabase Auth — sign in with email + password
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+      if (authError) {
+        return { success: false, error: authError.message };
+      }
+
+      const userId = data?.user?.id;
+      if (userId) {
+        await fetchAndSyncProfile(userId, data.user?.email || email);
+      }
 
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message };
+      return { success: false, error: err.message || 'Login failed. Try again.' };
     }
   };
 
+  // ─── LOGOUT ───
   const logout = async () => {
     if (isSupabaseConfigured) {
       await supabase.auth.signOut().catch(() => {});
@@ -229,8 +236,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useUser = () => {
   const context = useContext(UserContext);
-  if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
-  }
+  if (!context) throw new Error('useUser must be used within a UserProvider');
   return context;
 };
