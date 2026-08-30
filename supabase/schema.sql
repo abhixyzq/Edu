@@ -1,6 +1,7 @@
 -- ========================================================
 -- EDUSTRIDE (NAINIX EDU) CLASS 12 PREP DATABASE SCHEMA
 -- Target Engine: PostgreSQL / Supabase
+-- Copy and paste this script directly into Supabase SQL Editor
 -- ========================================================
 
 -- 1. Create Profiles Table (Syncs with Supabase Auth users)
@@ -15,8 +16,11 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Enable RLS for Profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public profiles are viewable by everyone" ON public.profiles;
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
+
 CREATE POLICY "Public profiles are viewable by everyone" ON public.profiles FOR SELECT USING (true);
 CREATE POLICY "Users can insert their own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY "Users can update their own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
@@ -31,8 +35,8 @@ CREATE TABLE IF NOT EXISTS public.subjects (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Enable RLS for Subjects
 ALTER TABLE public.subjects ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Subjects are viewable by everyone" ON public.subjects;
 CREATE POLICY "Subjects are viewable by everyone" ON public.subjects FOR SELECT USING (true);
 
 -- 3. Create Chapters Table
@@ -45,8 +49,8 @@ CREATE TABLE IF NOT EXISTS public.chapters (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Enable RLS for Chapters
 ALTER TABLE public.chapters ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Chapters are viewable by everyone" ON public.chapters;
 CREATE POLICY "Chapters are viewable by everyone" ON public.chapters FOR SELECT USING (true);
 
 -- 4. Create Tests Table
@@ -61,8 +65,8 @@ CREATE TABLE IF NOT EXISTS public.tests (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Enable RLS for Tests
 ALTER TABLE public.tests ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Tests are viewable by everyone" ON public.tests;
 CREATE POLICY "Tests are viewable by everyone" ON public.tests FOR SELECT USING (true);
 
 -- 5. Create Questions Table
@@ -80,8 +84,8 @@ CREATE TABLE IF NOT EXISTS public.questions (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Enable RLS for Questions
 ALTER TABLE public.questions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Questions are viewable by everyone" ON public.questions;
 CREATE POLICY "Questions are viewable by everyone" ON public.questions FOR SELECT USING (true);
 
 -- 6. Create User Test Results Table
@@ -101,8 +105,10 @@ CREATE TABLE IF NOT EXISTS public.user_test_results (
   attempted_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Enable RLS for User Test Results
 ALTER TABLE public.user_test_results ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view their own test results" ON public.user_test_results;
+DROP POLICY IF EXISTS "Users can insert their own test results" ON public.user_test_results;
+
 CREATE POLICY "Users can view their own test results" ON public.user_test_results FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert their own test results" ON public.user_test_results FOR INSERT WITH CHECK (auth.uid() = user_id);
 
