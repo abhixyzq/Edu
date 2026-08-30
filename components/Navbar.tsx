@@ -199,18 +199,20 @@ export const Navbar: React.FC = () => {
             <a
               href="/EduStride_Class12.apk"
               download="EduStride_Class12.apk"
-              className="w-full py-2.5 px-3.5 rounded-2xl bg-[#9b4500] hover:bg-[#ff8c42] text-white font-bold text-xs transition-all shadow-md flex items-center justify-between group active:scale-[0.98] cursor-pointer"
+              className="w-full py-2.5 px-3.5 rounded-2xl bg-gradient-to-r from-[#9b4500] to-[#ba5600] hover:from-[#ba5600] hover:to-[#9b4500] text-white font-bold text-xs transition-all shadow-md hover:shadow-lg flex items-center justify-between group active:scale-[0.98] cursor-pointer border border-[#ff8c42]/30"
             >
               <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center text-white">
-                  <span className="material-symbols-outlined text-[18px]">android</span>
+                <div className="w-8 h-8 rounded-full bg-white p-0.5 shadow-xs flex items-center justify-center overflow-hidden shrink-0">
+                  <img src="/logo.png" alt="NAINIX EDU Logo" className="w-full h-full object-contain rounded-full" />
                 </div>
                 <div className="flex flex-col text-left">
-                  <span className="leading-tight font-extrabold text-[12px]">Download App</span>
-                  <span className="text-[10px] text-[#ffdbc9] font-normal">Android APK (v1.0)</span>
+                  <span className="leading-tight font-extrabold text-[12px]">Download Official App</span>
+                  <span className="text-[10px] text-[#ffdbc9] font-medium">NAINIX EDU · Android APK</span>
                 </div>
               </div>
-              <span className="material-symbols-outlined text-[18px] group-hover:translate-y-0.5 transition-transform">download</span>
+              <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors shrink-0">
+                <span className="material-symbols-outlined text-[18px] group-hover:translate-y-0.5 transition-transform">download</span>
+              </div>
             </a>
 
             <div className="flex items-center justify-between text-xs text-[#564338] px-1 pt-1">
