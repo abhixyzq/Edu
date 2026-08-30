@@ -12,9 +12,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(identifier ? identifier.split('@')[0] : 'Abhishek', identifier);
+    await login(identifier || 'abhishek@edustride.prep', identifier.includes('@') ? identifier.split('@')[0] : identifier);
     router.push('/');
   };
 

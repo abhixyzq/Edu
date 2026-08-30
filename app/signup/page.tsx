@@ -7,7 +7,8 @@ import { useUser } from '@/context/UserContext';
 
 export default function SignupPage() {
   const router = useRouter();
-  const { setTargetBoard, login } = useUser();
+  const { setTargetBoard, signup } = useUser();
+  const [loading, setLoading] = useState(false);
 
   const [fullName, setFullName] = useState('');
   const [contact, setContact] = useState('');
@@ -16,10 +17,12 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [agreedTerms, setAgreedTerms] = useState(true);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     setTargetBoard(board);
-    login(fullName || 'Abhishek', contact);
+    await signup(fullName || 'Abhishek', contact, password, board);
+    setLoading(false);
     router.push('/');
   };
 
