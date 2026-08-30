@@ -3,6 +3,7 @@ import './globals.css';
 import { UserProvider } from '@/context/UserContext';
 import { TestProvider } from '@/context/TestContext';
 import { Navbar } from '@/components/Navbar';
+import { SecurityGuard } from '@/components/SecurityGuard';
 
 export const metadata: Metadata = {
   title: 'EduStride Class 12 Prep | PrepMaster',
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body className="bg-[#f4fafd] text-[#161d1f] antialiased selection:bg-[#ffdbc9] selection:text-[#6a2d00]">
         <UserProvider>
           <TestProvider>
+            <SecurityGuard />
             <div className="min-h-screen flex flex-col justify-between">
               <Navbar />
               <div className="flex-1">{children}</div>
