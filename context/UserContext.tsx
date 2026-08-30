@@ -12,6 +12,7 @@ interface UserContextType {
     streakDays: number;
     targetBoard: string;
     isLoggedIn: boolean;
+    isAdmin: boolean;
   };
   setTargetBoard: (boardId: string) => void;
   incrementStreak: () => void;
@@ -31,6 +32,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     streakDays: 7,
     targetBoard: 'cbse',
     isLoggedIn: false,
+    isAdmin: false,
   });
 
   // ─── On mount: restore session from localStorage + listen to Supabase auth state ───
@@ -84,6 +86,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const name = profile?.name || email.split('@')[0] || 'Student';
       const board = profile?.target_board || 'cbse';
       const streak = profile?.streak_days || 7;
+      const isAdmin = profile?.is_admin === true;
 
       if (error && error.code !== 'PGRST116') {
         // PGRST116 = row not found (expected for new users)
@@ -99,6 +102,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         targetBoard: board,
         streakDays: streak,
         isLoggedIn: true,
+        isAdmin,
       }));
     } catch (err) {
       console.warn('[Auth] Profile sync error:', err);

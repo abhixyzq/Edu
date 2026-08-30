@@ -10,8 +10,8 @@ export const Navbar: React.FC = () => {
   const { user, logout } = useUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Hide navbars on focused auth pages (login/signup) & exam environment
-  if (pathname?.startsWith('/test') || pathname === '/login' || pathname === '/signup') {
+  // Hide navbars on focused auth pages (login/signup), exam environment, and admin pages
+  if (pathname?.startsWith('/test') || pathname === '/login' || pathname === '/signup' || pathname?.startsWith('/admin')) {
     return null;
   }
 
@@ -21,6 +21,8 @@ export const Navbar: React.FC = () => {
     { href: '/results', label: 'Results', icon: 'analytics' },
     { href: '/profile', label: 'Profile', icon: 'person' },
   ];
+
+  const adminLink = user.isAdmin ? { href: '/admin', label: 'Admin', icon: 'admin_panel_settings' } : null;
 
   const sidebarExtraLinks = [
     { href: '/subjects/physics', label: 'Physics Notes & MCQs', icon: 'psychology' },
@@ -89,6 +91,15 @@ export const Navbar: React.FC = () => {
               </Link>
             );
           })}
+          {adminLink && (
+            <Link
+              href={adminLink.href}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 text-[#564338] hover:bg-[#1a1f21] hover:text-white font-bold text-sm"
+            >
+              <span className="material-symbols-outlined text-[20px]">{adminLink.icon}</span>
+              <span>{adminLink.label}</span>
+            </Link>
+          )}
         </nav>
 
         {/* User Badge & Profile */}
@@ -166,6 +177,16 @@ export const Navbar: React.FC = () => {
                   </Link>
                 );
               })}
+              {adminLink && (
+                <Link
+                  href={adminLink.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-3.5 py-3 rounded-xl text-[#161d1f] hover:bg-[#1a1f21] hover:text-white font-bold transition-all"
+                >
+                  <span className="material-symbols-outlined text-[22px]">{adminLink.icon}</span>
+                  <span className="text-sm">{adminLink.label}</span>
+                </Link>
+              )}
             </div>
 
             {/* Class 12 Subject Links */}

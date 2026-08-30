@@ -11,7 +11,7 @@ export function SecurityGuard() {
 
     // 2. Prevent Keyboard Copy / Inspect / Print / Zoom Hotkeys
     const handleKeyDown = (e: KeyboardEvent) => {
-      const key = e.key.toLowerCase();
+      const key = (e.key ?? '').toLowerCase();
       
       // Block F12, PrintScreen, Ctrl+C, Ctrl+X, Ctrl+U, Ctrl+S, Ctrl+A, Ctrl+P, Ctrl++, Ctrl+-, Ctrl+0
       if (
