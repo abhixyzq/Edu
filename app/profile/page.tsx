@@ -1,34 +1,153 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useUser } from '@/context/UserContext';
 import { BOARDS } from '@/lib/mockData';
 import { Mascot } from '@/components/gamification/Mascot';
-import { playButtonClick } from '@/lib/soundEffects';
-
+import { playButtonClick, playGemDing } from '@/lib/soundEffects';
 import { GemIcon, HeartLifeIcon, StreakFlameIcon, XpBoltIcon } from '@/components/icons/AppIcons';
 
+const SCHOLAR_AVATARS = [
+  { id: 'av-1', emoji: '🧑‍🎓', name: 'Graduate' },
+  { id: 'av-2', emoji: '🚀', name: 'Cosmonaut' },
+  { id: 'av-3', emoji: '⚡', name: 'Physicist' },
+  { id: 'av-4', emoji: '🔬', name: 'Chemist' },
+  { id: 'av-5', emoji: '🤖', name: 'AI Scholar' },
+  { id: 'av-6', emoji: '🧠', name: 'Brainiac' },
+  { id: 'av-7', emoji: '🎯', name: 'Achiever' },
+  { id: 'av-8', emoji: '🦁', name: 'Champion' },
+];
+
 export default function ProfilePage() {
-  const { user, setTargetBoard, logout } = useUser();
+  const { user, setTargetBoard, updateAvatar, logout } = useUser();
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const completedCount = Object.keys(user.completedNodes).length;
+
+  // Handle client-side compressed image upload
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+
+      img.onload = () => {
+        // Compress and resize using canvas to avoid exceeding local storage quota
+        const canvas = document.createElement('canvas');
+        const MAX_SIZE = 360;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          updateAvatar(compressedDataUrl);
+          playGemDing();
+        }
+        setIsUploading(false);
+        setIsAvatarModalOpen(false);
+      };
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  const handleSelectEmojiAvatar = (emoji: string) => {
+    // Generate a clean SVG data URI for emoji
+    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect width="128" height="128" rx="32" fill="#7c3aed"/><text x="50%" y="55%" dominant-baseline="central" text-anchor="middle" font-size="70">${emoji}</text></svg>`;
+    const dataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svgString)}`;
+    updateAvatar(dataUrl);
+    playGemDing();
+    setIsAvatarModalOpen(false);
+  };
+
+  const handleRemovePhoto = () => {
+    updateAvatar('');
+    playButtonClick();
+    setIsAvatarModalOpen(false);
+  };
 
   return (
     <main className="w-full min-h-screen bg-[#f4f5fa] pb-28 font-sans">
       
+      {/* Hidden File Input */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept="image/png, image/jpeg, image/webp, image/gif"
+        className="hidden"
+      />
+
       {/* ─── Profile Header Hero ─── */}
       <div className="w-full bg-gradient-to-b from-[#ddd6fe] via-[#ede9fe] to-[#f4f5fa] pt-4 pb-6 px-4 sm:px-6">
         <div className="max-w-md mx-auto">
           <div className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-[#e2e8f0] shadow-sm flex items-center justify-between gap-4">
+            
             <div className="flex items-center gap-3.5">
-              <div className="relative">
-                <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-br from-[#a78bfa] to-[#7c3aed] text-white font-black text-2xl sm:text-3xl flex items-center justify-center shadow-md">
-                  {user.name.charAt(0)}
-                </div>
-                <span className="absolute -bottom-1 -right-1 bg-amber-400 text-white p-1 rounded-full border-2 border-white flex items-center justify-center shadow-xs">
-                  <StreakFlameIcon size={16} />
-                </span>
+              
+              {/* Profile Avatar with Upload Action */}
+              <div className="relative group">
+                <button
+                  type="button"
+                  onClick={() => {
+                    playButtonClick();
+                    setIsAvatarModalOpen(true);
+                  }}
+                  className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-br from-[#a78bfa] to-[#7c3aed] text-white font-black text-2xl sm:text-3xl flex items-center justify-center shadow-md overflow-hidden relative border-2 border-white hover:scale-105 transition-all cursor-pointer"
+                  title="Change Profile Photo"
+                >
+                  {user.avatarUrl ? (
+                    <img
+                      src={user.avatarUrl}
+                      alt={user.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span>{user.name.charAt(0).toUpperCase()}</span>
+                  )}
+
+                  {/* Hover Edit Overlay */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white">
+                    <span className="material-symbols-outlined text-[20px]">photo_camera</span>
+                  </div>
+                </button>
+
+                {/* Floating Camera Button on Badge */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    playButtonClick();
+                    setIsAvatarModalOpen(true);
+                  }}
+                  className="absolute -bottom-1 -right-1 bg-violet-600 hover:bg-violet-700 text-white p-1.5 rounded-full border-2 border-white flex items-center justify-center shadow-xs cursor-pointer transition-transform active:scale-95"
+                  title="Upload Photo"
+                >
+                  <span className="material-symbols-outlined text-[14px]">photo_camera</span>
+                </button>
               </div>
 
               <div>
@@ -223,6 +342,92 @@ export default function ProfilePage() {
         </div>
 
       </div>
+
+      {/* ─── Photo Upload & Avatar Picker Modal ─── */}
+      {isAvatarModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
+            
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 className="font-heading font-black text-base text-slate-900">
+                Change Profile Photo
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsAvatarModalOpen(false)}
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+
+            {/* Current Preview */}
+            <div className="flex flex-col items-center my-4">
+              <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#a78bfa] to-[#7c3aed] text-white font-black text-3xl flex items-center justify-center shadow-lg overflow-hidden border-2 border-violet-200 mb-2">
+                {user.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt={user.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span>{user.name.charAt(0).toUpperCase()}</span>
+                )}
+              </div>
+              <p className="text-xs font-semibold text-slate-500">
+                {user.name}
+              </p>
+            </div>
+
+            {/* Upload Button */}
+            <button
+              type="button"
+              disabled={isUploading}
+              onClick={() => {
+                playButtonClick();
+                fileInputRef.current?.click();
+              }}
+              className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-black text-xs shadow-md shadow-violet-200 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer mb-3"
+            >
+              <span className="material-symbols-outlined text-[18px]">upload</span>
+              <span>{isUploading ? 'Compressing & Uploading...' : 'Upload Photo from Device'}</span>
+            </button>
+
+            {/* Pre-made Avatars */}
+            <div className="mt-4 pt-3 border-t border-slate-100">
+              <span className="text-[11px] font-black uppercase text-slate-400 block mb-2 text-center">
+                Or Choose an Avatar
+              </span>
+              <div className="grid grid-cols-4 gap-2">
+                {SCHOLAR_AVATARS.map((av) => (
+                  <button
+                    key={av.id}
+                    type="button"
+                    onClick={() => handleSelectEmojiAvatar(av.emoji)}
+                    className="h-12 rounded-xl bg-slate-50 hover:bg-violet-50 border border-slate-200 hover:border-violet-300 text-2xl flex items-center justify-center transition-transform active:scale-90 cursor-pointer shadow-2xs"
+                    title={av.name}
+                  >
+                    {av.emoji}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Remove Photo Action */}
+            {user.avatarUrl && (
+              <button
+                type="button"
+                onClick={handleRemovePhoto}
+                className="w-full py-2.5 mt-4 rounded-xl border border-rose-200 bg-rose-50/50 hover:bg-rose-100 text-rose-600 font-bold text-xs transition-colors cursor-pointer"
+              >
+                Remove Photo & Reset
+              </button>
+            )}
+
+          </div>
+        </div>
+      )}
+
     </main>
   );
 }

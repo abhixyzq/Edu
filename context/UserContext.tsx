@@ -35,12 +35,14 @@ export interface UserGamifiedState {
   unlockedNodes: string[];
   completedNodes: Record<string, CompletedNodeData>;
   inventory: UserInventory;
+  avatarUrl?: string;
   soundMuted: boolean;
 }
 
 interface UserContextType {
   user: UserGamifiedState;
   setTargetBoard: (boardId: string) => void;
+  updateAvatar: (avatarUrl: string) => Promise<void>;
   incrementStreak: () => void;
   addXP: (amount: number) => { newXP: number; leveledUp: boolean; newLevel: number };
   addGems: (amount: number) => void;
@@ -101,6 +103,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const storedNodes = localStorage.getItem('edustride_unlocked_nodes');
     const storedCompleted = localStorage.getItem('edustride_completed_nodes');
     const storedInv = localStorage.getItem('edustride_inventory');
+    const storedAvatar = localStorage.getItem('edustride_user_avatar');
 
     const soundMuted = getSoundMuted();
 
@@ -120,6 +123,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         unlockedNodes: storedNodes ? JSON.parse(storedNodes) : prev.unlockedNodes,
         completedNodes: storedCompleted ? JSON.parse(storedCompleted) : prev.completedNodes,
         inventory: storedInv ? JSON.parse(storedInv) : prev.inventory,
+        avatarUrl: storedAvatar || prev.avatarUrl || '',
         soundMuted,
       };
     });
@@ -419,6 +423,18 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateAvatar = async (avatarUrl: string) => {
+    setUser((prev) => ({ ...prev, avatarUrl }));
+    localStorage.setItem('edustride_user_avatar', avatarUrl);
+    if (isSupabaseConfigured && user.id) {
+      try {
+        await supabase.from('profiles').update({ avatar_url: avatarUrl }).eq('id', user.id);
+      } catch (e) {
+        console.warn('Could not sync avatar to Supabase:', e);
+      }
+    }
+  };
+
   const logout = async () => {
     if (isSupabaseConfigured) {
       await supabase.auth.signOut().catch(() => {});
@@ -431,6 +447,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         setTargetBoard,
+        updateAvatar,
         incrementStreak,
         addXP,
         addGems,

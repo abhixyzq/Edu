@@ -111,14 +111,24 @@ export const Navbar: React.FC = () => {
                   )}
 
                   {/* Icon */}
-                  <span
-                    className={`material-symbols-outlined text-[24px] transition-transform duration-150 ${
-                      isActive ? 'scale-105' : 'scale-100'
-                    }`}
-                    style={isActive ? { fontVariationSettings: "'FILL' 1, 'wght' 700" } : undefined}
-                  >
-                    {tab.icon}
-                  </span>
+                  {tab.href === '/profile' && user.avatarUrl ? (
+                    <div
+                      className={`w-6 h-6 rounded-full overflow-hidden border transition-all ${
+                        isActive ? 'border-[#7c3aed] ring-2 ring-violet-200 scale-105' : 'border-slate-300'
+                      }`}
+                    >
+                      <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <span
+                      className={`material-symbols-outlined text-[24px] transition-transform duration-150 ${
+                        isActive ? 'scale-105' : 'scale-100'
+                      }`}
+                      style={isActive ? { fontVariationSettings: "'FILL' 1, 'wght' 700" } : undefined}
+                    >
+                      {tab.icon}
+                    </span>
+                  )}
 
                   {/* Label */}
                   <span
