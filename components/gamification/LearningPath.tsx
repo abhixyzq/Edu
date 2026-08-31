@@ -28,7 +28,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
   physics: [
     {
       id: 'phy-1',
-      code: '101',
+      code: '01',
       title: 'Introduction to Charges & Coulomb Force',
       subtitle: 'Quantization & Vectors',
       iconType: 'brain',
@@ -41,7 +41,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     },
     {
       id: 'phy-2',
-      code: '102',
+      code: '02',
       title: 'Electric Fields & Dipole Moment',
       subtitle: 'Field Lines & Torque',
       iconType: 'atom',
@@ -54,7 +54,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     },
     {
       id: 'phy-3',
-      code: '201',
+      code: '03',
       title: 'Gauss Law & Electric Flux',
       subtitle: 'Cylindrical & Spherical Surfaces',
       iconType: 'circuit',
@@ -67,7 +67,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     },
     {
       id: 'phy-4',
-      code: '202',
+      code: '04',
       title: 'Electrostatic Potential & Capacitors',
       subtitle: 'Dielectrics & Energy Stored',
       iconType: 'atom',
@@ -80,7 +80,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     },
     {
       id: 'phy-5',
-      code: '203',
+      code: '05',
       title: 'Current Electricity & Drift Speed',
       subtitle: 'Ohm Law & Resistance Networks',
       iconType: 'circuit',
@@ -93,7 +93,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     },
     {
       id: 'phy-6',
-      code: '301',
+      code: '06',
       title: 'Kirchhoff Rules & Wheatstone Bridge',
       subtitle: 'Complex Loop Analysis',
       iconType: 'math',
@@ -106,7 +106,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     },
     {
       id: 'phy-boss-1',
-      code: '302',
+      code: '07',
       title: 'Term 1 Mastery Exam Drill',
       subtitle: '40 Marks Board Level Test',
       iconType: 'trophy',
@@ -122,7 +122,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
   chemistry: [
     {
       id: 'chem-1',
-      code: '101',
+      code: '01',
       title: 'Solutions & Concentration Terms',
       subtitle: 'Molarity & Raoult Law',
       iconType: 'brain',
@@ -135,7 +135,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     },
     {
       id: 'chem-2',
-      code: '102',
+      code: '02',
       title: 'Colligative Properties & Osmosis',
       subtitle: 'Vant Hoff Factor',
       iconType: 'flask',
@@ -148,7 +148,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     },
     {
       id: 'chem-3',
-      code: '201',
+      code: '03',
       title: 'Electrochemistry & Nernst Equation',
       subtitle: 'Galvanic Cells & EMF',
       iconType: 'flask',
@@ -163,7 +163,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
   mathematics: [
     {
       id: 'math-1',
-      code: '101',
+      code: '01',
       title: 'Matrices & Determinants Basics',
       subtitle: 'Operations & Adjoints',
       iconType: 'brain',
@@ -176,7 +176,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     },
     {
       id: 'math-2',
-      code: '102',
+      code: '02',
       title: 'Continuity & Differentiability',
       subtitle: 'Chain Rule & Logarithmic Diff',
       iconType: 'math',
@@ -189,7 +189,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     },
     {
       id: 'math-3',
-      code: '201',
+      code: '03',
       title: 'Integral Calculus & By Parts',
       subtitle: 'Standard Substitutions',
       iconType: 'math',
@@ -204,7 +204,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
   biology: [
     {
       id: 'bio-1',
-      code: '101',
+      code: '01',
       title: 'Reproduction in Flowering Plants',
       subtitle: 'Pollination & Fertilization',
       iconType: 'brain',
@@ -217,7 +217,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     },
     {
       id: 'bio-2',
-      code: '102',
+      code: '02',
       title: 'Human Reproduction & Hormones',
       subtitle: 'Gametogenesis Cycle',
       iconType: 'dna',
@@ -230,7 +230,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     },
     {
       id: 'bio-3',
-      code: '201',
+      code: '03',
       title: 'Principles of Inheritance & Genetics',
       subtitle: 'Mendelian Genetics',
       iconType: 'dna',
