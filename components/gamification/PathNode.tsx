@@ -7,13 +7,15 @@ export type NodeStatus = 'completed' | 'active' | 'locked';
 
 export interface PathNodeProps {
   id: string;
-  code: string; // e.g. "101", "102", "201"
+  code: string; // e.g. "01", "02", "03"
   title: string;
   subtitle?: string;
   status: NodeStatus;
   isBoss?: boolean;
   themeColor: string; // e.g. "#10b981", "#3b82f6", "#8b5cf6"
   iconType?: string;
+  userAvatarUrl?: string;
+  userName?: string;
   onClick: () => void;
   textSide?: 'left' | 'right';
 }
@@ -123,6 +125,8 @@ export const PathNode: React.FC<PathNodeProps> = ({
   isBoss = false,
   themeColor,
   iconType,
+  userAvatarUrl,
+  userName,
   onClick,
   textSide = 'right',
 }) => {
@@ -166,11 +170,20 @@ export const PathNode: React.FC<PathNodeProps> = ({
           <TopicIcon type={iconType} color={themeColor} isLocked={isLocked} />
         </div>
 
-        {/* ─── Active Level Cute Floating Mascot Badge (Exact Screenshot Feature!) ─── */}
+        {/* ─── Active Level User Profile Photo Floating Badge ─── */}
         {isActive && (
-          <div className="absolute -bottom-1.5 -right-1.5 w-8 h-8 rounded-full bg-[#fde047] border-2 border-white shadow-md flex items-center justify-center animate-bounce z-30">
-            {/* Friendly Smiley Mascot */}
-            <span className="text-base leading-none">😊</span>
+          <div className="absolute -bottom-1 -right-1 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-violet-600 to-indigo-600 border-2 border-white shadow-md flex items-center justify-center overflow-hidden z-30 animate-bounce ring-2 ring-violet-200">
+            {userAvatarUrl ? (
+              <img
+                src={userAvatarUrl}
+                alt={userName || 'You'}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-[11px] font-black text-white">
+                {(userName ? userName.charAt(0) : 'U').toUpperCase()}
+              </span>
+            )}
           </div>
         )}
       </button>

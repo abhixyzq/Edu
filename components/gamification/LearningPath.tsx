@@ -465,6 +465,8 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
                 isBoss={node.isBoss}
                 themeColor={node.themeColor}
                 iconType={node.iconType}
+                userAvatarUrl={user.avatarUrl}
+                userName={user.name}
                 textSide={textSide}
                 onClick={() => handleNodeClick(node)}
               />
