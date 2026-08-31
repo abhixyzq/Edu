@@ -1,137 +1,164 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { useUser } from '@/context/UserContext';
 import { BOARDS } from '@/lib/mockData';
+import { Mascot } from '@/components/gamification/Mascot';
 
 export default function ProfilePage() {
-  const { user, setTargetBoard } = useUser();
+  const { user, setTargetBoard, logout } = useUser();
+
+  const completedCount = Object.keys(user.completedNodes).length;
 
   return (
-    <main className="max-w-[800px] mx-auto px-4 md:px-6 pt-6 pb-24 md:pb-16">
+    <main className="max-w-[850px] mx-auto px-4 md:px-6 pt-6 pb-24 md:pb-16 font-sans">
       {/* Profile Header Card */}
-      <div className="card-outline rounded-3xl p-6 md:p-8 bg-white border-[#ddc1b3] shadow-md flex flex-col sm:flex-row items-center gap-6 mb-8 text-center sm:text-left">
-        <div className="relative">
-          <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-[#ff8c42] bg-gradient-to-br from-[#ffdbc9] to-[#ff8c42] text-[#6a2d00] font-extrabold text-3xl md:text-4xl flex items-center justify-center shadow-md">
-            {user.name.charAt(0)}
+      <div className="bg-white rounded-3xl p-6 md:p-8 border-2 border-[#dde4e6] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6 mb-8 text-center sm:text-left">
+        <div className="flex flex-col sm:flex-row items-center gap-5">
+          <div className="relative">
+            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-[#ff8c42] bg-gradient-to-br from-[#ffdbc9] to-[#ff8c42] text-[#6a2d00] font-black text-3xl md:text-4xl flex items-center justify-center shadow-md">
+              {user.name.charAt(0)}
+            </div>
+            <span className="absolute bottom-0 right-0 bg-[#ff8c42] text-white p-1 rounded-full border-2 border-white flex items-center justify-center shadow-xs">
+              <span className="material-symbols-outlined text-[16px]">local_fire_department</span>
+            </span>
           </div>
-          <span className="absolute bottom-0 right-0 bg-[#ff8c42] text-white p-1 rounded-full border-2 border-white flex items-center justify-center shadow-xs">
-            <span className="material-symbols-outlined text-[16px]">local_fire_department</span>
-          </span>
+
+          <div>
+            <div className="flex items-center justify-center sm:justify-start gap-2 mb-1.5 flex-wrap">
+              <span className="bg-[#ffdbc9] text-[#9b4500] text-xs font-black px-3 py-0.5 rounded-full uppercase border border-[#ff8c42]/40">
+                Level {user.level} Scholar
+              </span>
+              <span className="bg-[#d4e3ff] text-[#0060ac] text-xs font-black px-3 py-0.5 rounded-full uppercase border border-[#a2c5ff]">
+                {user.leagueTier} League
+              </span>
+            </div>
+            <h1 className="font-heading text-2xl md:text-3xl font-extrabold text-[#161d1f]">
+              {user.name}
+            </h1>
+            <p className="text-xs text-[#564338] mt-0.5">
+              {user.email || 'student@edustride.prep'} • Class 12 Board Prep
+            </p>
+          </div>
         </div>
 
-        <div className="flex-1">
-          <div className="inline-flex items-center gap-1.5 bg-[#ffdbc9] text-[#6a2d00] px-3 py-1 rounded-md text-xs font-bold border border-[#ff8c42]/40 mb-2">
-            <span className="material-symbols-outlined text-[16px] text-[#9b4500]">verified</span>
-            Verified Class 12 Aspirant
-          </div>
-          <h1 className="font-heading text-2xl md:text-3xl font-bold text-[#161d1f]">
-            {user.name}
-          </h1>
-          <p className="text-sm text-[#564338]">
-            Target Board: <span className="font-bold uppercase text-[#9b4500]">{user.targetBoard}</span> • Science PCM Stream
-          </p>
+        <div className="hidden sm:block">
+          <Mascot mood="happy" size={85} />
         </div>
       </div>
 
-      {/* Stats Summary - Background Watermark Icon Design */}
-      <div className="grid grid-cols-3 gap-3 md:gap-5 mb-8">
-        {/* Card 1: Streak */}
-        <div className="card-outline rounded-3xl p-5 md:p-6 bg-white text-center flex flex-col items-center justify-center gap-1 shadow-xs border-[#e0e0e0] hover:border-[#9b4500] transition-all relative overflow-hidden group">
-          {/* Background Watermark Icon */}
-          <span
-            className="material-symbols-outlined text-[#9b4500] absolute pointer-events-none select-none transition-transform duration-300 group-hover:scale-110"
-            style={{ fontSize: '85px', opacity: 0.2, right: '-10px', bottom: '-10px', lineHeight: 1 }}
-          >
+      {/* Gamified Stats Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
+        {/* Streak */}
+        <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-[#dde4e6] shadow-xs flex flex-col items-center justify-center text-center">
+          <span className="material-symbols-outlined text-[32px] text-[#9b4500] mb-1">
             local_fire_department
           </span>
-          <div className="relative z-10 flex flex-col items-center">
-            <div className="font-heading text-3xl md:text-5xl font-extrabold text-[#161d1f] tracking-tight">
-              {user.streakDays}
-            </div>
-            <div className="font-heading text-lg md:text-2xl font-bold text-[#9b4500] mt-0.5">
-              Days
-            </div>
-            <p className="text-xs md:text-sm font-semibold text-[#564338] mt-1">
-              Study Streak
-            </p>
-          </div>
+          <span className="font-heading text-2xl font-black text-[#161d1f]">{user.streakDays}</span>
+          <span className="text-[11px] font-bold text-[#897266] uppercase">Day Streak</span>
         </div>
 
-        {/* Card 2: Tests Attempted */}
-        <div className="card-outline rounded-3xl p-5 md:p-6 bg-white text-center flex flex-col items-center justify-center gap-1 shadow-xs border-[#e0e0e0] hover:border-[#3a6a00] transition-all relative overflow-hidden group">
-          {/* Background Watermark Icon */}
-          <span
-            className="material-symbols-outlined text-[#3a6a00] absolute pointer-events-none select-none transition-transform duration-300 group-hover:scale-110"
-            style={{ fontSize: '85px', opacity: 0.2, right: '-10px', bottom: '-10px', lineHeight: 1 }}
-          >
-            military_tech
+        {/* Total XP */}
+        <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-[#dde4e6] shadow-xs flex flex-col items-center justify-center text-center">
+          <span className="material-symbols-outlined text-[32px] text-[#ffd700] mb-1">
+            bolt
           </span>
-          <div className="relative z-10 flex flex-col items-center">
-            <div className="font-heading text-3xl md:text-5xl font-extrabold text-[#161d1f] tracking-tight">
-              14
-            </div>
-            <div className="font-heading text-lg md:text-2xl font-bold text-[#3a6a00] mt-0.5">
-              Tests
-            </div>
-            <p className="text-xs md:text-sm font-semibold text-[#564338] mt-1">
-              Attempted
-            </p>
-          </div>
+          <span className="font-heading text-2xl font-black text-[#161d1f]">{user.xp}</span>
+          <span className="text-[11px] font-bold text-[#897266] uppercase">Total XP</span>
         </div>
 
-        {/* Card 3: Avg Accuracy */}
-        <div className="card-outline rounded-3xl p-5 md:p-6 bg-white text-center flex flex-col items-center justify-center gap-1 shadow-xs border-[#e0e0e0] hover:border-[#0060ac] transition-all relative overflow-hidden group">
-          {/* Background Watermark Icon */}
-          <span
-            className="material-symbols-outlined text-[#0060ac] absolute pointer-events-none select-none transition-transform duration-300 group-hover:scale-110"
-            style={{ fontSize: '85px', opacity: 0.2, right: '-10px', bottom: '-10px', lineHeight: 1 }}
-          >
-            menu_book
+        {/* Gems */}
+        <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-[#dde4e6] shadow-xs flex flex-col items-center justify-center text-center">
+          <span className="material-symbols-outlined text-[32px] text-[#0060ac] mb-1">
+            diamond
           </span>
-          <div className="relative z-10 flex flex-col items-center">
-            <div className="font-heading text-3xl md:text-5xl font-extrabold text-[#161d1f] tracking-tight">
-              86%
+          <span className="font-heading text-2xl font-black text-[#161d1f]">{user.gems}</span>
+          <span className="text-[11px] font-bold text-[#897266] uppercase">Gems</span>
+        </div>
+
+        {/* Completed Nodes */}
+        <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-[#dde4e6] shadow-xs flex flex-col items-center justify-center text-center">
+          <span className="material-symbols-outlined text-[32px] text-[#58cc02] mb-1">
+            check_circle
+          </span>
+          <span className="font-heading text-2xl font-black text-[#161d1f]">{completedCount}</span>
+          <span className="text-[11px] font-bold text-[#897266] uppercase">Nodes Mastered</span>
+        </div>
+      </div>
+
+      {/* Inventory & Power-ups */}
+      <div className="bg-white rounded-3xl p-6 border-2 border-[#dde4e6] shadow-xs mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-heading text-lg font-extrabold text-[#161d1f]">
+            Inventory & Equipped Power-Ups
+          </h2>
+          <Link href="/shop" className="text-xs font-black text-[#0060ac] hover:underline">
+            Shop Power-Ups
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="p-3.5 rounded-2xl bg-[#f4fafd] border border-[#dde4e6] flex items-center gap-3">
+            <span className="material-symbols-outlined text-[24px] text-[#0060ac]">ac_unit</span>
+            <div>
+              <p className="text-xs font-extrabold text-[#161d1f]">Streak Freeze</p>
+              <span className="text-[11px] text-[#564338] font-bold">{user.inventory.streakFreeze} Equipped</span>
             </div>
-            <div className="font-heading text-lg md:text-2xl font-bold text-[#0060ac] mt-0.5">
-              Avg
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-[#f4fafd] border border-[#dde4e6] flex items-center gap-3">
+            <span className="material-symbols-outlined text-[24px] text-[#ffd700]">bolt</span>
+            <div>
+              <p className="text-xs font-extrabold text-[#161d1f]">2x XP Boosters</p>
+              <span className="text-[11px] text-[#564338] font-bold">{user.inventory.doubleXpCount} Available</span>
             </div>
-            <p className="text-xs md:text-sm font-semibold text-[#564338] mt-1">
-              Accuracy
-            </p>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-[#f4fafd] border border-[#dde4e6] flex items-center gap-3">
+            <span className="material-symbols-outlined text-[24px] text-[#ba1a1a]">favorite</span>
+            <div>
+              <p className="text-xs font-extrabold text-[#161d1f]">Current Lives</p>
+              <span className="text-[11px] text-[#564338] font-bold">{user.hearts}/5 Hearts</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Preferences & Target Board Selection */}
-      <div className="card-outline rounded-2xl p-6 bg-white flex flex-col gap-6">
-        <h2 className="font-heading text-xl font-bold text-[#161d1f]">
-          Target Exam Preferences
+      {/* Target Board Switcher */}
+      <div className="bg-white rounded-3xl p-6 border-2 border-[#dde4e6] shadow-xs mb-8">
+        <h2 className="font-heading text-lg font-extrabold text-[#161d1f] mb-3">
+          Target Examination Board
         </h2>
-
-        <div>
-          <label className="block text-xs font-bold text-[#564338] mb-2">
-            Switch Target Examination Board
-          </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {BOARDS.map((board) => {
-              const isSelected = user.targetBoard === board.id;
-              return (
-                <button
-                  key={board.id}
-                  onClick={() => setTargetBoard(board.id)}
-                  className={`p-3 rounded-xl text-xs font-bold border transition-all text-center ${
-                    isSelected
-                      ? 'bg-[#ff8c42] text-white border-[#9b4500] shadow-xs'
-                      : 'bg-white text-[#161d1f] border-[#ddc1b3] hover:border-[#9b4500]'
-                  }`}
-                >
-                  {board.name}
-                </button>
-              );
-            })}
-          </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+          {BOARDS.map((board) => {
+            const isSelected = user.targetBoard === board.id;
+            return (
+              <button
+                key={board.id}
+                onClick={() => setTargetBoard(board.id)}
+                className={`p-3 rounded-2xl text-xs font-extrabold border-b-4 active:border-b-0 active:translate-y-1 transition-all text-center cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#ff8c42] text-white border-[#9b4500] shadow-sm'
+                    : 'bg-white text-[#161d1f] border-[#dde4e6] hover:bg-[#ffdbc9]/30'
+                }`}
+              >
+                {board.name}
+              </button>
+            );
+          })}
         </div>
+      </div>
+
+      {/* Account Logout */}
+      <div className="flex justify-end">
+        <button
+          onClick={logout}
+          className="py-2.5 px-6 rounded-2xl border-2 border-[#ba1a1a] text-[#ba1a1a] font-black text-xs hover:bg-[#ffdad6] transition-colors flex items-center gap-2 cursor-pointer"
+        >
+          <span className="material-symbols-outlined text-[18px]">logout</span>
+          Sign Out of EduStride
+        </button>
       </div>
     </main>
   );
