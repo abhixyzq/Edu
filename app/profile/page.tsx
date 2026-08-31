@@ -176,13 +176,13 @@ export default function ProfilePage() {
 
             {/* Direct Download Button */}
             <a
-              href="/EduStride_Class12_v1.0.2.apk?v=1.0.2"
-              download="nainixOne_Class12_v1.0.2.apk"
+              href={`/EduStride_Class12_v1.0.2.apk?v=latest`}
+              download="nainixOne_Class12_Latest.apk"
               onClick={playButtonClick}
-              className="mt-4 w-full py-3 px-4 rounded-2xl bg-white hover:bg-amber-50 text-[#6d28d9] font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
+              className="mt-4 w-full py-3.5 px-4 rounded-2xl bg-white hover:bg-violet-50 text-[#6d28d9] font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[20px] text-[#6d28d9]">download</span>
-              <span>Download APK (Direct Install)</span>
+              <span className="material-symbols-outlined text-[20px] text-[#6d28d9]">android</span>
+              <span>Download Latest APK (Direct Install)</span>
             </a>
           </div>
 
