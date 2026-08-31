@@ -53,7 +53,7 @@ export default function SignupPage() {
         <Link
           href="/"
           onClick={playButtonClick}
-          className="text-xs font-black text-slate-600 hover:text-blue-600 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-50 border-2 border-slate-200 hover:border-blue-400 shadow-2xs transition-all active:scale-95 cursor-pointer"
+          className="text-xs font-black text-slate-600 hover:text-[#7c3aed] flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-50 border-2 border-slate-200 hover:border-violet-400 shadow-2xs transition-all active:scale-95 cursor-pointer"
         >
           <span className="material-symbols-outlined text-[16px]">arrow_back</span>
           <span>Back</span>
@@ -63,8 +63,8 @@ export default function SignupPage() {
       {/* ─── Main Interactive Graphic Registration Window ─── */}
       <main className="w-full max-w-md my-auto py-6 relative flex flex-col items-center justify-center z-10">
         
-        {/* Soft Organic Cloud / Blob Background */}
-        <div className="absolute -inset-4 sm:-inset-8 bg-[#dbeafe]/75 rounded-[60px] transform rotate-1 pointer-events-none -z-10 blur-xs" />
+        {/* Soft Organic Cloud / Blob Background (Brand Violet Theme) */}
+        <div className="absolute -inset-4 sm:-inset-8 bg-[#ede9fe]/80 rounded-[60px] transform rotate-1 pointer-events-none -z-10 blur-xs" />
 
         {/* ─── Top-Left Illuminated Idea Bulb ─── */}
         <div className="absolute -top-3 -left-2 sm:-top-5 sm:-left-6 z-20 flex flex-col items-center pointer-events-none animate-pulse">
@@ -77,17 +77,17 @@ export default function SignupPage() {
 
           {/* Light Bulb Icon */}
           <div className="w-12 h-12 rounded-full bg-white border-2 border-slate-900 shadow-md flex items-center justify-center relative">
-            <span className="material-symbols-outlined text-[28px] text-blue-600 font-bold">school</span>
+            <span className="material-symbols-outlined text-[28px] text-[#7c3aed] font-bold">school</span>
             {/* Thread Base */}
-            <div className="absolute -bottom-2 w-5 h-2 bg-blue-600 border border-slate-900 rounded-b-sm" />
+            <div className="absolute -bottom-2 w-5 h-2 bg-[#7c3aed] border border-slate-900 rounded-b-sm" />
           </div>
         </div>
 
         {/* ─── The Main Browser Registration Window ─── */}
         <div className="w-full bg-white border-[3px] border-slate-900 rounded-3xl shadow-[8px_8px_0px_#0f172a] overflow-hidden relative transition-all">
           
-          {/* 1. Browser Title Bar (Electric Cobalt Header with Window Controls) */}
-          <div className="w-full bg-[#1d4ed8] border-b-[3px] border-slate-900 px-4 py-3 flex items-center justify-between">
+          {/* 1. Browser Title Bar (Brand Purple Theme Header) */}
+          <div className="w-full bg-[#7c3aed] border-b-[3px] border-slate-900 px-4 py-3 flex items-center justify-between">
             {/* 3 Circular Window Dots */}
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-white/90 border border-slate-900 shadow-2xs" />
@@ -95,7 +95,7 @@ export default function SignupPage() {
               <span className="w-3 h-3 rounded-full bg-white/90 border border-slate-900 shadow-2xs" />
             </div>
 
-            <span className="text-[11px] font-black uppercase text-blue-100 tracking-wider">
+            <span className="text-[11px] font-black uppercase text-violet-100 tracking-wider">
               nainixOne • Scholar Registration
             </span>
 
@@ -105,10 +105,10 @@ export default function SignupPage() {
           {/* 2. Window Content Body */}
           <div className="p-5 sm:p-7 flex flex-col items-center">
             
-            {/* User Icon Circle */}
-            <div className="w-18 h-18 rounded-full bg-[#1d4ed8] border-[3px] border-slate-900 flex items-center justify-center text-white shadow-sm mb-4 relative overflow-hidden">
+            {/* User Icon Circle (Brand Purple Theme) */}
+            <div className="w-18 h-18 rounded-full bg-[#7c3aed] border-[3px] border-slate-900 flex items-center justify-center text-white shadow-sm mb-4 relative overflow-hidden">
               <span className="material-symbols-outlined text-[44px] text-white">person_add</span>
-              <div className="absolute top-1 left-2 w-14 h-7 bg-white/15 rounded-t-full pointer-events-none" />
+              <div className="absolute top-1 left-2 w-14 h-7 bg-white/20 rounded-t-full pointer-events-none" />
             </div>
 
             {/* Error Message */}
@@ -123,8 +123,8 @@ export default function SignupPage() {
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3">
               
               {/* Capsule Input 1: Full Name */}
-              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-blue-500/20 transition-all">
-                <div className="w-22 sm:w-26 h-full bg-[#1d4ed8] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
+              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
+                <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
                   <span className="material-symbols-outlined text-[16px]">person</span>
                   <span className="text-[10px] font-black tracking-tight">NAME</span>
                 </div>
@@ -140,8 +140,8 @@ export default function SignupPage() {
               </div>
 
               {/* Capsule Input 2: Email Address */}
-              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-blue-500/20 transition-all">
-                <div className="w-22 sm:w-26 h-full bg-[#1d4ed8] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
+              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
+                <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
                   <span className="material-symbols-outlined text-[16px]">mail</span>
                   <span className="text-[10px] font-black tracking-tight">EMAIL</span>
                 </div>
@@ -157,8 +157,8 @@ export default function SignupPage() {
               </div>
 
               {/* Capsule Input 3: Target Board */}
-              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-blue-500/20 transition-all relative">
-                <div className="w-22 sm:w-26 h-full bg-[#1d4ed8] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
+              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all relative">
+                <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
                   <span className="material-symbols-outlined text-[16px]">school</span>
                   <span className="text-[10px] font-black tracking-tight">BOARD</span>
                 </div>
@@ -179,8 +179,8 @@ export default function SignupPage() {
               </div>
 
               {/* Capsule Input 4: Password */}
-              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-blue-500/20 transition-all">
-                <div className="w-22 sm:w-26 h-full bg-[#1d4ed8] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
+              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
+                <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
                   <span className="material-symbols-outlined text-[16px]">key</span>
                   <span className="text-[10px] font-black tracking-tight">PASS</span>
                 </div>
@@ -211,10 +211,10 @@ export default function SignupPage() {
                   type="checkbox"
                   checked={agreedTerms}
                   onChange={(e) => setAgreedTerms(e.target.checked)}
-                  className="w-4 h-4 rounded border-2 border-slate-900 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600"
+                  className="w-4 h-4 rounded border-2 border-slate-900 text-[#7c3aed] focus:ring-[#7c3aed] cursor-pointer accent-[#7c3aed]"
                 />
                 <label htmlFor="terms" className="text-[11px] font-bold text-slate-600 cursor-pointer">
-                  I agree to the <span className="text-[#1d4ed8] font-black underline">Terms & Conditions</span>
+                  I agree to the <span className="text-[#7c3aed] font-black underline">Terms & Conditions</span>
                 </label>
               </div>
 
@@ -222,7 +222,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={!agreedTerms || loading}
-                className="w-full mt-1 h-12 rounded-2xl bg-[#1d4ed8] hover:bg-[#1e40af] disabled:opacity-50 text-white font-black text-sm border-2 border-slate-900 shadow-[0_4px_0_#0f172a] active:shadow-none active:translate-y-1 transition-all duration-100 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full mt-1 h-12 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] disabled:opacity-50 text-white font-black text-sm border-2 border-slate-900 shadow-[0_4px_0_#0f172a] active:shadow-none active:translate-y-1 transition-all duration-100 cursor-pointer flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -243,7 +243,7 @@ export default function SignupPage() {
                 <Link
                   href="/login"
                   onClick={playButtonClick}
-                  className="font-black text-[#1d4ed8] hover:underline ml-1"
+                  className="font-black text-[#7c3aed] hover:underline ml-1"
                 >
                   Log In
                 </Link>
@@ -253,17 +253,17 @@ export default function SignupPage() {
           </div>
         </div>
 
-        {/* ─── Bottom Interlocking Mechanical Gears ─── */}
+        {/* ─── Bottom Interlocking Mechanical Gears (Brand Purple Theme) ─── */}
         <div className="relative w-full max-w-[280px] h-12 -mt-3 flex items-center justify-center z-20 pointer-events-none">
-          <div className="w-14 h-14 rounded-full bg-[#1d4ed8] border-2 border-slate-900 flex items-center justify-center shadow-md animate-spin-slow">
+          <div className="w-14 h-14 rounded-full bg-[#7c3aed] border-2 border-slate-900 flex items-center justify-center shadow-md animate-spin-slow">
             <div className="w-5 h-5 rounded-full bg-white border-2 border-slate-900" />
           </div>
 
-          <div className="w-10 h-10 -ml-2 -mt-4 rounded-full bg-[#2563eb] border-2 border-slate-900 flex items-center justify-center shadow-md animate-spin-reverse-slow">
+          <div className="w-10 h-10 -ml-2 -mt-4 rounded-full bg-[#8b5cf6] border-2 border-slate-900 flex items-center justify-center shadow-md animate-spin-reverse-slow">
             <div className="w-3.5 h-3.5 rounded-full bg-white border border-slate-900" />
           </div>
 
-          <div className="w-8 h-8 -ml-1 mt-2 rounded-full bg-[#1d4ed8] border-2 border-slate-900 flex items-center justify-center shadow-xs">
+          <div className="w-8 h-8 -ml-1 mt-2 rounded-full bg-[#6d28d9] border-2 border-slate-900 flex items-center justify-center shadow-xs">
             <div className="w-2.5 h-2.5 rounded-full bg-white border border-slate-900" />
           </div>
         </div>
