@@ -7,6 +7,8 @@ import { BOARDS } from '@/lib/mockData';
 import { Mascot } from '@/components/gamification/Mascot';
 import { playButtonClick } from '@/lib/soundEffects';
 
+import { GemIcon, HeartLifeIcon, StreakFlameIcon, XpBoltIcon } from '@/components/icons/AppIcons';
+
 export default function ProfilePage() {
   const { user, setTargetBoard, logout } = useUser();
 
@@ -25,7 +27,7 @@ export default function ProfilePage() {
                   {user.name.charAt(0)}
                 </div>
                 <span className="absolute -bottom-1 -right-1 bg-amber-400 text-white p-1 rounded-full border-2 border-white flex items-center justify-center shadow-xs">
-                  <span className="material-symbols-outlined text-[13px]">local_fire_department</span>
+                  <StreakFlameIcon size={16} />
                 </span>
               </div>
 
@@ -42,7 +44,7 @@ export default function ProfilePage() {
                   {user.name}
                 </h1>
                 <p className="text-xs text-[#64748b] mt-0.5">
-                  {user.email || 'student@edustride.prep'}
+                  {user.email || 'student@nainixone.prep'}
                 </p>
               </div>
             </div>
@@ -69,7 +71,7 @@ export default function ProfilePage() {
             </div>
 
             <h3 className="font-heading text-lg font-black leading-tight text-white">
-              Install EduStride on Android
+              Install nainixOne on Android
             </h3>
             <p className="text-xs text-[#ede9fe] mt-1 leading-relaxed">
               Experience ultra-smooth practice sessions, offline tests, and fast gamified sound effects on your phone.
@@ -78,7 +80,7 @@ export default function ProfilePage() {
             {/* Direct Download Button */}
             <a
               href="/EduStride_Class12_v1.0.2.apk?v=1.0.2"
-              download="EduStride_Class12_v1.0.2.apk"
+              download="nainixOne_Class12_v1.0.2.apk"
               onClick={playButtonClick}
               className="mt-4 w-full py-3 px-4 rounded-2xl bg-white hover:bg-amber-50 text-[#6d28d9] font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
             >
@@ -94,29 +96,29 @@ export default function ProfilePage() {
         {/* ─── Gamified Stats Grid ─── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {/* Streak */}
-          <div className="bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs flex flex-col items-center justify-center text-center">
-            <span className="text-2xl mb-1">🔥</span>
+          <div className="bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs flex flex-col items-center justify-center text-center group hover:border-amber-300 transition-colors">
+            <StreakFlameIcon size={30} className="mb-1 group-hover:scale-110 transition-transform" />
             <span className="font-heading text-xl font-black text-[#1e293b]">{user.streakDays}</span>
             <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">Day Streak</span>
           </div>
 
           {/* Total XP */}
-          <div className="bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs flex flex-col items-center justify-center text-center">
-            <span className="text-2xl mb-1">⚡</span>
+          <div className="bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs flex flex-col items-center justify-center text-center group hover:border-amber-300 transition-colors">
+            <XpBoltIcon size={30} className="mb-1 group-hover:scale-110 transition-transform" />
             <span className="font-heading text-xl font-black text-[#1e293b]">{user.xp}</span>
             <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">Total XP</span>
           </div>
 
           {/* Gems */}
-          <div className="bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs flex flex-col items-center justify-center text-center">
-            <span className="text-2xl mb-1">💎</span>
+          <div className="bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs flex flex-col items-center justify-center text-center group hover:border-cyan-300 transition-colors">
+            <GemIcon size={30} className="mb-1 group-hover:scale-110 transition-transform" />
             <span className="font-heading text-xl font-black text-[#1e293b]">{user.gems}</span>
             <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">Gems</span>
           </div>
 
           {/* Completed Nodes */}
-          <div className="bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs flex flex-col items-center justify-center text-center">
-            <span className="text-2xl mb-1">✅</span>
+          <div className="bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs flex flex-col items-center justify-center text-center group hover:border-emerald-300 transition-colors">
+            <span className="material-symbols-outlined text-[30px] text-emerald-500 mb-1 group-hover:scale-110 transition-transform">verified</span>
             <span className="font-heading text-xl font-black text-[#1e293b]">{completedCount}</span>
             <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">Mastered</span>
           </div>
@@ -184,6 +186,28 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* ─── Admin Panel Card (Visible to Admins) ─── */}
+        {user.isAdmin && (
+          <div className="bg-gradient-to-r from-[#1a1f21] to-[#2d3748] text-white rounded-3xl p-5 shadow-md border-b-4 border-[#ff8c42] flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-[#ff8c42] text-white flex items-center justify-center font-bold shadow-xs">
+                <span className="material-symbols-outlined text-[22px]">admin_panel_settings</span>
+              </div>
+              <div>
+                <h3 className="font-heading text-sm font-black text-white">Administrator Portal</h3>
+                <p className="text-[11px] text-[#cbd5e1]">Manage subjects, tests, questions & users</p>
+              </div>
+            </div>
+            <Link
+              href="/admin"
+              onClick={playButtonClick}
+              className="px-4 py-2 rounded-xl bg-[#ff8c42] hover:bg-[#ff7a24] text-white font-black text-xs transition-all shadow-xs"
+            >
+              Open Panel
+            </Link>
+          </div>
+        )}
+
         {/* ─── Sign Out ─── */}
         <div className="flex justify-center pt-2">
           <button
@@ -194,7 +218,7 @@ export default function ProfilePage() {
             className="w-full py-3 rounded-2xl border-2 border-rose-200 bg-rose-50/50 text-rose-600 font-black text-xs hover:bg-rose-100 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <span className="material-symbols-outlined text-[16px]">logout</span>
-            Sign Out of EduStride
+            Sign Out of nainixOne
           </button>
         </div>
 

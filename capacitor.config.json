@@ -1,6 +1,6 @@
 {
-  "appId": "com.edustride.prep",
-  "appName": "EduStride Class 12",
+  "appId": "com.nainixone.prep",
+  "appName": "nainixOne Class 12",
   "webDir": "out",
   "server": {
     "androidScheme": "https"

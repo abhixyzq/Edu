@@ -3,8 +3,8 @@ import { AdminGuard } from '@/components/AdminGuard';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 
 export const metadata: Metadata = {
-  title: 'Admin Panel | EduStride',
-  description: 'EduStride admin dashboard for managing content, users, and analytics.',
+  title: 'Admin Panel | nainixOne',
+  description: 'nainixOne admin dashboard for managing content, users, and analytics.',
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

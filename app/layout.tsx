@@ -15,9 +15,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'EduStride Class 12 Prep | PrepMaster',
+  title: 'nainixOne | Class 12 Board Exam Prep & Mock Tests',
   description: 'AI-curated practice exams, mock tests, and subject learning platform for Class 12 CBSE, Bihar Board, UP Board, and ICSE students.',
-  keywords: ['EduStride', 'PrepMaster', 'Class 12 Prep', 'CBSE Class 12', 'Bihar Board', 'Mock Test', 'Physics Mock Test'],
+  keywords: ['nainixOne', 'Class 12 Prep', 'CBSE Class 12', 'Bihar Board', 'Mock Test', 'Physics Mock Test'],
 };
 
 export default function RootLayout({

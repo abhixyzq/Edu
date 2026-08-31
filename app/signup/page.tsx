@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
 
+import { BrandLogo } from '@/components/BrandLogo';
+
 export default function SignupPage() {
   const router = useRouter();
   const { setTargetBoard, signup } = useUser();
@@ -40,9 +42,7 @@ export default function SignupPage() {
       {/* Top Header */}
       <header className="w-full shrink-0 flex justify-between items-center max-w-md mx-auto py-1">
         <Link href="/">
-          <span className="font-heading text-2xl font-extrabold text-[#9b4500] tracking-tight">
-            EduStride
-          </span>
+          <BrandLogo size="lg" />
         </Link>
         <Link href="/" className="text-xs font-bold text-[#564338] hover:text-[#9b4500] flex items-center gap-1">
           <span className="material-symbols-outlined text-[16px]">arrow_back</span> Back
@@ -58,7 +58,7 @@ export default function SignupPage() {
             Create Account
           </h1>
           <p className="text-xs text-[#564338] mt-1">
-            Join EduStride Class 12 Board Prep
+            Join nainixOne Class 12 Board Prep
           </p>
         </div>
 
@@ -192,7 +192,7 @@ export default function SignupPage() {
 
       {/* Footer copyright */}
       <footer className="w-full shrink-0 text-center text-[10px] text-[#897266] py-1">
-        © 2026 EduStride PrepMaster
+        © 2026 nainixOne
       </footer>
     </div>
   );

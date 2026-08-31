@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
 
+import { BrandLogo } from '@/components/BrandLogo';
+
 const navLinks = [
   { href: '/admin', label: 'Overview', icon: 'dashboard', exact: true },
   { href: '/admin/subjects', label: 'Subjects', icon: 'category' },
@@ -25,16 +27,13 @@ export function AdminSidebar() {
     <>
       {/* ── Desktop Sidebar ──────────────────────────────── */}
       <aside className="hidden md:flex flex-col w-64 shrink-0 bg-[#1a1f21] min-h-screen fixed left-0 top-0 z-30 border-r border-white/5">
-        {/* Logo */}
+        {/* Text Logo */}
         <div className="p-5 border-b border-white/10">
-          <Link href="/admin" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl bg-[#ff8c42] flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined text-white text-[20px]">admin_panel_settings</span>
-            </div>
-            <div>
-              <span className="font-heading text-white font-bold text-base block leading-tight">EduStride</span>
-              <span className="text-[#ff8c42] text-[10px] font-bold uppercase tracking-widest">Admin Panel</span>
-            </div>
+          <Link href="/admin" className="flex flex-col group">
+            <BrandLogo size="lg" variant="dark" />
+            <span className="text-[#a855f7] text-[10px] font-bold uppercase tracking-widest mt-1.5">
+              Admin Portal
+            </span>
           </Link>
         </div>
 
@@ -91,10 +90,10 @@ export function AdminSidebar() {
       {/* ── Mobile Top Bar ────────────────────────────────── */}
       <header className="md:hidden sticky top-0 z-40 bg-[#1a1f21] border-b border-white/10 flex items-center justify-between px-4 py-3">
         <Link href="/admin" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#ff8c42] flex items-center justify-center">
-            <span className="material-symbols-outlined text-white text-[18px]">admin_panel_settings</span>
-          </div>
-          <span className="font-heading text-white font-bold text-base">Admin</span>
+          <BrandLogo size="sm" variant="dark" />
+          <span className="text-[10px] bg-white/10 text-[#a855f7] font-black px-2 py-0.5 rounded-full">
+            Admin
+          </span>
         </Link>
         <button
           onClick={() => setMobileOpen(true)}
@@ -118,7 +117,7 @@ export function AdminSidebar() {
           }`}
         >
           <div className="p-5 border-b border-white/10 flex items-center justify-between">
-            <span className="font-heading text-white font-bold">Admin Panel</span>
+            <BrandLogo size="md" variant="dark" />
             <button onClick={() => setMobileOpen(false)} className="p-1.5 rounded-full text-white/50 hover:bg-white/10">
               <span className="material-symbols-outlined text-[20px]">close</span>
             </button>

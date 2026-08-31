@@ -16,6 +16,8 @@ import {
 import { Scratchpad } from './Scratchpad';
 import { Mascot, MascotMood } from './Mascot';
 
+import { HeartLifeIcon, StreakFlameIcon, GemIcon, XpBoltIcon } from '@/components/icons/AppIcons';
+
 export function DuolingoQuizClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -155,19 +157,19 @@ export function DuolingoQuizClient() {
           {/* Reward Badges Grid */}
           <div className="grid grid-cols-3 gap-3 w-full mt-6">
             <div className="bg-white p-3.5 rounded-2xl border-2 border-[#ffd700] shadow-sm flex flex-col items-center">
-              <span className="material-symbols-outlined text-[28px] text-[#ffd700]">bolt</span>
+              <XpBoltIcon size={32} className="mb-1" />
               <span className="text-lg font-black text-[#9b4500]">+{30 + correctCount * 5}</span>
               <span className="text-[10px] font-bold text-[#897266] uppercase">XP Earned</span>
             </div>
 
             <div className="bg-white p-3.5 rounded-2xl border-2 border-[#0060ac] shadow-sm flex flex-col items-center">
-              <span className="material-symbols-outlined text-[28px] text-[#0060ac]">diamond</span>
+              <GemIcon size={32} className="mb-1" />
               <span className="text-lg font-black text-[#0060ac]">+15</span>
               <span className="text-[10px] font-bold text-[#897266] uppercase">Gems</span>
             </div>
 
             <div className="bg-white p-3.5 rounded-2xl border-2 border-[#58cc02] shadow-sm flex flex-col items-center">
-              <span className="material-symbols-outlined text-[28px] text-[#58cc02]">target</span>
+              <span className="material-symbols-outlined text-[30px] text-[#58cc02] mb-1">target</span>
               <span className="text-lg font-black text-[#58cc02]">{accuracy}%</span>
               <span className="text-[10px] font-bold text-[#897266] uppercase">Accuracy</span>
             </div>
@@ -176,9 +178,7 @@ export function DuolingoQuizClient() {
           {/* Streak Boost Card */}
           <div className="w-full bg-[#ffdbc9]/70 border border-[#ff8c42] rounded-2xl p-4 mt-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-[32px] text-[#9b4500] animate-bounce">
-                local_fire_department
-              </span>
+              <StreakFlameIcon size={36} className="animate-bounce" />
               <div className="text-left">
                 <p className="text-xs font-black text-[#6a2d00]">{user.streakDays} Day Streak Active!</p>
                 <p className="text-[10px] text-[#564338]">Consistent daily practice boosts exam retention</p>
@@ -202,9 +202,9 @@ export function DuolingoQuizClient() {
   }
 
   return (
-    <div className={`min-h-screen bg-white flex flex-col justify-between font-sans ${screenShake ? 'animate-shake' : ''}`}>
+    <div className={`fixed inset-0 w-full h-[100dvh] max-h-[100dvh] bg-white flex flex-col justify-between overflow-hidden font-sans select-none ${screenShake ? 'animate-shake' : ''}`}>
       {/* ─── Top Duolingo Header ─── */}
-      <header className="px-4 sm:px-8 py-4 flex items-center justify-between gap-3 border-b border-[#dde4e6] bg-white sticky top-0 z-30">
+      <header className="shrink-0 px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-between gap-3 border-b border-[#dde4e6] bg-white z-30">
         {/* Exit Button */}
         <Link
           href="/"
@@ -250,19 +250,17 @@ export function DuolingoQuizClient() {
           </button>
 
           {/* Hearts Indicator */}
-          <div className="flex items-center gap-1 bg-[#ffdad6] text-[#93000a] px-2.5 sm:px-3 py-1 rounded-xl font-black text-xs sm:text-sm border border-[#ffb4ab]">
-            <span className="material-symbols-outlined text-[18px] text-[#ba1a1a] animate-pulse">
-              favorite
-            </span>
+          <div className="flex items-center gap-1.5 bg-[#ffdad6] text-[#93000a] px-2.5 sm:px-3 py-1 rounded-xl font-black text-xs sm:text-sm border border-[#ffb4ab]">
+            <HeartLifeIcon size={20} className="animate-pulse" />
             <span>{user.infiniteHeartsUntil && Date.now() < user.infiniteHeartsUntil ? '∞' : user.hearts}</span>
           </div>
         </div>
       </header>
 
-      {/* ─── Main Question Body ─── */}
-      <main className="flex-1 max-w-2xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col justify-center">
+      {/* ─── Main Scrollable Question Body ─── */}
+      <main className="flex-1 max-w-2xl w-full mx-auto px-4 sm:px-6 py-4 sm:py-6 overflow-y-auto flex flex-col justify-start">
         {/* Question Type & Combo Badge */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-3 shrink-0">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-[#ffdbc9] text-[#9b4500] border border-[#ff8c42]/30">
             <span className="material-symbols-outlined text-[15px]">psychology</span>
             Question {currentIndex + 1} of {questions.length}
@@ -317,39 +315,39 @@ export function DuolingoQuizClient() {
         </div>
       </main>
 
-      {/* ─── Bottom Action Bar / Sliding Drawer ─── */}
+      {/* ─── Bottom Action Bar / Fixed Sticky Dock ─── */}
       <footer
-        className={`w-full border-t transition-all duration-300 py-4 sm:py-5 px-4 sm:px-8 ${
+        className={`sticky bottom-0 z-30 w-full border-t transition-all duration-300 py-4 sm:py-5 px-4 sm:px-8 pb-safe shadow-[0_-4px_24px_rgba(0,0,0,0.06)] ${
           !isAnswerChecked
-            ? 'bg-white border-[#dde4e6]'
+            ? 'bg-white border-slate-200'
             : isCorrect
             ? 'bg-[#d7ffb8] border-[#58cc02] text-[#2b6401]'
             : 'bg-[#ffdad6] border-[#ba1a1a] text-[#93000a]'
         }`}
       >
-        <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
-          {/* Status Message & Mascot reaction when answered */}
+        <div className="max-w-2xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+          {/* Status Message & Feedback when answered */}
           {!isAnswerChecked ? (
-            <div className="hidden sm:flex items-center gap-2 text-xs text-[#897266] font-medium">
-              <span>Press <kbd className="px-1.5 py-0.5 bg-[#e8eff1] rounded font-bold">1-4</kbd> to select</span>
+            <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 font-medium">
+              <span>Press <kbd className="px-2 py-0.5 bg-slate-100 border border-slate-200 rounded-md font-bold text-slate-700">1-4</kbd> or click to choose answer</span>
             </div>
           ) : (
-            <div className="flex items-center gap-3">
+            <div className="flex items-start sm:items-center gap-3">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-white shrink-0 shadow-md ${
+                className={`w-10 h-10 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-md ${
                   isCorrect ? 'bg-[#58cc02]' : 'bg-[#ba1a1a]'
                 }`}
               >
-                <span className="material-symbols-outlined text-[24px] font-black">
+                <span className="material-symbols-outlined text-[26px] font-black">
                   {isCorrect ? 'check' : 'close'}
                 </span>
               </div>
               <div>
-                <h3 className="font-heading font-extrabold text-base sm:text-lg">
+                <h3 className="font-heading font-black text-base sm:text-lg">
                   {isCorrect ? 'Nicely Done!' : 'Correct Solution:'}
                 </h3>
                 {!isCorrect && (
-                  <p className="text-xs text-[#564338] mt-0.5 line-clamp-2 max-w-sm">
+                  <p className="text-xs text-slate-700 font-medium mt-0.5 line-clamp-2 max-w-md">
                     {currentQ.explanation}
                   </p>
                 )}
@@ -357,16 +355,16 @@ export function DuolingoQuizClient() {
             </div>
           )}
 
-          {/* Action Button */}
+          {/* Action Button (Full width on mobile, prominent 3D tactile button) */}
           {!isAnswerChecked ? (
             <button
               type="button"
               onClick={handleCheck}
               disabled={!selectedKey}
-              className={`px-8 py-3.5 rounded-2xl font-black text-sm sm:text-base border-b-5 active:border-b-0 active:translate-y-1 transition-all duration-150 tracking-wider uppercase shadow-md ${
+              className={`w-full sm:w-auto sm:min-w-[160px] h-13 sm:h-14 px-8 rounded-2xl font-black text-base border-b-4 active:border-b-0 active:translate-y-1 transition-all duration-150 tracking-wider uppercase shadow-md flex items-center justify-center cursor-pointer ${
                 selectedKey
-                  ? 'bg-[#58cc02] hover:bg-[#46a302] text-white border-[#388401] cursor-pointer'
-                  : 'bg-[#e5e5e5] text-[#afafaf] border-[#afafaf] cursor-not-allowed'
+                  ? 'bg-[#58cc02] hover:bg-[#4cb802] text-white border-[#388401] shadow-[#58cc02]/25'
+                  : 'bg-slate-200 text-slate-400 border-slate-300 cursor-not-allowed'
               }`}
             >
               Check
@@ -375,10 +373,10 @@ export function DuolingoQuizClient() {
             <button
               type="button"
               onClick={handleContinue}
-              className={`px-8 py-3.5 rounded-2xl font-black text-sm sm:text-base border-b-5 active:border-b-0 active:translate-y-1 transition-all duration-150 tracking-wider uppercase shadow-md cursor-pointer ${
+              className={`w-full sm:w-auto sm:min-w-[160px] h-13 sm:h-14 px-8 rounded-2xl font-black text-base border-b-4 active:border-b-0 active:translate-y-1 transition-all duration-150 tracking-wider uppercase shadow-md flex items-center justify-center cursor-pointer ${
                 isCorrect
-                  ? 'bg-[#58cc02] hover:bg-[#46a302] text-white border-[#388401]'
-                  : 'bg-[#ba1a1a] hover:bg-[#93000a] text-white border-[#680005]'
+                  ? 'bg-[#58cc02] hover:bg-[#4cb802] text-white border-[#388401] shadow-[#58cc02]/30'
+                  : 'bg-[#ef4444] hover:bg-[#dc2626] text-white border-[#b91c1c] shadow-[#ef4444]/30'
               }`}
             >
               Continue

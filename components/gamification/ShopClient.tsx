@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { useUser } from '@/context/UserContext';
 import { Mascot } from './Mascot';
 
+import { GemIcon } from '@/components/icons/AppIcons';
+
 interface ShopItem {
   id: 'heart_refill' | 'streak_freeze' | 'infinite_hearts' | 'double_xp';
   name: string;
@@ -74,8 +76,8 @@ export function ShopClient() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs font-black uppercase tracking-widest text-[#d4e3ff]">Power-Ups & Inventory</span>
-            <div className="flex items-center gap-1 bg-white/20 px-2.5 py-0.5 rounded-full text-xs font-extrabold text-white">
-              <span className="material-symbols-outlined text-[16px] text-[#ffd700]">diamond</span>
+            <div className="flex items-center gap-1.5 bg-white/20 px-2.5 py-0.5 rounded-full text-xs font-extrabold text-white">
+              <GemIcon size={16} />
               <span>{user.gems} Gems</span>
             </div>
           </div>
@@ -133,8 +135,8 @@ export function ShopClient() {
 
               {/* Price & Buy Button */}
               <div className="mt-5 pt-3 border-t border-[#dde4e6] flex items-center justify-between">
-                <div className="flex items-center gap-1 font-black text-sm text-[#0060ac]">
-                  <span className="material-symbols-outlined text-[18px]">diamond</span>
+                <div className="flex items-center gap-1.5 font-black text-sm text-[#0060ac]">
+                  <GemIcon size={18} />
                   <span>{item.cost}</span>
                 </div>
 

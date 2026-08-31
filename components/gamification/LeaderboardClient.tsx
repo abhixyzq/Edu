@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useUser } from '@/context/UserContext';
 import { playButtonClick } from '@/lib/soundEffects';
+import { XpBoltIcon, GemIcon } from '@/components/icons/AppIcons';
 
 interface LeaguePlayer {
   rank: number;
@@ -220,7 +221,7 @@ export function LeaderboardClient() {
 
                 {/* Right: XP Score */}
                 <div className="flex items-center gap-1.5 font-black text-xs sm:text-sm text-[#1e293b]">
-                  <span className="text-amber-500 text-sm leading-none">⚡</span>
+                  <XpBoltIcon size={18} />
                   <span>{p.xp} XP</span>
                 </div>
               </div>
@@ -249,8 +250,8 @@ export function LeaderboardClient() {
             </div>
           </div>
 
-          <div className="flex items-center gap-1 font-black text-xs bg-white/10 px-3 py-1.5 rounded-xl">
-            <span className="text-amber-400">⚡</span>
+          <div className="flex items-center gap-1.5 font-black text-xs bg-white/10 px-3 py-1.5 rounded-xl">
+            <XpBoltIcon size={16} />
             <span>{currentUserData.xp} XP</span>
           </div>
         </div>
