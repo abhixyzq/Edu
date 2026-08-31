@@ -9,14 +9,13 @@ import { playButtonClick, playGemDing } from '@/lib/soundEffects';
 import { GemIcon, HeartLifeIcon, StreakFlameIcon, XpBoltIcon } from '@/components/icons/AppIcons';
 
 const SCHOLAR_AVATARS = [
-  { id: 'av-1', emoji: '🧑‍🎓', name: 'Graduate' },
-  { id: 'av-2', emoji: '🚀', name: 'Cosmonaut' },
-  { id: 'av-3', emoji: '⚡', name: 'Physicist' },
-  { id: 'av-4', emoji: '🔬', name: 'Chemist' },
-  { id: 'av-5', emoji: '🤖', name: 'AI Scholar' },
-  { id: 'av-6', emoji: '🧠', name: 'Brainiac' },
-  { id: 'av-7', emoji: '🎯', name: 'Achiever' },
-  { id: 'av-8', emoji: '🦁', name: 'Champion' },
+  { id: 'av-1', src: '/emoji/file_0000000007148211a1eafe7e0e8b1aa2.png', name: '3D Scholar 1' },
+  { id: 'av-2', src: '/emoji/file_0000000046d082119e0e9eef22bb129f.png', name: '3D Scholar 2' },
+  { id: 'av-3', src: '/emoji/file_000000004fb88211bf8e0f9ffbed8f55.png', name: '3D Scholar 3' },
+  { id: 'av-4', src: '/emoji/file_00000000de50821193433d73f25e29cf.png', name: '3D Scholar 4' },
+  { id: 'av-5', src: '/emoji/file_00000000e11082119a9e3d2feef9e762.png', name: '3D Scholar 5' },
+  { id: 'av-6', src: '/emoji/file_00000000e218821199cdb2575db7c3f8.png', name: '3D Scholar 6' },
+  { id: 'av-7', src: '/emoji/file_00000000ef8c82119a5f33c7714208ec.png', name: '3D Scholar 7' },
 ];
 
 export default function ProfilePage() {
@@ -75,11 +74,8 @@ export default function ProfilePage() {
     reader.readAsDataURL(file);
   };
 
-  const handleSelectEmojiAvatar = (emoji: string) => {
-    // Generate a clean SVG data URI for emoji
-    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect width="128" height="128" rx="32" fill="#7c3aed"/><text x="50%" y="55%" dominant-baseline="central" text-anchor="middle" font-size="70">${emoji}</text></svg>`;
-    const dataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svgString)}`;
-    updateAvatar(dataUrl);
+  const handleSelectPreMadeAvatar = (src: string) => {
+    updateAvatar(src);
     playGemDing();
     setIsAvatarModalOpen(false);
   };
@@ -377,19 +373,23 @@ export default function ProfilePage() {
 
             {/* Pre-made Avatars */}
             <div className="mt-4 pt-3 border-t border-slate-100">
-              <span className="text-[11px] font-black uppercase text-slate-400 block mb-2 text-center">
-                Or Choose an Avatar
+              <span className="text-[11px] font-black uppercase text-slate-400 block mb-2.5 text-center">
+                Or Choose a 3D Avatar
               </span>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-2.5">
                 {SCHOLAR_AVATARS.map((av) => (
                   <button
                     key={av.id}
                     type="button"
-                    onClick={() => handleSelectEmojiAvatar(av.emoji)}
-                    className="h-12 rounded-xl bg-slate-50 hover:bg-violet-50 border border-slate-200 hover:border-violet-300 text-2xl flex items-center justify-center transition-transform active:scale-90 cursor-pointer shadow-2xs"
+                    onClick={() => handleSelectPreMadeAvatar(av.src)}
+                    className="aspect-square rounded-2xl bg-slate-50 hover:bg-violet-50 border-2 border-slate-200 hover:border-violet-400 p-1.5 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-xs overflow-hidden"
                     title={av.name}
                   >
-                    {av.emoji}
+                    <img
+                      src={av.src}
+                      alt={av.name}
+                      className="w-full h-full object-contain drop-shadow-xs"
+                    />
                   </button>
                 ))}
               </div>
