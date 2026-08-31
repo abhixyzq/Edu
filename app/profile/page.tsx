@@ -109,15 +109,15 @@ export default function ProfilePage() {
             
             <div className="flex items-center gap-3.5">
               
-              {/* Profile Avatar with Upload Action */}
-              <div className="relative group">
+              {/* Profile Avatar */}
+              <div className="relative">
                 <button
                   type="button"
                   onClick={() => {
                     playButtonClick();
                     setIsAvatarModalOpen(true);
                   }}
-                  className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-br from-[#a78bfa] to-[#7c3aed] text-white font-black text-2xl sm:text-3xl flex items-center justify-center shadow-md overflow-hidden relative border-2 border-white hover:scale-105 transition-all cursor-pointer"
+                  className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-br from-[#a78bfa] to-[#7c3aed] text-white font-black text-2xl sm:text-3xl flex items-center justify-center shadow-md overflow-hidden relative border-2 border-white hover:scale-105 active:scale-95 transition-all cursor-pointer"
                   title="Change Profile Photo"
                 >
                   {user.avatarUrl ? (
@@ -129,24 +129,6 @@ export default function ProfilePage() {
                   ) : (
                     <span>{user.name.charAt(0).toUpperCase()}</span>
                   )}
-
-                  {/* Hover Edit Overlay */}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white">
-                    <span className="material-symbols-outlined text-[20px]">photo_camera</span>
-                  </div>
-                </button>
-
-                {/* Floating Camera Button on Badge */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    playButtonClick();
-                    setIsAvatarModalOpen(true);
-                  }}
-                  className="absolute -bottom-1 -right-1 bg-violet-600 hover:bg-violet-700 text-white p-1.5 rounded-full border-2 border-white flex items-center justify-center shadow-xs cursor-pointer transition-transform active:scale-95"
-                  title="Upload Photo"
-                >
-                  <span className="material-symbols-outlined text-[14px]">photo_camera</span>
                 </button>
               </div>
 
