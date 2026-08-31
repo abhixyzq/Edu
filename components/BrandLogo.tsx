@@ -16,50 +16,46 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   const isDark = variant === 'dark';
 
   const sizeClasses = {
-    sm: 'text-lg',
-    md: 'text-xl sm:text-[22px]',
-    lg: 'text-2xl sm:text-3xl',
-    xl: 'text-3xl sm:text-4xl',
+    sm: 'text-[19px]',
+    md: 'text-[23px]',
+    lg: 'text-[30px]',
+    xl: 'text-[38px]',
   };
 
   const verticalLetterSizes = {
-    sm: 'text-[6.5px] leading-[6px]',
-    md: 'text-[7.5px] leading-[7px]',
-    lg: 'text-[9.5px] leading-[9px]',
-    xl: 'text-[12px] leading-[11px]',
-  };
-
-  const badgePadding = {
-    sm: 'px-1 py-0.5 rounded-[5px] ml-1',
-    md: 'px-1.5 py-1 rounded-[6px] ml-1.5',
-    lg: 'px-2 py-1.5 rounded-[8px] ml-2',
-    xl: 'px-2.5 py-2 rounded-[10px] ml-2.5',
+    sm: 'text-[6.5px] leading-[5px] ml-1 tracking-[0.14em]',
+    md: 'text-[7.5px] leading-[6px] ml-1.5 tracking-[0.16em]',
+    lg: 'text-[9.5px] leading-[7.5px] ml-2 tracking-[0.18em]',
+    xl: 'text-[12px] leading-[9.5px] ml-2.5 tracking-[0.2em]',
   };
 
   return (
-    <div className={`inline-flex items-center select-none group font-heading ${className}`}>
+    <div
+      style={{ fontFamily: "'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif" }}
+      className={`inline-flex items-center select-none group font-logo ${className}`}
+    >
       {/* Base Wordmark 'nainix' */}
       <span
-        className={`font-black tracking-[-0.04em] leading-none transition-all duration-200 ${
+        style={{ fontFamily: "'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif" }}
+        className={`font-black tracking-[-0.05em] leading-none transition-all duration-200 ${
           sizeClasses[size]
         } ${isDark ? 'text-white' : 'text-slate-900 group-hover:text-slate-800'}`}
       >
         nainix
       </span>
 
-      {/* Designer Vertical 'ONE' Stamped Micro-Insignia */}
+      {/* Vertical 'ONE' Wordmark */}
       <div
-        className={`flex flex-col items-center justify-center bg-gradient-to-b from-[#7c3aed] via-[#8b5cf6] to-[#a855f7] text-white shadow-[0_2px_8px_rgba(124,58,237,0.35)] transition-transform duration-200 group-hover:scale-105 select-none ${
-          badgePadding[size]
-        }`}
+        style={{ fontFamily: "'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif" }}
+        className={`flex flex-col items-center justify-center font-black uppercase select-none transition-all duration-200 group-hover:scale-105 ${verticalLetterSizes[size]}`}
       >
-        <span className={`font-black tracking-widest uppercase ${verticalLetterSizes[size]}`}>
+        <span className="bg-gradient-to-b from-violet-600 to-purple-600 bg-clip-text text-transparent">
           O
         </span>
-        <span className={`font-black tracking-widest uppercase my-[1px] ${verticalLetterSizes[size]}`}>
+        <span className="bg-gradient-to-b from-purple-600 to-indigo-600 bg-clip-text text-transparent my-[0.5px]">
           N
         </span>
-        <span className={`font-black tracking-widest uppercase ${verticalLetterSizes[size]}`}>
+        <span className="bg-gradient-to-b from-indigo-600 to-violet-700 bg-clip-text text-transparent">
           E
         </span>
       </div>

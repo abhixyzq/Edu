@@ -42,6 +42,8 @@ const config: Config = {
       fontFamily: {
         heading: ['Quicksand', 'sans-serif'],
         sans: ['Nunito Sans', 'sans-serif'],
+        logo: ['Outfit', 'sans-serif'],
+        brand: ['Plus Jakarta Sans', 'sans-serif'],
       },
     },
   },
