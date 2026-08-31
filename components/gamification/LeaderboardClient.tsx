@@ -13,6 +13,7 @@ interface LeaderboardUser {
   rank: number;
   name: string;
   avatar: string;
+  avatarUrl?: string;
   board: string;
   specialization: string;
   xp: number;
@@ -89,6 +90,7 @@ export function LeaderboardClient() {
         rank: 4,
         name: user.name || 'You',
         avatar: (user.name ? user.name.slice(0, 2) : 'ME').toUpperCase(),
+        avatarUrl: user.avatarUrl,
         board: user.targetBoard === 'bseb' ? 'Bihar Board (BSEB)' : 'CBSE Class 12',
         specialization: 'Electrodynamics & Calculus',
         xp: Math.max(user.xp, 2180),
@@ -212,7 +214,7 @@ export function LeaderboardClient() {
         trendValue: 1,
       },
     ];
-  }, [user.name, user.xp, user.streakDays, user.targetBoard]);
+  }, [user.name, user.xp, user.streakDays, user.targetBoard, user.avatarUrl]);
 
   // Filtering
   const filteredList = useMemo(() => {
@@ -377,8 +379,16 @@ export function LeaderboardClient() {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl bg-slate-800 border border-slate-600 text-slate-200 font-bold text-sm flex items-center justify-center">
-                      {top2.avatar}
+                    <div className="w-11 h-11 rounded-xl bg-slate-800 border border-slate-600 text-slate-200 font-bold text-sm flex items-center justify-center overflow-hidden shrink-0">
+                      {top2.avatarUrl || (top2.isCurrentUser && user.avatarUrl) ? (
+                        <img
+                          src={top2.avatarUrl || user.avatarUrl}
+                          alt={top2.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        top2.avatar
+                      )}
                     </div>
                     <div>
                       <h3 className="text-sm font-bold text-white group-hover:text-slate-200 transition-colors">
@@ -419,8 +429,16 @@ export function LeaderboardClient() {
 
               <div className="flex items-start justify-between mt-1">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-600 to-yellow-400 text-amber-950 font-black text-base flex items-center justify-center shadow-sm">
-                    {top1.avatar}
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-600 to-yellow-400 text-amber-950 font-black text-base flex items-center justify-center shadow-sm overflow-hidden shrink-0">
+                    {top1.avatarUrl || (top1.isCurrentUser && user.avatarUrl) ? (
+                      <img
+                        src={top1.avatarUrl || user.avatarUrl}
+                        alt={top1.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      top1.avatar
+                    )}
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-white group-hover:text-amber-200 transition-colors">
@@ -459,8 +477,16 @@ export function LeaderboardClient() {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl bg-amber-950/70 border border-amber-700/50 text-amber-200 font-bold text-sm flex items-center justify-center">
-                      {top3.avatar}
+                    <div className="w-11 h-11 rounded-xl bg-amber-950/70 border border-amber-700/50 text-amber-200 font-bold text-sm flex items-center justify-center overflow-hidden shrink-0">
+                      {top3.avatarUrl || (top3.isCurrentUser && user.avatarUrl) ? (
+                        <img
+                          src={top3.avatarUrl || user.avatarUrl}
+                          alt={top3.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        top3.avatar
+                      )}
                     </div>
                     <div>
                       <h3 className="text-sm font-bold text-white group-hover:text-zinc-200 transition-colors">
@@ -529,8 +555,16 @@ export function LeaderboardClient() {
 
                   {/* Candidate Column */}
                   <div className="col-span-6 sm:col-span-5 flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-white/10 text-zinc-300 font-semibold text-xs flex items-center justify-center shrink-0">
-                      {player.avatar}
+                    <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-white/10 text-zinc-300 font-semibold text-xs flex items-center justify-center overflow-hidden shrink-0">
+                      {player.avatarUrl || (isUser && user.avatarUrl) ? (
+                        <img
+                          src={player.avatarUrl || user.avatarUrl}
+                          alt={player.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        player.avatar
+                      )}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
@@ -578,8 +612,12 @@ export function LeaderboardClient() {
           
           {/* User Info */}
           <div className="flex items-center gap-3 w-full sm:w-auto">
-            <div className="w-9 h-9 rounded-xl bg-violet-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
-              #{currentUserData.rank}
+            <div className="w-9 h-9 rounded-xl bg-violet-600 text-white font-bold text-xs flex items-center justify-center overflow-hidden shrink-0 border border-violet-400/40">
+              {user.avatarUrl ? (
+                <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
+              ) : (
+                `#${currentUserData.rank}`
+              )}
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -626,8 +664,16 @@ export function LeaderboardClient() {
             
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-zinc-800 border border-white/10 text-white font-bold text-base flex items-center justify-center">
-                  {selectedUser.avatar}
+                <div className="w-12 h-12 rounded-xl bg-zinc-800 border border-white/10 text-white font-bold text-base flex items-center justify-center overflow-hidden shrink-0">
+                  {selectedUser.avatarUrl || (selectedUser.isCurrentUser && user.avatarUrl) ? (
+                    <img
+                      src={selectedUser.avatarUrl || user.avatarUrl}
+                      alt={selectedUser.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    selectedUser.avatar
+                  )}
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">{selectedUser.name}</h3>
