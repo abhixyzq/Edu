@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { PathNode, NodeStatus } from './PathNode';
 import { useUser } from '@/context/UserContext';
 import { SUBJECTS } from '@/lib/mockData';
+import { playButtonClick } from '@/lib/soundEffects';
+import { XpBoltIcon, GemIcon } from '@/components/icons/AppIcons';
 
 export interface LessonNode {
   id: string;
@@ -64,6 +66,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   const router = useRouter();
   const { user } = useUser();
   const [activeSubject, setActiveSubject] = useState(initialSubject);
+  const [selectedNode, setSelectedNode] = useState<LessonNode | null>(null);
   const activeNodeRef = useRef<HTMLDivElement | null>(null);
 
   const nodes = LESSON_PATH[activeSubject] || LESSON_PATH.physics;
@@ -86,6 +89,11 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   };
 
   const handleNodeClick = (node: LessonNode) => {
+    setSelectedNode(node);
+  };
+
+  const startLesson = (node: LessonNode) => {
+    playButtonClick();
     router.push(`/test/${node.testId}?nodeId=${node.id}&subject=${activeSubject}&title=${encodeURIComponent(node.title)}`);
   };
 
@@ -104,37 +112,36 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   const completedInUnit = currentUnit.nodes.filter((n) => user.completedNodes[n.id]).length;
   const unitProgressPercent = Math.round((completedInUnit / Math.max(1, currentUnit.nodes.length)) * 100);
 
-  // ─── Mathematical Coordinate Calculation for 100% Perfect Conduit Connection ───
+  // ─── Mathematical Coordinate Calculation for S-Curve Track ───
   const CONTAINER_WIDTH = 320;
-  const ROW_HEIGHT = 160;
-  const Y_OFFSET = 60;
+  const ROW_HEIGHT = 150;
+  const Y_OFFSET = 50;
 
-  // Coordinate pattern: Center (160) -> Right (245) -> Center (160) -> Left (75)
-  const getNodePoint = (index: number): Point => {
+  // S-Curve Pattern: Center (160) -> Right (235) -> Center (160) -> Left (85)
+  const getNodePoint = (index: number, isBoss?: boolean): Point => {
     const y = Y_OFFSET + index * ROW_HEIGHT;
+    if (isBoss) return { x: 160, y }; // Boss is always center aligned
     const mod = index % 4;
-    let x = 160; // Center
-    if (mod === 1) x = 245; // Right
-    if (mod === 3) x = 75; // Left
+    let x = 160;
+    if (mod === 1) x = 235;
+    if (mod === 3) x = 85;
     return { x, y };
   };
 
-  const nodePoints: Point[] = nodes.map((_, i) => getNodePoint(i));
-  const totalTrackHeight = Y_OFFSET + (nodes.length - 1) * ROW_HEIGHT + 120;
+  const nodePoints: Point[] = nodes.map((n, i) => getNodePoint(i, n.isBoss));
+  const totalTrackHeight = Y_OFFSET + (nodes.length - 1) * ROW_HEIGHT + 100;
 
-  // Generate continuous SVG paths for both base track and completed progress
+  // Generate continuous SVG Bezier curves
   const generatePathSegment = (p1: Point, p2: Point) => {
-    const dy = (p2.y - p1.y) * 0.45;
+    const dy = (p2.y - p1.y) * 0.5;
     return `M ${p1.x} ${p1.y} C ${p1.x} ${p1.y + dy}, ${p2.x} ${p2.y - dy}, ${p2.x} ${p2.y}`;
   };
 
   const baseTrackD = nodePoints.slice(0, -1).map((p, i) => generatePathSegment(p, nodePoints[i + 1])).join(' ');
-  
-  // Completed progress line up to currentActiveIdx
   const completedSegments = Math.max(0, currentActiveIdx);
   const completedTrackD = nodePoints.slice(0, completedSegments).map((p, i) => generatePathSegment(p, nodePoints[i + 1])).join(' ');
 
-  // ─── Auto Scroll to Active Level ───
+  // Auto scroll to active node
   useEffect(() => {
     const timer = setTimeout(() => {
       if (activeNodeRef.current) {
@@ -145,20 +152,15 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   }, [activeSubject, user.completedNodes]);
 
   return (
-    <div
-      className="w-full flex flex-col items-center pt-3 pb-24 min-h-screen"
-      style={{
-        backgroundImage: 'radial-gradient(#d1d5db 1.5px, transparent 1.5px)',
-        backgroundSize: '28px 28px',
-      }}
-    >
-      {/* ─── Top Chapter / Unit Card (Ultra-Premium Glass Card) ─── */}
-      <div className="w-full max-w-sm bg-white/95 backdrop-blur-md rounded-3xl p-5 border border-slate-200/80 shadow-[0_8px_24px_rgba(0,0,0,0.04)] mb-4 transition-all">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="px-2.5 py-0.5 rounded-full bg-[#ede9fe] text-[#6d28d9] text-[10px] font-black uppercase tracking-wider">
+    <div className="w-full flex flex-col items-center pt-2 pb-28 min-h-screen">
+      
+      {/* ─── Chapter / Unit Master Card ─── */}
+      <div className="w-full max-w-sm bg-white/95 rounded-3xl p-5 border-2 border-slate-200 shadow-sm mb-4 transition-all">
+        <div className="flex items-center justify-between mb-2">
+          <span className="px-3 py-1 rounded-full bg-violet-100 text-violet-800 text-[11px] font-black uppercase tracking-wider">
             {activeSubject} • Class 12
           </span>
-          <span className="text-xs font-black text-[#7c3aed]">
+          <span className="text-xs font-black text-violet-700">
             {unitProgressPercent}% Mastered
           </span>
         </div>
@@ -167,16 +169,16 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
           {currentUnit.title}
         </h2>
 
-        {/* Dynamic Glowing Progress Bar */}
-        <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden mt-3 p-0.5 border border-slate-200/60">
+        {/* Glowing Progress Track */}
+        <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden mt-3 p-0.5 border border-slate-200">
           <div
-            className="bg-gradient-to-r from-[#7c3aed] to-[#a855f7] h-full rounded-full transition-all duration-500 shadow-[0_0_12px_rgba(124,58,237,0.4)]"
-            style={{ width: `${Math.max(12, unitProgressPercent)}%` }}
+            className="bg-gradient-to-r from-violet-600 to-indigo-600 h-full rounded-full transition-all duration-500 shadow-xs"
+            style={{ width: `${Math.max(10, unitProgressPercent)}%` }}
           />
         </div>
       </div>
 
-      {/* ─── Subject Switcher (Sleek Modern Glass Tabs) ─── */}
+      {/* ─── Subject Switcher (Clean Pills) ─── */}
       <div className="w-full max-w-sm flex items-center justify-between gap-1.5 overflow-x-auto no-scrollbar py-1 px-0.5 mb-6">
         {SUBJECTS.map((s) => {
           const isSel = activeSubject === s.id;
@@ -184,11 +186,14 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
             <button
               key={s.id}
               type="button"
-              onClick={() => setActiveSubject(s.id)}
-              className={`flex-1 py-2 px-2 rounded-2xl font-black text-[11px] whitespace-nowrap transition-all border cursor-pointer text-center active:scale-95 ${
+              onClick={() => {
+                playButtonClick();
+                setActiveSubject(s.id);
+              }}
+              className={`flex-1 py-2 px-2.5 rounded-2xl font-black text-xs whitespace-nowrap transition-all border cursor-pointer text-center active:scale-95 ${
                 isSel
-                  ? 'bg-[#7c3aed] text-white border-[#6d28d9] shadow-[0_4px_14px_rgba(124,58,237,0.35)] scale-102'
-                  : 'bg-white/90 text-slate-500 border-slate-200/80 hover:text-slate-800 hover:bg-white'
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-md scale-102'
+                  : 'bg-white text-slate-600 border-slate-200 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
               {s.name}
@@ -197,77 +202,57 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
         })}
       </div>
 
-      {/* ─── Learning Path with Flawless Mathematical Conduit Connection ─── */}
+      {/* ─── Modern Learning Path S-Curve Track ─── */}
       <div
         className="w-full max-w-[320px] mx-auto relative select-none"
         style={{ height: `${totalTrackHeight}px` }}
       >
-        {/* Continuous Background Conduit SVG Pipes */}
+        {/* SVG Conduit Paths */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible"
           viewBox={`0 0 ${CONTAINER_WIDTH} ${totalTrackHeight}`}
         >
           <defs>
-            <linearGradient id="activePipeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#8b5cf6" />
-              <stop offset="100%" stopColor="#7c3aed" />
+            <linearGradient id="activeGradLine" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#10b981" />
+              <stop offset="100%" stopColor="#8b5cf6" />
             </linearGradient>
-            <filter id="pipeShadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#7c3aed" floodOpacity="0.25" />
-            </filter>
           </defs>
 
-          {/* Base Inactive Conduit Pipe (Track) */}
+          {/* Inactive Base Track */}
           <path
             d={baseTrackD}
             fill="none"
             stroke="#e2e8f0"
-            strokeWidth="12"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          {/* Inner Groove Line for 3D Pipe Illusion */}
-          <path
-            d={baseTrackD}
-            fill="none"
-            stroke="#cbd5e1"
-            strokeWidth="3"
+            strokeWidth="8"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
 
-          {/* Completed Active Conduit Pipe (Purple Glowing Track) */}
+          {/* Active Completed Progress Line */}
           {completedTrackD && (
-            <>
-              <path
-                d={completedTrackD}
-                fill="none"
-                stroke="url(#activePipeGrad)"
-                strokeWidth="12"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                filter="url(#pipeShadow)"
-              />
-              <path
-                d={completedTrackD}
-                fill="none"
-                stroke="#c4b5fd"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </>
+            <path
+              d={completedTrackD}
+              fill="none"
+              stroke="url(#activeGradLine)"
+              strokeWidth="8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           )}
         </svg>
 
-        {/* Nodes Layer: Positioned Centered on the Conduit Points */}
+        {/* Level Nodes */}
         {nodes.map((node, index) => {
           const status = getNodeStatus(node, index);
           const isCurrentActive = status === 'active' && index === currentActiveIdx;
           const pt = nodePoints[index];
-          const isRadialProgress = isCurrentActive && index === 3;
           const mod = index % 4;
-          const side: 'left' | 'right' = (mod === 1 || mod === 0) ? 'left' : 'right';
+          const side: 'left' | 'right' | 'center' = node.isBoss
+            ? 'center'
+            : mod === 1 || mod === 0
+            ? 'left'
+            : 'right';
 
           return (
             <div
@@ -278,17 +263,20 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
                 position: 'absolute',
                 top: `${pt.y}px`,
                 left: `${pt.x}px`,
-                transform: 'translate(-50%, -50%)', // Centers the 80px button exactly on (pt.x, pt.y)
+                transform: 'translate(-50%, -50%)',
               }}
               className="z-10 flex items-center justify-center"
             >
               <PathNode
                 id={node.id}
+                number={node.number}
                 title={node.title}
+                subtitle={node.subtitle}
                 status={status}
+                isBoss={node.isBoss}
+                xpReward={node.xpReward}
+                gemsReward={node.gemsReward}
                 side={side}
-                progressText={isRadialProgress ? '1/3' : undefined}
-                progressPercent={33}
                 onClick={() => handleNodeClick(node)}
               />
             </div>
@@ -296,6 +284,67 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
         })}
 
       </div>
+
+      {/* ─── Node Interactive Launch Sheet / Modal ─── */}
+      {selectedNode && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 animate-in slide-in-from-bottom-5 duration-200">
+            
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="text-[11px] font-black text-violet-700 bg-violet-50 px-2.5 py-0.5 rounded-full uppercase tracking-wider border border-violet-200">
+                  {selectedNode.isBoss ? 'Unit Boss Checkpoint' : `Lesson #${selectedNode.number}`}
+                </span>
+                <h3 className="font-heading font-black text-lg text-slate-900 mt-2 leading-snug">
+                  {selectedNode.title}
+                </h3>
+                <p className="text-xs text-slate-500 font-semibold mt-0.5">
+                  {selectedNode.subtitle}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedNode(null)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+
+            {/* Reward & Info Badges */}
+            <div className="grid grid-cols-2 gap-2 my-5">
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 flex items-center gap-2.5">
+                <XpBoltIcon size={22} />
+                <div>
+                  <span className="text-[10px] font-bold text-amber-800 uppercase block">XP Reward</span>
+                  <span className="text-sm font-black text-amber-950">+{selectedNode.xpReward} XP</span>
+                </div>
+              </div>
+
+              <div className="bg-cyan-50 border border-cyan-200 rounded-2xl p-3 flex items-center gap-2.5">
+                <GemIcon size={22} />
+                <div>
+                  <span className="text-[10px] font-bold text-cyan-800 uppercase block">Gem Bonus</span>
+                  <span className="text-sm font-black text-cyan-950">+{selectedNode.gemsReward} 💎</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Start / Practice CTA */}
+            <button
+              type="button"
+              onClick={() => startLesson(selectedNode)}
+              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white font-black text-sm shadow-lg shadow-violet-300/40 hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>{user.completedNodes[selectedNode.id] ? 'Practice Again' : 'Start Lesson'}</span>
+              <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
+            </button>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
