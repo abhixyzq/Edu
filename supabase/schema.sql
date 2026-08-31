@@ -11,7 +11,11 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   email TEXT NOT NULL UNIQUE,
   target_board TEXT DEFAULT 'CBSE Board (Class 12)',
   streak_days INT DEFAULT 1,
-  xp_points INT DEFAULT 240,
+  xp_points INT DEFAULT 320,
+  hearts INT DEFAULT 5,
+  gems INT DEFAULT 150,
+  level INT DEFAULT 1,
+  league_tier TEXT DEFAULT 'Bronze',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );

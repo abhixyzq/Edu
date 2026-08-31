@@ -3,181 +3,189 @@
 import React from 'react';
 import Link from 'next/link';
 import { useUser } from '@/context/UserContext';
-import { SUBJECTS, RECENT_TESTS, BOARDS } from '@/lib/mockData';
-import { SubjectCard } from '@/components/SubjectCard';
+import { BOARDS } from '@/lib/mockData';
+import { LearningPath } from '@/components/gamification/LearningPath';
+import { Mascot } from '@/components/gamification/Mascot';
 
 export default function HomePage() {
   const { user, setTargetBoard } = useUser();
 
+  const xpCurrentLevel = user.xp % 100;
+  const xpNextLevel = 100;
+
   return (
-    <main className="max-w-[1200px] mx-auto px-4 md:px-6 pt-6 pb-24 md:pb-16">
-      {/* Unified Responsive Greeting Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="font-heading text-2xl md:text-3xl font-bold text-[#161d1f]">
-            Welcome back, {user.name} 👋
-          </h1>
-          <p className="text-xs md:text-sm text-[#564338] mt-1">
-            Let's continue your Class 12 board exam preparation.
-          </p>
-        </div>
-      </div>
-
-      {/* Board Selector Chips */}
-      <div className="flex overflow-x-auto no-scrollbar gap-3 mb-8 pb-1">
-        {BOARDS.map((board) => {
-          const isSelected = user.targetBoard === board.id;
-          return (
-            <button
-              key={board.id}
-              onClick={() => setTargetBoard(board.id)}
-              className={`shrink-0 px-4 py-2 rounded-xl text-sm font-semibold border transition-all ${
-                isSelected
-                  ? 'bg-[#ff8c42] text-white border-[#9b4500] shadow-xs scale-102'
-                  : 'bg-white text-[#161d1f] border-[#ddc1b3] hover:border-[#9b4500] hover:bg-[#eef5f7]'
-              }`}
-            >
-              {board.name}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Grid Layout for Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
-        {/* Left Column (Main Focus - 8 cols) */}
-        <div className="lg:col-span-8 flex flex-col gap-8">
-          {/* Start Test CTA Card */}
-          <div className="card-outline rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between relative overflow-hidden bg-gradient-to-br from-white via-white to-[#ffdbc9]/30 border-[#ff8c42]">
-            <div className="z-10 flex flex-col items-start gap-3 max-w-md">
-              <span className="inline-flex items-center gap-1.5 bg-[#6dbf00]/20 text-[#254700] px-3 py-1 rounded-md text-xs font-bold border border-[#6dbf00]/30">
-                <span className="material-symbols-outlined text-[16px] text-[#3a6a00]">trending_up</span>
-                Recommended for Today
+    <main className="max-w-[1200px] mx-auto px-4 md:px-6 pt-5 pb-24 md:pb-16 font-sans">
+      {/* ─── Top Gamified Student Header ─── */}
+      <div className="bg-gradient-to-r from-white via-white to-[#ffdbc9]/40 rounded-3xl p-5 sm:p-6 border-2 border-[#dde4e6] shadow-sm mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-4 flex-1">
+          <div className="w-14 h-14 rounded-2xl border-2 border-[#ff8c42] bg-[#ffdbc9] text-[#6a2d00] font-black text-xl flex items-center justify-center shrink-0 shadow-xs">
+            {user.name.charAt(0)}
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <h1 className="font-heading text-xl sm:text-2xl font-black text-[#161d1f]">
+                Ready to Learn, {user.name}?
+              </h1>
+              <span className="bg-[#ffdbc9] text-[#9b4500] text-[10px] font-black uppercase px-2 py-0.5 rounded-md border border-[#ff8c42]/30">
+                Level {user.level}
               </span>
-              <h2 className="font-heading text-2xl md:text-3xl font-bold text-[#161d1f]">
-                Full Syllabus Physics Mock Test
-              </h2>
-              <p className="text-sm md:text-base text-[#564338]">
-                Evaluate your readiness with our AI-curated Class 12 practice exam.
-              </p>
-              <Link href="/test/1" className="w-full md:w-auto mt-2">
-                <button className="w-full md:w-auto bg-[#9b4500] text-white font-bold text-sm md:text-base px-7 py-3.5 rounded-full hover:bg-[#ff8c42] transition-colors shadow-md flex items-center justify-center gap-2 group">
-                  <span className="material-symbols-outlined text-[20px]">play_arrow</span>
-                  Start Test Now
-                </button>
-              </Link>
             </div>
+            <p className="text-xs text-[#564338] mt-0.5">
+              Class 12 Board & Competitive Prep • {user.leagueTier} League
+            </p>
 
-            {/* Illustration graphic */}
-            <div className="w-full md:w-60 h-44 md:h-full mt-6 md:mt-0 rounded-xl overflow-hidden shrink-0 relative bg-[#ffdbc9]/40 border border-[#ff8c42]/30 flex items-center justify-center">
-              <div className="absolute inset-0 bg-gradient-to-t from-[#ff8c42]/20 to-transparent" />
-              <div className="flex flex-col items-center text-center p-4 z-10">
-                <div className="w-16 h-16 rounded-full bg-white p-3 shadow-md mb-2 flex items-center justify-center text-[#9b4500]">
-                  <span className="material-symbols-outlined text-[32px]">auto_awesome</span>
-                </div>
-                <span className="font-heading text-sm font-bold text-[#6a2d00]">30 Questions • 45 Mins</span>
-                <span className="text-xs text-[#564338] mt-1">+4 Marks per question</span>
+            {/* XP Progress to next Level */}
+            <div className="mt-2.5 max-w-sm flex items-center gap-2">
+              <div className="flex-1 bg-[#e8eff1] h-2.5 rounded-full overflow-hidden border border-[#dde4e6]">
+                <div
+                  className="bg-gradient-to-r from-[#ffd700] to-[#ff8c42] h-full rounded-full transition-all duration-300"
+                  style={{ width: `${(xpCurrentLevel / xpNextLevel) * 100}%` }}
+                />
               </div>
+              <span className="text-[11px] font-extrabold text-[#9b4500] shrink-0">
+                {xpCurrentLevel} / {xpNextLevel} XP
+              </span>
             </div>
           </div>
+        </div>
 
-          {/* Subject Bento Grid */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-heading text-xl font-bold text-[#161d1f]">
-                Your Subjects
-              </h3>
-              <span className="text-xs text-[#564338] font-medium">Class 12 Science Stream</span>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">
-              {SUBJECTS.map((subject) => (
-                <SubjectCard key={subject.id} subject={subject} />
+        {/* Mascot & Board Selection */}
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col items-end">
+            <span className="text-[11px] font-extrabold text-[#897266] uppercase mb-1">Target Board</span>
+            <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
+              {BOARDS.slice(0, 3).map((b) => (
+                <button
+                  key={b.id}
+                  onClick={() => setTargetBoard(b.id)}
+                  className={`px-3 py-1 rounded-xl text-xs font-bold transition-all border-b-2 active:border-b-0 ${
+                    user.targetBoard === b.id
+                      ? 'bg-[#9b4500] text-white border-[#6a2d00]'
+                      : 'bg-white text-[#564338] border-[#dde4e6] hover:bg-[#e8eff1]'
+                  }`}
+                >
+                  {b.name}
+                </button>
               ))}
             </div>
           </div>
+
+          <div className="hidden sm:block">
+            <Mascot mood="happy" size={70} />
+          </div>
         </div>
+      </div>
 
-        {/* Right Column (Secondary Info - 4 cols) */}
-        <div className="lg:col-span-4 flex flex-col gap-6">
-
-          {/* Continue Learning Progress */}
-          <div className="card-outline rounded-2xl p-5 flex flex-col gap-4 bg-white">
-            <div className="flex items-center justify-between">
-              <h3 className="font-heading text-base font-bold text-[#161d1f]">
-                Continue Learning
-              </h3>
-              <span className="text-xs text-[#0060ac] font-bold">Physics</span>
+      {/* ─── Main Grid: Center Quest Learning Path & Right Sidebar Widgets ─── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
+        {/* Left / Center Column: Duolingo Quest Path Tree (8 cols) */}
+        <div className="lg:col-span-8 flex flex-col items-center bg-white rounded-3xl p-4 sm:p-6 border-2 border-[#dde4e6] shadow-sm">
+          <div className="w-full flex items-center justify-between mb-4 border-b border-[#dde4e6] pb-3">
+            <div>
+              <h2 className="font-heading text-xl font-extrabold text-[#161d1f]">
+                Mastery Quest Path
+              </h2>
+              <p className="text-xs text-[#564338]">Tap an active node to begin your gamified lesson drill</p>
             </div>
-
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-12 bg-[#d4e3ff] rounded-lg border border-[#0060ac]/30 flex items-center justify-center shrink-0 text-[#0060ac]">
-                <span className="material-symbols-outlined text-[24px]">picture_as_pdf</span>
-              </div>
-              <div className="flex-1">
-                <h4 className="font-semibold text-sm text-[#161d1f] line-clamp-1">
-                  Electromagnetic Induction - Chapter 6
-                </h4>
-                <p className="text-xs text-[#564338] mt-0.5 mb-2">
-                  Notes & Formulas • 12 mins left
-                </p>
-                <div className="w-full bg-[#e8eff1] h-2 rounded-full overflow-hidden border border-[#dde4e6]">
-                  <div className="bg-[#9b4500] h-full w-[65%] rounded-full" />
-                </div>
-              </div>
-            </div>
-
-            <Link href="/subjects/physics">
-              <button className="w-full py-2.5 rounded-full border border-[#9b4500] text-[#9b4500] font-bold text-xs hover:bg-[#ffdbc9]/30 transition-colors">
-                Resume Reading
-              </button>
+            <Link
+              href="/tests"
+              className="text-xs font-black text-[#9b4500] hover:underline flex items-center gap-1"
+            >
+              Full Mock Exams <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
             </Link>
           </div>
 
-          {/* Recent Tests List */}
-          <div className="card-outline rounded-2xl p-5 bg-white">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-heading text-base font-bold text-[#161d1f]">
-                Recent Test History
+          {/* Interactive Winding Learning Path */}
+          <LearningPath initialSubject="physics" />
+        </div>
+
+        {/* Right Column: Gamification Widgets (4 cols) */}
+        <div className="lg:col-span-4 flex flex-col gap-6">
+          {/* Daily Quests Widget */}
+          <div className="bg-white rounded-3xl p-5 border-2 border-[#dde4e6] shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-heading text-base font-extrabold text-[#161d1f]">
+                Daily Quests
               </h3>
-              <Link href="/results" className="text-xs font-bold text-[#9b4500] hover:underline flex items-center gap-1">
-                View All <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+              <Link href="/quests" className="text-xs font-black text-[#9b4500] hover:underline">
+                View All
               </Link>
             </div>
 
             <div className="flex flex-col gap-3">
-              {RECENT_TESTS.map((test) => (
-                <Link key={test.id} href={`/results/${RECENT_TESTS.indexOf(test) + 1}`}>
-                  <div className="p-3 rounded-xl border border-[#e0e0e0] hover:border-[#9b4500] hover:bg-[#f4fafd] transition-all flex items-center justify-between group">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-[#e8eff1] flex items-center justify-center text-[#564338] group-hover:bg-[#ffdbc9] group-hover:text-[#6a2d00] transition-colors">
-                        <span className="material-symbols-outlined text-[20px]">quiz</span>
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-bold text-[#161d1f] line-clamp-1">
-                          {test.title}
-                        </h4>
-                        <p className="text-[11px] text-[#564338]">{test.date}</p>
-                      </div>
-                    </div>
-
-                    <div className="text-right">
-                      <span
-                        className={`text-sm font-heading font-bold ${
-                          test.scorePercent >= 75
-                            ? 'text-[#3a6a00]'
-                            : test.scorePercent >= 50
-                            ? 'text-[#0060ac]'
-                            : 'text-[#ba1a1a]'
-                        }`}
-                      >
-                        {test.scorePercent}%
-                      </span>
-                      <p className="text-[10px] text-[#564338]">{test.score}</p>
-                    </div>
+              {/* Quest 1 */}
+              <div className="p-3 rounded-2xl bg-[#f4fafd] border border-[#dde4e6] flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[#ffdbc9] text-[#9b4500] flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-[20px]">bolt</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-extrabold text-[#161d1f]">Earn 50 XP Today</p>
+                  <div className="w-full bg-[#e8eff1] h-2 rounded-full overflow-hidden mt-1">
+                    <div
+                      className="bg-[#58cc02] h-full rounded-full"
+                      style={{ width: `${Math.min(100, ((user.xp % 100) / 50) * 100)}%` }}
+                    />
                   </div>
-                </Link>
-              ))}
+                </div>
+                <span className="text-xs font-black text-[#0060ac] shrink-0">+10 💎</span>
+              </div>
+
+              {/* Quest 2 */}
+              <div className="p-3 rounded-2xl bg-[#f4fafd] border border-[#dde4e6] flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[#ffdad6] text-[#ba1a1a] flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-[20px]">local_fire_department</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-extrabold text-[#161d1f]">Daily 7-Day Streak</p>
+                  <div className="w-full bg-[#e8eff1] h-2 rounded-full overflow-hidden mt-1">
+                    <div className="bg-[#ff8c42] h-full rounded-full w-full" />
+                  </div>
+                </div>
+                <span className="text-xs font-black text-[#0060ac] shrink-0">+15 💎</span>
+              </div>
             </div>
+          </div>
+
+          {/* League Standings Widget */}
+          <div className="bg-white rounded-3xl p-5 border-2 border-[#dde4e6] shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px] text-[#ffd700]">military_tech</span>
+                <h3 className="font-heading text-base font-extrabold text-[#161d1f]">
+                  {user.leagueTier} League
+                </h3>
+              </div>
+              <Link href="/leaderboard" className="text-xs font-black text-[#9b4500] hover:underline">
+                Rankings
+              </Link>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-[#ffd700]/20 to-[#ff8c42]/20 border border-[#ffd700] flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-black uppercase text-[#823b00]">Your Current Rank</span>
+                <p className="text-sm font-extrabold text-[#161d1f]">#4 in Silver Division</p>
+                <p className="text-[10px] text-[#3a6a00] font-bold mt-0.5">Top 3 advance to Gold!</p>
+              </div>
+              <div className="text-right">
+                <span className="text-sm font-black text-[#9b4500]">{user.xp} XP</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Power-up Shop Promo Widget */}
+          <div className="bg-gradient-to-br from-[#0060ac] to-[#004278] text-white rounded-3xl p-5 shadow-sm flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#d4e3ff]">Scholar Shop</span>
+              <h4 className="font-heading font-extrabold text-sm mt-0.5">Heart Refills & Boosts</h4>
+              <p className="text-[11px] text-[#d4e3ff] mt-0.5">You have {user.gems} Gems available</p>
+              <Link
+                href="/shop"
+                className="inline-block mt-3 px-4 py-1.5 rounded-xl bg-white text-[#0060ac] text-xs font-black hover:bg-[#d4e3ff] transition-colors"
+              >
+                Open Shop ➔
+              </Link>
+            </div>
+            <span className="material-symbols-outlined text-[44px] text-[#ffd700]">diamond</span>
           </div>
         </div>
       </div>

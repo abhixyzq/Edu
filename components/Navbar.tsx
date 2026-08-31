@@ -7,7 +7,7 @@ import { useUser } from '@/context/UserContext';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
-  const { user, logout } = useUser();
+  const { user, logout, toggleSound } = useUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Hide navbars on focused auth pages (login/signup), exam environment, and admin pages
@@ -16,31 +16,33 @@ export const Navbar: React.FC = () => {
   }
 
   const navLinks = [
-    { href: '/', label: 'Home', icon: 'home' },
-    { href: '/tests', label: 'Tests', icon: 'quiz' },
-    { href: '/results', label: 'Results', icon: 'analytics' },
+    { href: '/', label: 'Learn', icon: 'map' },
+    { href: '/leaderboard', label: 'Leagues', icon: 'military_tech' },
+    { href: '/quests', label: 'Quests', icon: 'flag' },
+    { href: '/shop', label: 'Shop', icon: 'storefront' },
+    { href: '/tests', label: 'Exams', icon: 'quiz' },
     { href: '/profile', label: 'Profile', icon: 'person' },
   ];
 
   const adminLink = user.isAdmin ? { href: '/admin', label: 'Admin', icon: 'admin_panel_settings' } : null;
 
   const sidebarExtraLinks = [
-    { href: '/subjects/physics', label: 'Physics Notes & MCQs', icon: 'psychology' },
-    { href: '/subjects/chemistry', label: 'Chemistry Practice', icon: 'science' },
-    { href: '/subjects/mathematics', label: 'Maths Calculus', icon: 'calculate' },
-    { href: '/subjects/biology', label: 'Biology NCERT Special', icon: 'biotech' },
+    { href: '/subjects/physics', label: 'Physics Mastery Path', icon: 'bolt' },
+    { href: '/subjects/chemistry', label: 'Chemistry Lab & MCQs', icon: 'science' },
+    { href: '/subjects/mathematics', label: 'Maths Calculus Drills', icon: 'calculate' },
+    { href: '/subjects/biology', label: 'Biology High-Yield Tree', icon: 'biotech' },
   ];
 
   return (
     <>
       {/* Universal TopAppBar (Mobile & Desktop) */}
-      <header className="flex justify-between items-center px-4 md:px-6 py-3 w-full bg-[#f4fafd] border-b border-[#ddc1b3] sticky top-0 z-40 shadow-xs backdrop-blur-md bg-opacity-90">
-        <div className="flex items-center gap-3 md:gap-4">
-          {/* Stylish 3-Line Hamburger Menu Toggle */}
+      <header className="flex justify-between items-center px-3 sm:px-6 py-2.5 w-full bg-[#f4fafd] border-b border-[#ddc1b3] sticky top-0 z-40 shadow-xs backdrop-blur-md bg-opacity-95">
+        <div className="flex items-center gap-2 sm:gap-4">
+          {/* 3-Line Hamburger Menu Toggle */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="group p-2.5 rounded-2xl bg-[#ffdbc9]/60 hover:bg-[#ffdbc9] border border-[#ff8c42]/30 flex flex-col justify-center gap-1 transition-all duration-300 active:scale-95 shadow-xs cursor-pointer"
+            className="group p-2 rounded-2xl bg-[#ffdbc9]/60 hover:bg-[#ffdbc9] border border-[#ff8c42]/30 flex flex-col justify-center gap-1 transition-all duration-300 active:scale-95 shadow-xs cursor-pointer"
             aria-label="Toggle Navigation Drawer"
           >
             <span
@@ -61,18 +63,18 @@ export const Navbar: React.FC = () => {
           </button>
 
           {/* Brand Logo & Name */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#ff8c42]/40 p-0.5 shadow-xs overflow-hidden group-hover:scale-105 transition-transform bg-white">
-              <img src="/logo.png" alt="NAINIX EDU Logo" className="w-full h-full object-contain rounded-full" />
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-[#ff8c42]/40 p-0.5 shadow-xs overflow-hidden group-hover:scale-105 transition-transform bg-white">
+              <img src="/logo.png" alt="EduStride Logo" className="w-full h-full object-contain rounded-full" />
             </div>
-            <span className="font-heading text-2xl md:text-3xl text-[#9b4500] font-extrabold tracking-tight">
-              EduStride <span className="hidden sm:inline-block text-xs text-[#564338] font-normal px-2 py-0.5 bg-[#ffdbc9] rounded-md ml-1 border border-[#ff8c42]/30 align-middle">Class 12</span>
+            <span className="font-heading text-xl sm:text-2xl text-[#9b4500] font-black tracking-tight">
+              EduStride
             </span>
           </Link>
         </div>
 
-        {/* Desktop Header Links */}
-        <nav className="hidden md:flex gap-2 font-medium text-sm">
+        {/* Desktop Header Navigation Links */}
+        <nav className="hidden lg:flex gap-1 font-bold text-xs uppercase tracking-wider">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -80,13 +82,13 @@ export const Navbar: React.FC = () => {
                 key={link.href}
                 href={link.href}
                 aria-current={isActive ? 'page' : undefined}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 ${
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all duration-150 border-b-3 active:border-b-0 active:translate-y-0.5 ${
                   isActive
-                    ? 'bg-[#ff8c42] text-white font-bold shadow-xs'
-                    : 'text-[#564338] hover:bg-[#e8eff1] hover:text-[#9b4500]'
+                    ? 'bg-[#ff8c42] text-white border-[#9b4500] shadow-xs'
+                    : 'text-[#564338] border-transparent hover:bg-[#e8eff1] hover:text-[#9b4500]'
                 }`}
               >
-                <span className="material-symbols-outlined text-[20px]">{link.icon}</span>
+                <span className="material-symbols-outlined text-[18px]">{link.icon}</span>
                 <span>{link.label}</span>
               </Link>
             );
@@ -94,42 +96,78 @@ export const Navbar: React.FC = () => {
           {adminLink && (
             <Link
               href={adminLink.href}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 text-[#564338] hover:bg-[#1a1f21] hover:text-white font-bold text-sm"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[#564338] hover:bg-[#1a1f21] hover:text-white font-bold transition-all border-b-3 border-transparent"
             >
-              <span className="material-symbols-outlined text-[20px]">{adminLink.icon}</span>
+              <span className="material-symbols-outlined text-[18px]">{adminLink.icon}</span>
               <span>{adminLink.label}</span>
             </Link>
           )}
         </nav>
 
-        {/* User Badge & Profile */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Download Latest App Button */}
-          <a
-            href="/EduStride_Class12_v1.0.2.apk?v=1.0.2"
-            download="EduStride_Class12_v1.0.2.apk"
-            className="flex items-center gap-1.5 bg-gradient-to-r from-[#9b4500] to-[#ba5600] hover:from-[#ba5600] hover:to-[#9b4500] text-white px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-xs hover:shadow-md active:scale-95 cursor-pointer border border-[#ff8c42]/30"
-            title="Download EduStride Class 12 Latest App (v1.0.2)"
+        {/* Gamification Stats Bar (Streak, Hearts, Gems, Level, Sound) */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
+          {/* Streak Flame */}
+          <div
+            className="flex items-center gap-1 bg-[#ffdbc9] text-[#6a2d00] px-2.5 py-1 rounded-xl text-xs font-black border border-[#ff8c42]"
+            title={`${user.streakDays} Day Streak!`}
           >
-            <span className="material-symbols-outlined text-[18px]">android</span>
-            <span className="hidden sm:inline">Get App</span>
-            <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-md font-extrabold ml-0.5">v1.0.2</span>
-          </a>
-
-          <div className="flex items-center gap-1.5 bg-[#ffdbc9] text-[#6a2d00] px-3 py-1.5 rounded-full text-xs font-bold border border-[#ff8c42]">
-            <span className="material-symbols-outlined text-[18px] text-[#9b4500]">local_fire_department</span>
-            <span>{user.streakDays}d</span>
+            <span className="material-symbols-outlined text-[16px] text-[#9b4500] animate-pulse">
+              local_fire_department
+            </span>
+            <span>{user.streakDays}</span>
           </div>
 
+          {/* Hearts */}
+          <Link
+            href="/shop"
+            className="flex items-center gap-1 bg-[#ffdad6] text-[#93000a] px-2.5 py-1 rounded-xl text-xs font-black border border-[#ffb4ab] hover:scale-105 transition-transform"
+            title="Hearts (Lives) - Click to Refill"
+          >
+            <span className="material-symbols-outlined text-[16px] text-[#ba1a1a]">favorite</span>
+            <span>{user.infiniteHeartsUntil && Date.now() < user.infiniteHeartsUntil ? '∞' : user.hearts}</span>
+          </Link>
+
+          {/* Gems */}
+          <Link
+            href="/shop"
+            className="hidden sm:flex items-center gap-1 bg-[#d4e3ff] text-[#0060ac] px-2.5 py-1 rounded-xl text-xs font-black border border-[#a2c5ff] hover:scale-105 transition-transform"
+            title="Gems Balance - Click to Shop"
+          >
+            <span className="material-symbols-outlined text-[16px] text-[#0060ac]">diamond</span>
+            <span>{user.gems}</span>
+          </Link>
+
+          {/* Level Badge */}
+          <div
+            className="hidden md:flex items-center gap-1 bg-[#ffd700]/20 text-[#594100] px-2.5 py-1 rounded-xl text-xs font-black border border-[#ffd700]"
+            title={`Player Level ${user.level} (${user.xp} Total XP)`}
+          >
+            <span className="material-symbols-outlined text-[16px] text-[#b8860b]">bolt</span>
+            <span>Lvl {user.level}</span>
+          </div>
+
+          {/* Sound Mute Toggle */}
+          <button
+            type="button"
+            onClick={toggleSound}
+            className="p-1.5 rounded-xl text-[#564338] hover:bg-[#e8eff1] transition-colors"
+            title={user.soundMuted ? 'Unmute game sounds' : 'Mute game sounds'}
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              {user.soundMuted ? 'volume_off' : 'volume_up'}
+            </span>
+          </button>
+
+          {/* User Profile Avatar */}
           <Link href="/profile" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-[#ff8c42] bg-[#ffdbc9] text-[#6a2d00] font-bold text-sm flex items-center justify-center transition-transform group-hover:scale-105 shadow-xs">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-[#ff8c42] bg-[#ffdbc9] text-[#6a2d00] font-black text-xs sm:text-sm flex items-center justify-center transition-transform group-hover:scale-105 shadow-xs">
               {user.name.charAt(0)}
             </div>
           </Link>
         </div>
       </header>
 
-      {/* Slide-out Sidebar Drawer & Overlay with Smooth CSS Animations */}
+      {/* Slide-out Sidebar Drawer & Overlay */}
       <div
         className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-xs transition-opacity duration-300 ${
           mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -150,10 +188,15 @@ export const Navbar: React.FC = () => {
                   {user.name.charAt(0)}
                 </div>
                 <div>
-                  <h3 className="font-heading text-lg font-bold text-[#161d1f]">{user.name}</h3>
-                  <span className="text-xs font-bold text-[#9b4500] uppercase bg-white px-2 py-0.5 rounded border border-[#ff8c42]/30">
-                    {user.targetBoard} Board
-                  </span>
+                  <h3 className="font-heading text-base font-extrabold text-[#161d1f]">{user.name}</h3>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-[10px] font-extrabold text-[#9b4500] uppercase bg-white px-2 py-0.5 rounded border border-[#ff8c42]/30">
+                      Level {user.level}
+                    </span>
+                    <span className="text-[10px] font-extrabold text-[#0060ac] uppercase bg-white px-2 py-0.5 rounded border border-[#a2c5ff]">
+                      {user.leagueTier} League
+                    </span>
+                  </div>
                 </div>
               </div>
               <button
@@ -168,8 +211,8 @@ export const Navbar: React.FC = () => {
 
             {/* Primary Navigation Links */}
             <div className="p-4 flex flex-col gap-1">
-              <span className="text-[11px] font-bold text-[#897266] uppercase tracking-wider px-3 mb-1">
-                Main Navigation
+              <span className="text-[11px] font-black text-[#897266] uppercase tracking-wider px-3 mb-1">
+                Gamified Modules
               </span>
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
@@ -178,10 +221,10 @@ export const Navbar: React.FC = () => {
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all ${
+                    className={`flex items-center gap-3 px-3.5 py-3 rounded-2xl transition-all border-b-3 active:border-b-0 active:translate-y-0.5 ${
                       isActive
-                        ? 'bg-[#ff8c42] text-white font-bold shadow-xs'
-                        : 'text-[#161d1f] hover:bg-[#ffdbc9]/40 font-medium'
+                        ? 'bg-[#ff8c42] text-white border-[#9b4500] font-extrabold shadow-xs'
+                        : 'text-[#161d1f] border-transparent hover:bg-[#ffdbc9]/40 font-bold'
                     }`}
                   >
                     <span className="material-symbols-outlined text-[22px]">{link.icon}</span>
@@ -193,7 +236,7 @@ export const Navbar: React.FC = () => {
                 <Link
                   href={adminLink.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-3.5 py-3 rounded-xl text-[#161d1f] hover:bg-[#1a1f21] hover:text-white font-bold transition-all"
+                  className="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-[#161d1f] hover:bg-[#1a1f21] hover:text-white font-extrabold transition-all"
                 >
                   <span className="material-symbols-outlined text-[22px]">{adminLink.icon}</span>
                   <span className="text-sm">{adminLink.label}</span>
@@ -203,15 +246,15 @@ export const Navbar: React.FC = () => {
 
             {/* Class 12 Subject Links */}
             <div className="px-4 py-2 flex flex-col gap-1 border-t border-[#dde4e6] mt-2">
-              <span className="text-[11px] font-bold text-[#897266] uppercase tracking-wider px-3 mb-1">
-                Class 12 Study Materials
+              <span className="text-[11px] font-black text-[#897266] uppercase tracking-wider px-3 mb-1">
+                Class 12 Subject Paths
               </span>
               {sidebarExtraLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#564338] hover:bg-[#e8eff1] hover:text-[#9b4500] text-xs font-semibold transition-colors"
+                  className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#564338] hover:bg-[#e8eff1] hover:text-[#9b4500] text-xs font-bold transition-colors"
                 >
                   <span className="material-symbols-outlined text-[18px] text-[#9b4500]">{link.icon}</span>
                   <span>{link.label}</span>
@@ -226,26 +269,14 @@ export const Navbar: React.FC = () => {
             <a
               href="/EduStride_Class12_v1.0.2.apk?v=1.0.2"
               download="EduStride_Class12_v1.0.2.apk"
-              className="w-full py-2.5 px-3.5 rounded-2xl bg-gradient-to-r from-[#9b4500] to-[#ba5600] hover:from-[#ba5600] hover:to-[#9b4500] text-white font-bold text-xs transition-all shadow-md hover:shadow-lg flex items-center justify-between group active:scale-[0.98] cursor-pointer border border-[#ff8c42]/30"
+              className="w-full py-2.5 px-3.5 rounded-2xl bg-gradient-to-r from-[#9b4500] to-[#ba5600] text-white font-black text-xs transition-all shadow-md flex items-center justify-between group active:scale-[0.98] cursor-pointer border border-[#ff8c42]/30"
             >
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-white p-0.5 shadow-xs flex items-center justify-center overflow-hidden shrink-0">
-                  <img src="/logo.png" alt="NAINIX EDU Logo" className="w-full h-full object-contain rounded-full" />
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="leading-tight font-extrabold text-[12px]">Download Official App</span>
-                  <span className="text-[10px] text-[#ffdbc9] font-medium">v1.0.2 (Latest Update)</span>
-                </div>
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px]">android</span>
+                <span className="leading-tight font-extrabold text-[12px]">Download Official App</span>
               </div>
-              <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors shrink-0">
-                <span className="material-symbols-outlined text-[18px] group-hover:translate-y-0.5 transition-transform">download</span>
-              </div>
+              <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-md font-bold">v1.0.2</span>
             </a>
-
-            <div className="flex items-center justify-between text-xs text-[#564338] px-1 pt-1">
-              <span>Class 12 Board Exam Prep</span>
-              <span className="font-bold text-[#3a6a00]">2026 Batch</span>
-            </div>
 
             <button
               onClick={() => {
@@ -260,9 +291,9 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile BottomNavBar - Material Design 3 Pill Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-[#ddc1b3]/60 pb-safe pt-2 px-2 flex justify-around items-center z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
-        {navLinks.map((link) => {
+      {/* Mobile BottomNavBar */}
+      <nav className="lg:hidden fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-[#ddc1b3]/60 pb-safe pt-2 px-2 flex justify-around items-center z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        {navLinks.slice(0, 5).map((link) => {
           const isActive = pathname === link.href;
           return (
             <Link
@@ -271,21 +302,18 @@ export const Navbar: React.FC = () => {
               aria-current={isActive ? 'page' : undefined}
               className="flex flex-col items-center justify-center flex-1 py-1 group transition-all"
             >
-              {/* Icon Pill Badge */}
               <div
-                className={`w-14 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
+                className={`w-12 h-7 rounded-full flex items-center justify-center transition-all duration-150 ${
                   isActive
                     ? 'bg-[#ffdbc9] text-[#9b4500] shadow-xs scale-105 border border-[#ff8c42]/40'
-                    : 'text-[#564338] group-hover:text-[#9b4500] group-hover:bg-[#e8eff1]/60'
+                    : 'text-[#564338] group-hover:text-[#9b4500]'
                 }`}
               >
-                <span className="material-symbols-outlined text-[22px]">{link.icon}</span>
+                <span className="material-symbols-outlined text-[20px]">{link.icon}</span>
               </div>
-
-              {/* Label Underneath */}
               <span
-                className={`text-[11px] mt-1 transition-colors ${
-                  isActive ? 'font-extrabold text-[#9b4500]' : 'font-semibold text-[#564338]'
+                className={`text-[10px] mt-0.5 transition-colors ${
+                  isActive ? 'font-black text-[#9b4500]' : 'font-semibold text-[#564338]'
                 }`}
               >
                 {link.label}
