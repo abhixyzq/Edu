@@ -2,158 +2,283 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { playButtonClick } from '@/lib/soundEffects';
 
-export default function TestsPage() {
-  const [selectedSubject, setSelectedSubject] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
+export default function PracticePage() {
+  const router = useRouter();
 
-  const subjects = ['All', 'Physics', 'Chemistry', 'Mathematics', 'Biology'];
-
-  const testsList = [
+  const [playgrounds, setPlaygrounds] = useState([
     {
-      id: '1',
-      title: 'Class 12 Physics Full Syllabus Mock Test',
-      subject: 'Physics',
-      questions: 30,
-      duration: '45 mins',
-      marks: 120,
-      badge: 'High Yield',
+      id: 'p-1',
+      title: 'Simple website 2',
+      techBadges: [
+        { icon: 'html', color: 'bg-orange-500 text-white' },
+        { icon: 'javascript', color: 'bg-amber-400 text-black' },
+        { icon: 'css', color: 'bg-blue-500 text-white' },
+      ],
+      timeAgo: '6 months ago',
+      visibility: 'ONLY ME',
+      testId: '1',
     },
     {
-      id: '2',
-      title: 'Chemistry Organic & Inorganic Chapter Test',
-      subject: 'Chemistry',
-      questions: 25,
-      duration: '30 mins',
-      marks: 100,
-      badge: 'Recommended',
+      id: 'p-2',
+      title: 'Class 12 Physics Mechanics Drill',
+      techBadges: [
+        { icon: 'bolt', color: 'bg-purple-500 text-white' },
+        { icon: 'functions', color: 'bg-indigo-500 text-white' },
+      ],
+      timeAgo: '2 weeks ago',
+      visibility: 'ONLY ME',
+      testId: '2',
+    },
+  ]);
+
+  const pastTopics = [
+    {
+      id: 't-1',
+      duration: '8 min',
+      title: 'Incorporating Else If',
+      testId: '1',
     },
     {
-      id: '3',
-      title: 'Mathematics Calculus & Vectors Practice Exam',
-      subject: 'Mathematics',
-      questions: 35,
-      duration: '60 mins',
-      marks: 140,
-      badge: 'Advanced',
+      id: 't-2',
+      duration: '9 min',
+      title: 'Coding Else Statements',
+      testId: '2',
     },
     {
-      id: '4',
-      title: 'Genetics & Biotechnology Unit Evaluation',
-      subject: 'Biology',
-      questions: 30,
-      duration: '45 mins',
-      marks: 120,
-      badge: 'NCERT Special',
+      id: 't-3',
+      duration: '12 min',
+      title: 'Gauss Law Flux Drills',
+      testId: '3',
+    },
+    {
+      id: 't-4',
+      duration: '10 min',
+      title: 'Kirchhoff Circuit Rules',
+      testId: '4',
     },
   ];
 
-  const filteredTests = testsList.filter((test) => {
-    const matchesSubject = selectedSubject === 'All' || test.subject === selectedSubject;
-    const matchesSearch = test.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          test.subject.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSubject && matchesSearch;
-  });
+  const handleStartReview = () => {
+    playButtonClick();
+    router.push('/test/1');
+  };
 
   return (
-    <main className="max-w-[1000px] mx-auto px-4 md:px-6 pt-6 pb-24 md:pb-16">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="font-heading text-3xl font-bold text-[#161d1f]">
-            Mock Tests & Practice Exams
-          </h1>
-          <p className="text-sm text-[#564338] mt-1">
-            Simulate actual Class 12 board exam pattern with AI-timed test series.
-          </p>
-        </div>
+    <main className="w-full min-h-screen bg-[#f4f5fa] pb-28 font-sans">
+      
+      {/* ─── 1. Daily Review Hero Card (Purple gradient with Gym Robot) ─── */}
+      <div className="w-full bg-gradient-to-b from-[#ddd6fe] via-[#ede9fe] to-[#f4f5fa] pt-4 pb-6 px-4 sm:px-6">
+        <div className="max-w-md mx-auto">
+          
+          <div className="flex items-start justify-between relative">
+            <div className="z-10 max-w-[210px]">
+              {/* Daily Review Pill */}
+              <span className="inline-block px-3 py-1 rounded-full bg-[#1e1b4b] text-white text-[10px] font-black uppercase tracking-wider shadow-2xs">
+                DAILY REVIEW
+              </span>
+              
+              {/* Headline */}
+              <h1 className="font-heading text-xl sm:text-2xl font-black text-[#1e293b] mt-2 leading-tight">
+                Using Conditions
+              </h1>
 
-        {/* Search input bar */}
-        <div className="w-full md:w-72 relative">
-          <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#897266] text-[20px]">
-            search
-          </span>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search tests..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#ddc1b3] bg-white text-sm text-[#161d1f] placeholder:text-[#897266] outline-none focus:border-[#9b4500] focus:ring-1 focus:ring-[#9b4500] transition-all"
-          />
-        </div>
-      </div>
-
-      {/* Subject Filter Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 mb-6">
-        {subjects.map((sub) => {
-          const isActive = selectedSubject === sub;
-          return (
-            <button
-              key={sub}
-              type="button"
-              onClick={() => setSelectedSubject(sub)}
-              className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                isActive
-                  ? 'bg-[#9b4500] text-white shadow-xs'
-                  : 'bg-white text-[#564338] border border-[#ddc1b3] hover:border-[#9b4500] hover:bg-[#eef5f7]'
-              }`}
-            >
-              {sub}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Test List Container */}
-      <div className="flex flex-col gap-4">
-        {filteredTests.length > 0 ? (
-          filteredTests.map((test) => (
-            <div
-              key={test.id}
-              className="card-outline rounded-2xl p-5 md:p-6 bg-white flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-[#e0e0e0] hover:border-[#9b4500] transition-all"
-            >
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-[#9b4500] bg-[#ffdbc9] px-2.5 py-0.5 rounded-md border border-[#ff8c42]/40">
-                    {test.subject}
-                  </span>
-                  <span className="text-xs text-[#3a6a00] font-bold bg-[#6dbf00]/20 px-2.5 py-0.5 rounded-md border border-[#6dbf00]/30">
-                    {test.badge}
-                  </span>
-                </div>
-                <h3 className="font-heading text-xl font-bold text-[#161d1f]">
-                  {test.title}
-                </h3>
-                <div className="flex items-center gap-4 text-xs text-[#564338]">
-                  <span className="flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[14px] text-[#9b4500]">schedule</span> {test.duration}
-                  </span>
-                  <span>•</span>
-                  <span>{test.questions} Questions</span>
-                  <span>•</span>
-                  <span>{test.marks} Total Marks</span>
-                </div>
+              {/* Time Indicator */}
+              <div className="flex items-center gap-1 text-xs font-bold text-[#64748b] mt-1">
+                <span className="text-amber-500 font-black text-sm">⚡</span>
+                <span>8 min</span>
               </div>
-
-              <Link href={`/test/${test.id}`} className="w-full md:w-auto">
-                <button className="w-full md:w-auto bg-[#9b4500] text-white font-bold text-sm px-6 py-3 rounded-full hover:bg-[#ff8c42] transition-colors shadow-md flex items-center justify-center gap-2 active:scale-95 touch-manipulation">
-                  <span className="material-symbols-outlined text-[20px]">play_arrow</span>
-                  Attempt Test
-                </button>
-              </Link>
             </div>
-          ))
-        ) : (
-          <div className="bg-white rounded-2xl p-8 border border-[#ddc1b3] text-center flex flex-col items-center gap-3">
-            <span className="material-symbols-outlined text-[40px] text-[#897266]">search_off</span>
-            <p className="font-bold text-[#161d1f]">No tests found matching "{searchQuery}"</p>
+
+            {/* Gym Robot Illustration */}
+            <div className="w-28 h-28 relative shrink-0 -mt-2">
+              <svg viewBox="0 0 120 120" className="w-full h-full">
+                {/* Robot Head / Screen */}
+                <rect x="25" y="20" width="70" height="52" rx="14" fill="#f8fafc" stroke="#94a3b8" strokeWidth="2.5" />
+                <rect x="32" y="27" width="56" height="38" rx="8" fill="#0f172a" />
+                
+                {/* Blue Digital Eyes */}
+                <rect x="40" y="38" width="12" height="7" rx="3" fill="#38bdf8" />
+                <rect x="68" y="38" width="12" height="7" rx="3" fill="#38bdf8" />
+                {/* Digital Smile */}
+                <path d="M 52 53 Q 60 58 68 53" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" />
+                
+                {/* Green Headband */}
+                <rect x="22" y="24" width="76" height="8" rx="4" fill="#86efac" stroke="#22c55e" strokeWidth="1" />
+
+                {/* Robot Body */}
+                <rect x="42" y="74" width="36" height="24" rx="8" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="2" />
+                <circle x="50" y="86" r="3" fill="#60a5fa" />
+                <circle x="60" y="86" r="3" fill="#a855f7" />
+                <circle x="70" y="86" r="3" fill="#4ade80" />
+
+                {/* Legs */}
+                <rect x="48" y="98" width="8" height="12" rx="3" fill="#cbd5e1" />
+                <rect x="64" y="98" width="8" height="12" rx="3" fill="#cbd5e1" />
+
+                {/* Dumbbell & Left Arm */}
+                <path d="M 28 82 L 18 84" stroke="#94a3b8" strokeWidth="4" strokeLinecap="round" />
+                <rect x="5" y="74" width="8" height="20" rx="3" fill="#7c3aed" />
+                <rect x="13" y="81" width="12" height="6" rx="2" fill="#64748b" />
+                <rect x="25" y="74" width="8" height="20" rx="3" fill="#7c3aed" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Start Now Button */}
+          <button
+            type="button"
+            onClick={handleStartReview}
+            className="w-full mt-4 py-3 rounded-2xl bg-[#6d28d9] hover:bg-[#5b21b6] text-white font-black text-sm shadow-md transition-all active:scale-[0.98] cursor-pointer"
+          >
+            Start now
+          </button>
+        </div>
+      </div>
+
+      <div className="max-w-md mx-auto px-4 sm:px-6 space-y-6">
+
+        {/* ─── 2. Practice Past Topics (Horizontal Scrolling Cards) ─── */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-heading text-base font-black text-[#1e293b]">
+              Practice Past Topics
+            </h2>
+            <Link href="/tests" className="text-xs font-black text-[#7c3aed] hover:underline">
+              See all
+            </Link>
+          </div>
+
+          {/* Horizontal Cards Scroll */}
+          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 pt-1 -mx-4 px-4">
+            {pastTopics.map((topic) => (
+              <Link
+                key={topic.id}
+                href={`/test/${topic.testId}`}
+                onClick={playButtonClick}
+                className="w-48 shrink-0 bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs hover:border-[#8b5cf6] transition-all active:scale-95 flex flex-col justify-between h-32"
+              >
+                <div className="flex items-center gap-1 text-xs font-bold text-[#64748b]">
+                  <span className="text-amber-500 font-black">⚡</span>
+                  <span>{topic.duration}</span>
+                </div>
+                <h3 className="font-heading text-sm font-black text-[#1e293b] leading-tight">
+                  {topic.title}
+                </h3>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* ─── 3. Your Practice Progress (2-Column Stats Card) ─── */}
+        <div>
+          <h2 className="font-heading text-base font-black text-[#1e293b] mb-3">
+            Your Practice Progress
+          </h2>
+
+          <div className="bg-white rounded-3xl p-5 border-2 border-[#e2e8f0] shadow-xs grid grid-cols-2 gap-4">
+            {/* Stat 1 */}
+            <div>
+              <p className="font-heading text-2xl sm:text-3xl font-black text-[#4f46e5]">
+                12
+              </p>
+              <span className="text-xs font-bold text-[#64748b] block mt-0.5">
+                Activities done
+              </span>
+            </div>
+
+            {/* Stat 2 */}
+            <div className="border-l border-[#e2e8f0] pl-4">
+              <p className="font-heading text-2xl sm:text-3xl font-black text-[#4f46e5]">
+                1h 13min
+              </p>
+              <span className="text-xs font-bold text-[#64748b] block mt-0.5">
+                Time on tasks
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* ─── 4. Playgrounds (Drills List with + Create new) ─── */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-heading text-base font-black text-[#1e293b]">
+              Playgrounds
+            </h2>
             <button
-              onClick={() => { setSelectedSubject('All'); setSearchQuery(''); }}
-              className="text-xs font-bold text-[#9b4500] underline"
+              type="button"
+              onClick={() => {
+                playButtonClick();
+                router.push('/test/1');
+              }}
+              className="text-xs font-black text-[#7c3aed] flex items-center gap-1 hover:underline cursor-pointer"
             >
-              Clear filters
+              <span className="text-sm font-black leading-none">+</span> Create new
             </button>
           </div>
-        )}
+
+          {/* Playground Cards */}
+          <div className="flex flex-col gap-3">
+            {playgrounds.map((p) => (
+              <div
+                key={p.id}
+                className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-[#e2e8f0] shadow-xs flex items-center justify-between"
+              >
+                <div className="flex flex-col gap-1.5">
+                  {/* Badge Icons */}
+                  <div className="flex items-center gap-1">
+                    {p.techBadges.map((b, bIdx) => (
+                      <span
+                        key={bIdx}
+                        className={`w-6 h-6 rounded-md flex items-center justify-center font-bold text-[10px] uppercase shadow-2xs ${b.color}`}
+                      >
+                        <span className="material-symbols-outlined text-[14px]">{b.icon}</span>
+                      </span>
+                    ))}
+                  </div>
+
+                  <h3 className="font-heading text-sm sm:text-base font-black text-[#1e293b]">
+                    {p.title}
+                  </h3>
+
+                  <p className="text-xs text-[#94a3b8] font-semibold">
+                    {p.timeAgo}
+                  </p>
+                </div>
+
+                {/* Right: Options & Visibility Pill */}
+                <div className="flex flex-col items-end gap-3">
+                  <button
+                    type="button"
+                    className="text-[#94a3b8] hover:text-[#1e293b] p-1 cursor-pointer"
+                    aria-label="Options"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">more_vert</span>
+                  </button>
+
+                  <span className="px-2.5 py-1 rounded-full bg-[#f1f5f9] border border-[#e2e8f0] text-[10px] font-black text-[#64748b] flex items-center gap-1 uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-[12px]">lock</span> {p.visibility}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom Footnote */}
+          <p className="text-xs font-bold text-[#64748b] text-center mt-6">
+            9 free playgrounds left
+          </p>
+          <button
+            type="button"
+            onClick={() => router.push('/shop')}
+            className="text-xs font-black text-[#7c3aed] hover:underline text-center block mx-auto mt-1 cursor-pointer"
+          >
+            Upgrade for more
+          </button>
+        </div>
+
       </div>
     </main>
   );

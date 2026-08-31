@@ -114,18 +114,23 @@ export function QuestsClient() {
                   <span>+{q.gemReward}</span>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => handleClaim(q)}
-                  disabled={!q.completed}
-                  className={`px-4 py-2 rounded-xl text-xs font-black border-b-4 active:border-b-0 active:translate-y-1 transition-all ${
-                    q.completed
-                      ? 'bg-[#58cc02] text-white border-[#388401] hover:bg-[#46a302] cursor-pointer shadow-md'
-                      : 'bg-[#e5e5e5] text-[#afafaf] border-[#afafaf] cursor-not-allowed'
-                  }`}
-                >
-                  {q.completed ? 'Claim' : 'In Progress'}
-                </button>
+                {q.completed ? (
+                  <button
+                    type="button"
+                    onClick={() => handleClaim(q)}
+                    className="px-4 py-2 rounded-xl text-xs font-black border-b-4 active:border-b-0 active:translate-y-1 transition-all bg-[#58cc02] text-white border-[#388401] hover:bg-[#46a302] cursor-pointer shadow-md"
+                  >
+                    Claim
+                  </button>
+                ) : (
+                  <a
+                    href="/"
+                    className="px-4 py-2 rounded-xl text-xs font-black border-b-4 active:border-b-0 active:translate-y-1 transition-all bg-[#ff8c42] text-white border-[#9b4500] hover:bg-[#e66c1f] cursor-pointer shadow-md flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">play_arrow</span>
+                    Go Learn
+                  </a>
+                )}
               </div>
             </div>
           );

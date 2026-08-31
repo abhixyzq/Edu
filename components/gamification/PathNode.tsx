@@ -7,29 +7,19 @@ export type NodeStatus = 'completed' | 'active' | 'locked' | 'boss';
 
 export interface PathNodeProps {
   id: string;
-  number: number;
   title: string;
-  subtitle?: string;
-  icon?: string;
   status: NodeStatus;
-  stars?: number; // 0-3
-  xpReward?: number;
-  gemsReward?: number;
   onClick: () => void;
-  isBoss?: boolean;
+  progressText?: string;
+  progressPercent?: number;
 }
 
 export const PathNode: React.FC<PathNodeProps> = ({
-  number,
   title,
-  subtitle,
-  icon = 'school',
   status,
-  stars = 0,
-  xpReward = 20,
-  gemsReward = 10,
   onClick,
-  isBoss = false,
+  progressText,
+  progressPercent = 33,
 }) => {
   const handleClick = () => {
     if (status === 'locked') return;
@@ -37,98 +27,98 @@ export const PathNode: React.FC<PathNodeProps> = ({
     onClick();
   };
 
-  // Node color theming
-  const getTheme = () => {
-    if (status === 'locked') {
-      return {
-        btnBg: 'bg-[#e5e5e5] border-[#afafaf] text-[#afafaf]',
-        ring: '',
-        icon: 'lock',
-      };
-    }
-    if (isBoss) {
-      return {
-        btnBg: 'bg-gradient-to-b from-[#ffd700] to-[#e6a800] border-[#b38300] text-[#594100]',
-        ring: 'ring-4 ring-[#ffd700]/50 animate-pulse',
-        icon: 'military_tech',
-      };
-    }
-    if (status === 'completed') {
-      return {
-        btnBg: 'bg-gradient-to-b from-[#58cc02] to-[#46a302] border-[#388401] text-white',
-        ring: '',
-        icon: 'check',
-      };
-    }
-    // Active
-    return {
-      btnBg: 'bg-gradient-to-b from-[#ff8c42] to-[#e66c1f] border-[#b84e0c] text-white',
-      ring: 'ring-6 ring-[#ff8c42]/40 animate-pulse',
-      icon,
-    };
-  };
+  // 1. In-progress white tile with radial ring (like the 1/3 card in the reference UI)
+  if (status === 'active' && progressText) {
+    return (
+      <div className="flex flex-col items-center group relative select-none my-3">
+        <button
+          type="button"
+          onClick={handleClick}
+          aria-label={`${title} - In Progress`}
+          className="relative w-20 h-20 sm:w-22 sm:h-22 rounded-3xl bg-white border-2 border-[#e2e8f0] border-b-6 border-b-[#cbd5e1] flex items-center justify-center shadow-md active:border-b-2 active:translate-y-1 transition-all duration-150 cursor-pointer hover:scale-105"
+        >
+          {/* Radial Circular Progress Meter */}
+          <div className="relative w-12 h-12 flex items-center justify-center">
+            <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+              {/* Background circle */}
+              <path
+                className="text-[#e2e8f0]"
+                strokeWidth="3.5"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+              {/* Progress arc (yellow/amber) */}
+              <path
+                className="text-[#f59e0b]"
+                strokeDasharray={`${progressPercent}, 100`}
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+            </svg>
+            <span className="absolute text-xs font-black text-[#1e293b]">
+              {progressText}
+            </span>
+          </div>
+        </button>
 
-  const theme = getTheme();
+        {/* Title Label */}
+        <div className="mt-2 text-center max-w-[120px]">
+          <p className="text-xs font-bold text-[#1e293b] leading-tight">{title}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Completed / Active / Locked 3D Squircle Tile
+  const isCompleted = status === 'completed';
+  const isActive = status === 'active';
+  const isLocked = status === 'locked';
 
   return (
     <div className="flex flex-col items-center group relative select-none my-3">
-      {/* Node Button */}
       <button
         type="button"
         onClick={handleClick}
-        disabled={status === 'locked'}
+        disabled={isLocked}
         aria-label={`${title} - ${status}`}
-        className={`relative ${isBoss ? 'w-22 h-22 sm:w-24 sm:h-24' : 'w-18 h-18 sm:w-20 sm:h-20'} rounded-full flex flex-col items-center justify-center border-b-6 active:border-b-0 active:translate-y-1.5 transition-all duration-150 shadow-lg ${
-          theme.btnBg
-        } ${theme.ring} ${status !== 'locked' ? 'cursor-pointer hover:scale-105' : 'cursor-not-allowed opacity-80'}`}
+        className={`relative w-20 h-20 sm:w-22 sm:h-22 rounded-3xl flex items-center justify-center transition-all duration-150 shadow-md ${
+          isLocked
+            ? 'bg-[#f1f5f9] border-2 border-[#e2e8f0] border-b-6 border-b-[#cbd5e1] text-[#94a3b8] cursor-not-allowed opacity-85'
+            : isCompleted
+            ? 'bg-gradient-to-b from-[#a78bfa] to-[#8b5cf6] border-2 border-[#8b5cf6] border-b-6 border-b-[#6d28d9] text-white cursor-pointer hover:scale-105 active:border-b-2 active:translate-y-1'
+            : 'bg-gradient-to-b from-[#9061f9] to-[#7e3af2] border-2 border-[#7e3af2] border-b-6 border-b-[#5521b5] text-white cursor-pointer hover:scale-105 active:border-b-2 active:translate-y-1 ring-4 ring-[#8b5cf6]/40'
+        }`}
       >
-        {/* Shine Highlight Effect */}
-        <div className="absolute top-2 left-3 right-3 h-4 bg-white/25 rounded-full blur-[1px]" />
+        {/* Shine highlight */}
+        {!isLocked && (
+          <div className="absolute top-2 left-3 right-3 h-3.5 bg-white/20 rounded-full blur-[0.5px]" />
+        )}
 
-        {/* Icon */}
-        <span className={`material-symbols-outlined ${isBoss ? 'text-[36px]' : 'text-[28px]'} font-extrabold`}>
-          {theme.icon}
-        </span>
-
-        {/* Lesson Number pill */}
-        {status !== 'locked' && !isBoss && (
-          <span className="text-[10px] font-extrabold tracking-wider opacity-90 -mt-0.5">
-            L{number}
+        {/* Icon Inside Tile */}
+        {isCompleted ? (
+          <span className="material-symbols-outlined text-[34px] font-black text-white">
+            check
+          </span>
+        ) : isLocked ? (
+          <span className="material-symbols-outlined text-[28px] text-[#94a3b8]">
+            lock
+          </span>
+        ) : (
+          <span className="material-symbols-outlined text-[32px] text-white font-black animate-pulse">
+            bolt
           </span>
         )}
       </button>
 
-      {/* Star Rating Badge (Completed Nodes) */}
-      {status === 'completed' && (
-        <div className="flex gap-0.5 mt-1 bg-white/90 px-2 py-0.5 rounded-full shadow-xs border border-[#dde4e6]">
-          {[1, 2, 3].map((s) => (
-            <span
-              key={s}
-              className={`material-symbols-outlined text-[13px] ${
-                s <= stars ? 'text-[#ffd700] fill-current font-bold' : 'text-gray-300'
-              }`}
-            >
-              star
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Floating Active "START" Indicator Pill */}
-      {status === 'active' && (
-        <div className="absolute -top-3.5 bg-[#9b4500] text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-md border-2 border-white animate-bounce tracking-widest">
-          Start
-        </div>
-      )}
-
-      {/* Title Label below node */}
-      <div className="mt-1.5 text-center max-w-[130px]">
-        <p className={`text-xs font-bold leading-tight ${status === 'locked' ? 'text-gray-400' : 'text-[#161d1f]'}`}>
+      {/* Title Label */}
+      <div className="mt-2 text-center max-w-[120px]">
+        <p className={`text-xs font-bold leading-tight ${isLocked ? 'text-[#94a3b8]' : 'text-[#1e293b]'}`}>
           {title}
         </p>
-        {subtitle && (
-          <span className="text-[10px] text-[#897266] font-medium block mt-0.5">{subtitle}</span>
-        )}
       </div>
     </div>
   );

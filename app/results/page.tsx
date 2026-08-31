@@ -3,17 +3,25 @@
 import React from 'react';
 import Link from 'next/link';
 import { RECENT_TESTS } from '@/lib/mockData';
+import { Mascot } from '@/components/gamification/Mascot';
 
 export default function AllResultsPage() {
   return (
     <main className="max-w-[1000px] mx-auto px-4 md:px-6 pt-6 pb-24 md:pb-16">
-      <div className="flex flex-col gap-2 mb-8">
-        <h1 className="font-heading text-3xl font-bold text-[#161d1f]">
-          Your Test Scorecards & Performance
-        </h1>
-        <p className="text-sm text-[#564338]">
-          Review past attempt scores, percentile metrics, and question solutions.
-        </p>
+      {/* Hero Banner — consistent with other pages */}
+      <div className="bg-gradient-to-r from-[#0060ac] to-[#004278] text-white rounded-3xl p-6 sm:p-8 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 border-b-6 border-[#003060]">
+        <div>
+          <span className="text-xs font-black uppercase tracking-widest text-[#d4e3ff]">
+            Exam Performance
+          </span>
+          <h1 className="font-heading text-2xl sm:text-3xl font-black mt-1">
+            Your Test Scorecards &amp; Performance
+          </h1>
+          <p className="text-xs sm:text-sm text-[#d4e3ff] mt-1">
+            Review past attempt scores, percentile metrics, and question solutions.
+          </p>
+        </div>
+        <Mascot mood="happy" size={110} />
       </div>
 
       <div className="flex flex-col gap-4">

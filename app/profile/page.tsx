@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useUser } from '@/context/UserContext';
 import { BOARDS } from '@/lib/mockData';
 import { Mascot } from '@/components/gamification/Mascot';
+import { playButtonClick } from '@/lib/soundEffects';
 
 export default function ProfilePage() {
   const { user, setTargetBoard, logout } = useUser();
@@ -12,153 +13,191 @@ export default function ProfilePage() {
   const completedCount = Object.keys(user.completedNodes).length;
 
   return (
-    <main className="max-w-[850px] mx-auto px-4 md:px-6 pt-6 pb-24 md:pb-16 font-sans">
-      {/* Profile Header Card */}
-      <div className="bg-white rounded-3xl p-6 md:p-8 border-2 border-[#dde4e6] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6 mb-8 text-center sm:text-left">
-        <div className="flex flex-col sm:flex-row items-center gap-5">
-          <div className="relative">
-            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-[#ff8c42] bg-gradient-to-br from-[#ffdbc9] to-[#ff8c42] text-[#6a2d00] font-black text-3xl md:text-4xl flex items-center justify-center shadow-md">
-              {user.name.charAt(0)}
-            </div>
-            <span className="absolute bottom-0 right-0 bg-[#ff8c42] text-white p-1 rounded-full border-2 border-white flex items-center justify-center shadow-xs">
-              <span className="material-symbols-outlined text-[16px]">local_fire_department</span>
-            </span>
-          </div>
+    <main className="w-full min-h-screen bg-[#f4f5fa] pb-28 font-sans">
+      
+      {/* ─── Profile Header Hero ─── */}
+      <div className="w-full bg-gradient-to-b from-[#ddd6fe] via-[#ede9fe] to-[#f4f5fa] pt-4 pb-6 px-4 sm:px-6">
+        <div className="max-w-md mx-auto">
+          <div className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-[#e2e8f0] shadow-sm flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="relative">
+                <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-br from-[#a78bfa] to-[#7c3aed] text-white font-black text-2xl sm:text-3xl flex items-center justify-center shadow-md">
+                  {user.name.charAt(0)}
+                </div>
+                <span className="absolute -bottom-1 -right-1 bg-amber-400 text-white p-1 rounded-full border-2 border-white flex items-center justify-center shadow-xs">
+                  <span className="material-symbols-outlined text-[13px]">local_fire_department</span>
+                </span>
+              </div>
 
-          <div>
-            <div className="flex items-center justify-center sm:justify-start gap-2 mb-1.5 flex-wrap">
-              <span className="bg-[#ffdbc9] text-[#9b4500] text-xs font-black px-3 py-0.5 rounded-full uppercase border border-[#ff8c42]/40">
-                Level {user.level} Scholar
+              <div>
+                <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                  <span className="bg-[#ede9fe] text-[#6d28d9] text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase border border-[#c4b5fd]">
+                    Level {user.level}
+                  </span>
+                  <span className="bg-[#e0f2fe] text-[#0369a1] text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase border border-[#bae6fd]">
+                    {user.leagueTier} League
+                  </span>
+                </div>
+                <h1 className="font-heading text-lg sm:text-xl font-black text-[#1e293b] leading-tight">
+                  {user.name}
+                </h1>
+                <p className="text-xs text-[#64748b] mt-0.5">
+                  {user.email || 'student@edustride.prep'}
+                </p>
+              </div>
+            </div>
+
+            <div className="hidden xs:block shrink-0">
+              <Mascot mood="happy" size={70} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-md mx-auto px-4 sm:px-6 space-y-6">
+
+        {/* ─── Official App Download Banner Card ─── */}
+        <div className="bg-gradient-to-br from-[#6d28d9] via-[#7c3aed] to-[#9333ea] text-white rounded-3xl p-5 shadow-md border-b-6 border-[#5521b5] relative overflow-hidden">
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-black uppercase tracking-wider backdrop-blur-xs">
+                OFFICIAL ANDROID APP
               </span>
-              <span className="bg-[#d4e3ff] text-[#0060ac] text-xs font-black px-3 py-0.5 rounded-full uppercase border border-[#a2c5ff]">
-                {user.leagueTier} League
+              <span className="text-[10px] bg-amber-400 text-amber-950 font-black px-2 py-0.5 rounded-full shadow-2xs">
+                v1.0.2 APK
               </span>
             </div>
-            <h1 className="font-heading text-2xl md:text-3xl font-extrabold text-[#161d1f]">
-              {user.name}
-            </h1>
-            <p className="text-xs text-[#564338] mt-0.5">
-              {user.email || 'student@edustride.prep'} • Class 12 Board Prep
+
+            <h3 className="font-heading text-lg font-black leading-tight text-white">
+              Install EduStride on Android
+            </h3>
+            <p className="text-xs text-[#ede9fe] mt-1 leading-relaxed">
+              Experience ultra-smooth practice sessions, offline tests, and fast gamified sound effects on your phone.
             </p>
+
+            {/* Direct Download Button */}
+            <a
+              href="/EduStride_Class12_v1.0.2.apk?v=1.0.2"
+              download="EduStride_Class12_v1.0.2.apk"
+              onClick={playButtonClick}
+              className="mt-4 w-full py-3 px-4 rounded-2xl bg-white hover:bg-amber-50 text-[#6d28d9] font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[20px] text-[#6d28d9]">download</span>
+              <span>Download APK (Direct Install)</span>
+            </a>
+          </div>
+
+          {/* Decorative background shape */}
+          <div className="absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-white/10 pointer-events-none" />
+        </div>
+
+        {/* ─── Gamified Stats Grid ─── */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {/* Streak */}
+          <div className="bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs flex flex-col items-center justify-center text-center">
+            <span className="text-2xl mb-1">🔥</span>
+            <span className="font-heading text-xl font-black text-[#1e293b]">{user.streakDays}</span>
+            <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">Day Streak</span>
+          </div>
+
+          {/* Total XP */}
+          <div className="bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs flex flex-col items-center justify-center text-center">
+            <span className="text-2xl mb-1">⚡</span>
+            <span className="font-heading text-xl font-black text-[#1e293b]">{user.xp}</span>
+            <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">Total XP</span>
+          </div>
+
+          {/* Gems */}
+          <div className="bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs flex flex-col items-center justify-center text-center">
+            <span className="text-2xl mb-1">💎</span>
+            <span className="font-heading text-xl font-black text-[#1e293b]">{user.gems}</span>
+            <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">Gems</span>
+          </div>
+
+          {/* Completed Nodes */}
+          <div className="bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs flex flex-col items-center justify-center text-center">
+            <span className="text-2xl mb-1">✅</span>
+            <span className="font-heading text-xl font-black text-[#1e293b]">{completedCount}</span>
+            <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">Mastered</span>
           </div>
         </div>
 
-        <div className="hidden sm:block">
-          <Mascot mood="happy" size={85} />
-        </div>
-      </div>
+        {/* ─── Inventory & Power-ups ─── */}
+        <div className="bg-white rounded-3xl p-5 border-2 border-[#e2e8f0] shadow-xs">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-heading text-sm font-black text-[#1e293b]">
+              Inventory & Items
+            </h2>
+            <Link
+              href="/shop"
+              onClick={playButtonClick}
+              className="text-xs font-black text-[#7c3aed] hover:underline"
+            >
+              Shop Items
+            </Link>
+          </div>
 
-      {/* Gamified Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
-        {/* Streak */}
-        <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-[#dde4e6] shadow-xs flex flex-col items-center justify-center text-center">
-          <span className="material-symbols-outlined text-[32px] text-[#9b4500] mb-1">
-            local_fire_department
-          </span>
-          <span className="font-heading text-2xl font-black text-[#161d1f]">{user.streakDays}</span>
-          <span className="text-[11px] font-bold text-[#897266] uppercase">Day Streak</span>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3 rounded-2xl bg-[#f8fafc] border border-[#e2e8f0] flex items-center gap-2.5">
+              <span className="text-xl">🧊</span>
+              <div>
+                <p className="text-xs font-black text-[#1e293b]">Streak Freeze</p>
+                <span className="text-[10px] text-[#64748b] font-bold">{user.inventory.streakFreeze} Equipped</span>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-[#f8fafc] border border-[#e2e8f0] flex items-center gap-2.5">
+              <span className="text-xl">❤️</span>
+              <div>
+                <p className="text-xs font-black text-[#1e293b]">Hearts</p>
+                <span className="text-[10px] text-[#64748b] font-bold">{user.hearts}/5 Remaining</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Total XP */}
-        <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-[#dde4e6] shadow-xs flex flex-col items-center justify-center text-center">
-          <span className="material-symbols-outlined text-[32px] text-[#ffd700] mb-1">
-            bolt
-          </span>
-          <span className="font-heading text-2xl font-black text-[#161d1f]">{user.xp}</span>
-          <span className="text-[11px] font-bold text-[#897266] uppercase">Total XP</span>
-        </div>
-
-        {/* Gems */}
-        <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-[#dde4e6] shadow-xs flex flex-col items-center justify-center text-center">
-          <span className="material-symbols-outlined text-[32px] text-[#0060ac] mb-1">
-            diamond
-          </span>
-          <span className="font-heading text-2xl font-black text-[#161d1f]">{user.gems}</span>
-          <span className="text-[11px] font-bold text-[#897266] uppercase">Gems</span>
-        </div>
-
-        {/* Completed Nodes */}
-        <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-[#dde4e6] shadow-xs flex flex-col items-center justify-center text-center">
-          <span className="material-symbols-outlined text-[32px] text-[#58cc02] mb-1">
-            check_circle
-          </span>
-          <span className="font-heading text-2xl font-black text-[#161d1f]">{completedCount}</span>
-          <span className="text-[11px] font-bold text-[#897266] uppercase">Nodes Mastered</span>
-        </div>
-      </div>
-
-      {/* Inventory & Power-ups */}
-      <div className="bg-white rounded-3xl p-6 border-2 border-[#dde4e6] shadow-xs mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-heading text-lg font-extrabold text-[#161d1f]">
-            Inventory & Equipped Power-Ups
+        {/* ─── Target Examination Board ─── */}
+        <div className="bg-white rounded-3xl p-5 border-2 border-[#e2e8f0] shadow-xs">
+          <h2 className="font-heading text-sm font-black text-[#1e293b] mb-3">
+            Target Examination Board
           </h2>
-          <Link href="/shop" className="text-xs font-black text-[#0060ac] hover:underline">
-            Shop Power-Ups
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <div className="p-3.5 rounded-2xl bg-[#f4fafd] border border-[#dde4e6] flex items-center gap-3">
-            <span className="material-symbols-outlined text-[24px] text-[#0060ac]">ac_unit</span>
-            <div>
-              <p className="text-xs font-extrabold text-[#161d1f]">Streak Freeze</p>
-              <span className="text-[11px] text-[#564338] font-bold">{user.inventory.streakFreeze} Equipped</span>
-            </div>
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-[#f4fafd] border border-[#dde4e6] flex items-center gap-3">
-            <span className="material-symbols-outlined text-[24px] text-[#ffd700]">bolt</span>
-            <div>
-              <p className="text-xs font-extrabold text-[#161d1f]">2x XP Boosters</p>
-              <span className="text-[11px] text-[#564338] font-bold">{user.inventory.doubleXpCount} Available</span>
-            </div>
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-[#f4fafd] border border-[#dde4e6] flex items-center gap-3">
-            <span className="material-symbols-outlined text-[24px] text-[#ba1a1a]">favorite</span>
-            <div>
-              <p className="text-xs font-extrabold text-[#161d1f]">Current Lives</p>
-              <span className="text-[11px] text-[#564338] font-bold">{user.hearts}/5 Hearts</span>
-            </div>
+          <div className="grid grid-cols-2 gap-2">
+            {BOARDS.map((board) => {
+              const isSelected = user.targetBoard === board.id;
+              return (
+                <button
+                  key={board.id}
+                  onClick={() => {
+                    playButtonClick();
+                    setTargetBoard(board.id);
+                  }}
+                  className={`p-2.5 rounded-2xl text-xs font-black border-b-3 active:border-b-0 active:translate-y-0.5 transition-all text-center cursor-pointer ${
+                    isSelected
+                      ? 'bg-[#7c3aed] text-white border-[#5b21b6] shadow-xs'
+                      : 'bg-white text-[#64748b] border-[#e2e8f0] hover:bg-slate-50'
+                  }`}
+                >
+                  {board.name}
+                </button>
+              );
+            })}
           </div>
         </div>
-      </div>
 
-      {/* Target Board Switcher */}
-      <div className="bg-white rounded-3xl p-6 border-2 border-[#dde4e6] shadow-xs mb-8">
-        <h2 className="font-heading text-lg font-extrabold text-[#161d1f] mb-3">
-          Target Examination Board
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-          {BOARDS.map((board) => {
-            const isSelected = user.targetBoard === board.id;
-            return (
-              <button
-                key={board.id}
-                onClick={() => setTargetBoard(board.id)}
-                className={`p-3 rounded-2xl text-xs font-extrabold border-b-4 active:border-b-0 active:translate-y-1 transition-all text-center cursor-pointer ${
-                  isSelected
-                    ? 'bg-[#ff8c42] text-white border-[#9b4500] shadow-sm'
-                    : 'bg-white text-[#161d1f] border-[#dde4e6] hover:bg-[#ffdbc9]/30'
-                }`}
-              >
-                {board.name}
-              </button>
-            );
-          })}
+        {/* ─── Sign Out ─── */}
+        <div className="flex justify-center pt-2">
+          <button
+            onClick={() => {
+              playButtonClick();
+              logout();
+            }}
+            className="w-full py-3 rounded-2xl border-2 border-rose-200 bg-rose-50/50 text-rose-600 font-black text-xs hover:bg-rose-100 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[16px]">logout</span>
+            Sign Out of EduStride
+          </button>
         </div>
-      </div>
 
-      {/* Account Logout */}
-      <div className="flex justify-end">
-        <button
-          onClick={logout}
-          className="py-2.5 px-6 rounded-2xl border-2 border-[#ba1a1a] text-[#ba1a1a] font-black text-xs hover:bg-[#ffdad6] transition-colors flex items-center gap-2 cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-[18px]">logout</span>
-          Sign Out of EduStride
-        </button>
       </div>
     </main>
   );
