@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Modal, FormField, inputCls, PrimaryBtn, DangerBtn } from '@/components/admin/Modal';
 import { LatexPreview } from '@/components/admin/LatexPreview';
+import { BulkQuestionImportModal } from '@/components/admin/BulkQuestionImportModal';
 import { playButtonClick, playGemDing } from '@/lib/soundEffects';
 
 interface Question {
@@ -49,6 +50,7 @@ export function AdminQuestionsClient() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [bulkModalOpen, setBulkModalOpen] = useState(false);
   const [editing, setEditing] = useState<Omit<Question, 'id'>>({ ...EMPTY_Q, test_id: id });
   const [editId, setEditId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
@@ -176,13 +178,28 @@ export function AdminQuestionsClient() {
           </p>
         </div>
 
-        <button
-          onClick={openAdd}
-          className="flex items-center gap-1.5 bg-[#7c3aed] hover:bg-[#6d28d9] text-white px-4 py-2.5 rounded-2xl text-xs font-black transition-all active:scale-95 shadow-md cursor-pointer self-start sm:self-auto"
-        >
-          <span className="material-symbols-outlined text-[18px]">add</span>
-          <span>+ Add Question</span>
-        </button>
+        <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => {
+              playButtonClick();
+              setBulkModalOpen(true);
+            }}
+            className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2.5 rounded-2xl text-xs font-black transition-all active:scale-95 shadow-md cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[18px]">upload_file</span>
+            <span>📥 Bulk Import (CSV / JSON)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={openAdd}
+            className="flex items-center gap-1.5 bg-[#7c3aed] hover:bg-[#6d28d9] text-white px-4 py-2.5 rounded-2xl text-xs font-black transition-all active:scale-95 shadow-md cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[18px]">add</span>
+            <span>+ Add Question</span>
+          </button>
+        </div>
       </div>
 
       {/* Questions List */}
@@ -192,12 +209,26 @@ export function AdminQuestionsClient() {
           <span className="text-xs font-bold text-slate-500">Loading question bank...</span>
         </div>
       ) : questions.length === 0 ? (
-        <div className="bg-white rounded-3xl p-10 border-2 border-[#e2e8f0] text-center space-y-2">
+        <div className="bg-white rounded-3xl p-10 border-2 border-[#e2e8f0] text-center space-y-3">
           <span className="material-symbols-outlined text-[48px] text-slate-300">quiz</span>
           <h3 className="font-heading font-black text-slate-800 text-sm">No Questions Yet</h3>
           <p className="text-xs text-slate-400 max-w-sm mx-auto">
-            Click "+ Add Question" to start building MCQ questions with real-time formula rendering.
+            Upload an Excel/CSV file with 50+ questions or add MCQs individually with live LaTeX formulas.
           </p>
+
+          <div className="flex items-center justify-center gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                playButtonClick();
+                setBulkModalOpen(true);
+              }}
+              className="px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-1.5"
+            >
+              <span className="material-symbols-outlined text-[18px]">upload_file</span>
+              <span>📥 Bulk Import 50+ Questions</span>
+            </button>
+          </div>
         </div>
       ) : (
         <div className="space-y-3">
@@ -390,6 +421,17 @@ export function AdminQuestionsClient() {
           </div>
         </div>
       </Modal>
+
+      {/* Bulk Question Importer Modal */}
+      <BulkQuestionImportModal
+        testId={id}
+        open={bulkModalOpen}
+        onClose={() => setBulkModalOpen(false)}
+        onSuccess={() => {
+          load();
+        }}
+        startingNumber={questions.length + 1}
+      />
 
     </div>
   );
