@@ -1,11 +1,12 @@
 import { MetadataRoute } from 'next';
 
+export const dynamic = 'force-static';
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nainixone.com';
   const currentDate = new Date();
 
-  // Core public routes
-  const routes: MetadataRoute.Sitemap = [
+  return [
     {
       url: `${baseUrl}/`,
       lastModified: currentDate,
@@ -79,6 +80,4 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     },
   ];
-
-  return routes;
 }
