@@ -278,17 +278,35 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* ─── 2. Main Hero Showcase with Seamless 3D Depth Mascot & Giant Watermark ─── */}
-          <div className="w-full bg-gradient-to-b from-[#e4f0fd] via-[#edf5fd] to-white pt-2 px-4 pb-4 relative overflow-hidden">
+          {/* ─── 2. Main Hero Showcase with Full-Screen Mascot & Depth Typography ─── */}
+          <div className="w-full min-h-[360px] sm:min-h-[420px] pt-3 px-4 pb-4 relative overflow-hidden flex flex-col justify-between bg-gradient-to-b from-[#b8d6f5] via-[#d7e9fa] to-white">
             
-            {/* Navbar */}
-            <div className="w-full flex items-center justify-between z-30 relative pb-2">
+            {/* ══ Edge-to-Edge Fitted Mascot ══ */}
+            <div className="absolute inset-0 w-full h-full z-10 pointer-events-none select-none flex items-end justify-center">
+              <img
+                src="/images/image.png"
+                alt="Parrot Mascot Full Fit"
+                className="w-full h-full object-cover object-top sm:object-center transform scale-100"
+              />
+              {/* Soft seamless cloud baseline spanning 100% width across both sides */}
+              <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white via-white/70 to-transparent z-10" />
+            </div>
+
+            {/* ══ Giant Watermark Behind Mascot (z-0) ══ */}
+            <div className="absolute inset-x-0 top-12 sm:top-14 flex items-center justify-center z-0 select-none pointer-events-none">
+              <h1 className="font-heading font-black text-5xl sm:text-7xl text-white/95 tracking-[0.2em] uppercase drop-shadow-[0_4px_25px_rgba(30,64,175,0.3)] text-center">
+                NAINIXONE
+              </h1>
+            </div>
+
+            {/* Navbar (z-30) */}
+            <div className="w-full flex items-center justify-between z-30 relative pb-2 backdrop-blur-[2px]">
               <div className="flex items-center gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-blue-600 shadow-xs" />
                 <span className="text-xs font-black text-slate-900 tracking-wider">NAINIXONE</span>
               </div>
 
-              <div className="flex items-center gap-3 text-[10px] font-bold text-slate-600 font-sans">
+              <div className="flex items-center gap-3 text-[10px] font-bold text-slate-700 font-sans">
                 <span className="hover:text-blue-600 cursor-pointer">Features</span>
                 <span className="hover:text-blue-600 cursor-pointer">Mocks</span>
                 <span className="hover:text-blue-600 cursor-pointer">FAQ</span>
@@ -303,38 +321,19 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            {/* ══ Giant Outline Watermark Typography & Mascot Container ══ */}
-            <div className="relative w-full min-h-[220px] sm:min-h-[260px] flex items-center justify-center my-1 overflow-visible">
-              
-              {/* Giant Full-Width Watermark Heading Behind Mascot */}
-              <div className="absolute inset-0 flex items-center justify-center z-0 select-none pointer-events-none">
-                <h1 className="font-heading font-black text-6xl sm:text-8xl text-white tracking-[0.15em] uppercase drop-shadow-[0_4px_20px_rgba(37,99,235,0.18)]">
-                  NAINIXONE
-                </h1>
+            {/* Floating Status Pill (z-30) */}
+            <div className="w-full flex justify-end pr-2 z-30 my-auto pointer-events-none">
+              <div className="bg-white/95 backdrop-blur-md border border-white/80 px-2.5 py-0.5 rounded-full shadow-lg text-[8px] font-black text-slate-800 flex items-center gap-1 pointer-events-auto">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                <span>10M+ Scholars</span>
               </div>
-
-              {/* 3D Blue Mascot with Transparent Cutout (image.png) */}
-              <div className="relative z-10 w-56 sm:w-72 h-56 sm:h-72 flex items-center justify-center -mt-2">
-                <img
-                  src="/images/image.png"
-                  alt="Mascot Cutout"
-                  className="w-full h-full object-contain drop-shadow-[0_20px_35px_rgba(15,23,42,0.3)] transform scale-105"
-                />
-
-                {/* Floating Status Pill */}
-                <div className="absolute top-6 right-2 bg-white/95 backdrop-blur-md border border-slate-200 px-2.5 py-0.5 rounded-full shadow-lg text-[8px] font-black text-slate-800 flex items-center gap-1 z-30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                  <span>10M+ Scholars</span>
-                </div>
-              </div>
-
             </div>
 
-            {/* ══ Floating Left & Right Cards ══ */}
-            <div className="w-full relative flex items-center justify-between -mt-6 sm:-mt-8 z-30">
+            {/* ══ Floating Left & Right Cards Overlapping Cloud Base (z-30) ══ */}
+            <div className="w-full relative flex items-center justify-between mt-auto z-30">
               
               {/* Left Floating Card: 3D Earth */}
-              <div className="w-32 sm:w-36 bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-[0_15px_30px_rgba(30,64,175,0.12)] border border-white flex flex-col items-center text-center space-y-1.5 hover:scale-105 transition-all">
+              <div className="w-32 sm:w-36 bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-[0_15px_30px_rgba(30,64,175,0.15)] border border-white flex flex-col items-center text-center space-y-1.5 hover:scale-105 transition-all">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-teal-400 shadow-md flex items-center justify-center p-0.5 text-white">
                   <span className="material-symbols-outlined text-[24px]">public</span>
                 </div>
@@ -344,7 +343,7 @@ export default function LoginPage() {
               </div>
 
               {/* Right Floating Card: Blue Card */}
-              <div className="w-32 sm:w-36 bg-gradient-to-br from-[#1e40af] to-[#0f172a] text-white rounded-2xl p-3 shadow-[0_15px_30px_rgba(15,23,42,0.3)] border border-blue-400/40 space-y-1.5 hover:scale-105 transition-all">
+              <div className="w-32 sm:w-36 bg-gradient-to-br from-[#1e40af] to-[#0f172a] text-white rounded-2xl p-3 shadow-[0_15px_30px_rgba(15,23,42,0.35)] border border-blue-400/40 space-y-1.5 hover:scale-105 transition-all">
                 <div className="flex justify-between items-center text-[7px] text-blue-200">
                   <span className="font-black tracking-wider">NAINIXONE</span>
                   <span className="font-black text-amber-300">VISA</span>
