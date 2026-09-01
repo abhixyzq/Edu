@@ -92,38 +92,13 @@ export default function PracticePage() {
               </div>
             </div>
 
-            {/* Gym Robot Illustration */}
-            <div className="w-28 h-28 relative shrink-0 -mt-2">
-              <svg viewBox="0 0 120 120" className="w-full h-full">
-                {/* Robot Head / Screen */}
-                <rect x="25" y="20" width="70" height="52" rx="14" fill="#f8fafc" stroke="#94a3b8" strokeWidth="2.5" />
-                <rect x="32" y="27" width="56" height="38" rx="8" fill="#0f172a" />
-                
-                {/* Blue Digital Eyes */}
-                <rect x="40" y="38" width="12" height="7" rx="3" fill="#38bdf8" />
-                <rect x="68" y="38" width="12" height="7" rx="3" fill="#38bdf8" />
-                {/* Digital Smile */}
-                <path d="M 52 53 Q 60 58 68 53" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" />
-                
-                {/* Green Headband */}
-                <rect x="22" y="24" width="76" height="8" rx="4" fill="#86efac" stroke="#22c55e" strokeWidth="1" />
-
-                {/* Robot Body */}
-                <rect x="42" y="74" width="36" height="24" rx="8" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="2" />
-                <circle x="50" y="86" r="3" fill="#60a5fa" />
-                <circle x="60" y="86" r="3" fill="#a855f7" />
-                <circle x="70" y="86" r="3" fill="#4ade80" />
-
-                {/* Legs */}
-                <rect x="48" y="98" width="8" height="12" rx="3" fill="#cbd5e1" />
-                <rect x="64" y="98" width="8" height="12" rx="3" fill="#cbd5e1" />
-
-                {/* Dumbbell & Left Arm */}
-                <path d="M 28 82 L 18 84" stroke="#94a3b8" strokeWidth="4" strokeLinecap="round" />
-                <rect x="5" y="74" width="8" height="20" rx="3" fill="#7c3aed" />
-                <rect x="13" y="81" width="12" height="6" rx="2" fill="#64748b" />
-                <rect x="25" y="74" width="8" height="20" rx="3" fill="#7c3aed" />
-              </svg>
+            {/* Teacher Cat Mascot Illustration */}
+            <div className="w-28 h-28 sm:w-32 sm:h-32 relative shrink-0 -mt-4 -mr-1 drop-shadow-md hover:scale-105 transition-transform">
+              <img
+                src="/images/practice_teacher.png"
+                alt="nainixOne Teacher Mascot"
+                className="w-full h-full object-contain select-none"
+              />
             </div>
           </div>
 
