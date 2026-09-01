@@ -193,18 +193,15 @@ export default function LoginPage() {
           </div>
         </main>
 
-        {/* ─── Swipe Up / Scroll to About Drawer Prompt ─── */}
-        <footer className="w-full shrink-0 flex flex-col items-center pb-2 z-20">
+        {/* ─── Minimal Single Line Pull Indicator ─── */}
+        <footer className="w-full shrink-0 flex flex-col items-center pb-3 pt-2 z-20">
           <button
             type="button"
             onClick={scrollToAbout}
-            className="flex flex-col items-center gap-1 text-white/80 hover:text-white transition-all cursor-pointer group"
+            aria-label="View About Section"
+            className="p-2 flex items-center justify-center cursor-pointer group"
           >
-            <span className="text-[10px] font-black uppercase tracking-widest text-amber-300 drop-shadow-sm group-hover:scale-105 transition-transform flex items-center gap-1">
-              <span>Swipe Up to Explore</span>
-              <span className="material-symbols-outlined text-[14px] animate-bounce">expand_less</span>
-            </span>
-            <div className="w-8 h-1 rounded-full bg-white/40 group-hover:bg-white/80 transition-colors" />
+            <div className="w-14 h-1.5 rounded-full bg-white/40 group-hover:bg-white/80 group-active:scale-95 transition-all shadow-xs" />
           </button>
         </footer>
       </section>
