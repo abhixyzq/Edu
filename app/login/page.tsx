@@ -384,179 +384,23 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* ─── 4. Vintage Antique Clockwork Chronometer Section ─── */}
-          <div className="w-full px-4 sm:px-6 py-8 bg-[#faf8f5]">
-            <div className="rounded-[34px] bg-[#12100e] text-[#f7f1e5] border-2 border-[#d4af37]/40 p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.4)] grid grid-cols-1 md:grid-cols-12 gap-6 items-center relative overflow-hidden">
-              
-              {/* Subtle Ambient Golden Candlelight Glow */}
-              <div className="absolute -top-20 -left-20 w-64 h-64 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none" />
-              <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-[#c5a059]/10 rounded-full blur-3xl pointer-events-none" />
+          {/* ─── 4. Elegant Minimal Action & Navigation Bar ─── */}
+          <div className="w-full px-4 pt-4 pb-6 bg-white flex items-center justify-center gap-3">
+            <Link
+              href="/signup"
+              onClick={playButtonClick}
+              className="px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-heading font-black text-[10px] uppercase tracking-wider shadow-md transition-all active:scale-95"
+            >
+              Start Free Roadmaps &rarr;
+            </Link>
 
-              {/* Left Column: Vintage Horology Copy */}
-              <div className="md:col-span-6 space-y-3 relative z-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2a2216] border border-[#d4af37]/60 text-[8px] font-mono font-bold text-[#f3e5ab] uppercase tracking-[0.2em]">
-                  <span className="text-[#d4af37]">⌛</span>
-                  <span>TEMPORAL EXAM PRECISION</span>
-                </div>
-
-                <h3 className="font-serif font-bold text-base sm:text-2xl text-[#f3e5ab] tracking-tight uppercase leading-snug drop-shadow-md">
-                  Master Every Second. <br />
-                  <span className="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#f3e5ab] via-[#d4af37] to-[#e6ca65]">
-                    Conquer Every Question.
-                  </span>
-                </h3>
-
-                <p className="text-[9px] sm:text-[11px] text-[#cfc5b4] leading-relaxed font-serif">
-                  Calibrated chronometer-timed mock drills, precision difficulty algorithms, and timeless board exam mastery engineered for Class 12 scholars.
-                </p>
-
-                {/* 3 Vintage Brass Feature Badges */}
-                <div className="space-y-2 pt-1 font-serif">
-                  {[
-                    { icon: 'schedule', title: 'Chronometer-Timed Sprints', desc: '45-second precision speed drills per MCQ' },
-                    { icon: 'history_edu', title: 'State Rank Hall of Fame', desc: 'Real-time percentile tracking across Indian boards' },
-                    { icon: 'auto_stories', title: 'Timeless Curated Bank', desc: '15,000+ handpicked chapter problems with AI hints' },
-                  ].map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 text-[8.5px] sm:text-[10px]">
-                      <div className="w-5 h-5 rounded-full bg-[#261f14] border border-[#d4af37]/50 text-[#d4af37] flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                        <span className="material-symbols-outlined text-[12px]">{item.icon}</span>
-                      </div>
-                      <div>
-                        <span className="font-bold text-[#f3e5ab]">{item.title}: </span>
-                        <span className="text-[#b8ad9b]">{item.desc}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="pt-2">
-                  <Link
-                    href="/subjects"
-                    className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-[#d4af37] via-[#c5a059] to-[#a47e2b] text-[#12100e] font-serif font-black text-[9.5px] uppercase tracking-wider shadow-[0_6px_20px_rgba(212,175,55,0.35)] hover:brightness-110 transition-all active:scale-95"
-                  >
-                    <span>Wind The Clock</span>
-                    <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
-                  </Link>
-                </div>
-              </div>
-
-              {/* Right Column: Handcrafted Antique Clockwork HUD Card */}
-              <div className="md:col-span-6 relative z-10 flex justify-center">
-                <div className="w-full max-w-[320px] rounded-3xl bg-gradient-to-b from-[#1c1712] via-[#241e17] to-[#14100c] p-4 text-[#f7f1e5] shadow-2xl border-2 border-[#d4af37]/50 relative overflow-hidden space-y-3.5">
-                  
-                  {/* Roman Numeral Clock Face Motif */}
-                  <div className="flex items-center justify-between border-b border-[#d4af37]/30 pb-2">
-                    <div className="flex items-center gap-1.5 text-[8px] font-mono font-bold text-[#d4af37]">
-                      <span>CHRONOMETER</span>
-                      <span>•</span>
-                      <span>CALIBRATED</span>
-                    </div>
-                    <div className="px-2 py-0.5 rounded-full bg-[#d4af37]/15 border border-[#d4af37]/40 text-[7.5px] font-mono text-[#f3e5ab]">
-                      XII • III • VI • IX
-                    </div>
-                  </div>
-
-                  {/* Antique Watch Dial Display */}
-                  <div className="relative flex items-center justify-center py-2">
-                    <div className="w-32 h-32 rounded-full border-2 border-[#d4af37]/60 bg-gradient-to-tr from-[#16120e] to-[#2b2217] shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] flex items-center justify-center relative">
-                      
-                      {/* Roman Numerals on Watch Face */}
-                      <span className="absolute top-1 text-[8px] font-serif font-bold text-[#d4af37]">XII</span>
-                      <span className="absolute right-2 text-[8px] font-serif font-bold text-[#d4af37]">III</span>
-                      <span className="absolute bottom-1 text-[8px] font-serif font-bold text-[#d4af37]">VI</span>
-                      <span className="absolute left-2 text-[8px] font-serif font-bold text-[#d4af37]">IX</span>
-
-                      {/* Golden Watch Hands Center */}
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#d4af37] shadow-sm z-10 flex items-center justify-center" />
-                      <div className="absolute w-0.5 h-10 bg-[#f3e5ab] origin-bottom -top-2 rounded-full shadow-xs transform rotate-45" />
-                      <div className="absolute w-0.5 h-8 bg-[#d4af37] origin-bottom top-1 rounded-full shadow-xs transform -rotate-60" />
-                      
-                      {/* Inner Dial Center text */}
-                      <div className="absolute text-center mt-8">
-                        <span className="text-[6.5px] font-mono text-[#a89c89] tracking-widest block">SPEED</span>
-                        <span className="text-[11px] font-mono font-bold text-[#f3e5ab]">45s / Q</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 3 Brass Seal Metric Tiles */}
-                  <div className="grid grid-cols-3 gap-2 text-center font-serif">
-                    <div className="bg-[#15110c] border border-[#d4af37]/30 rounded-xl p-1.5 space-y-0.5">
-                      <span className="text-[6.5px] text-[#a89c89] uppercase block">ACCURACY</span>
-                      <span className="text-[11px] font-black text-[#f3e5ab]">99.4%</span>
-                    </div>
-                    <div className="bg-[#15110c] border border-[#d4af37]/30 rounded-xl p-1.5 space-y-0.5">
-                      <span className="text-[6.5px] text-[#a89c89] uppercase block">STREAK</span>
-                      <span className="text-[11px] font-black text-[#d4af37]">XIV DAYS</span>
-                    </div>
-                    <div className="bg-[#15110c] border border-[#d4af37]/30 rounded-xl p-1.5 space-y-0.5">
-                      <span className="text-[6.5px] text-[#a89c89] uppercase block">STATE RANK</span>
-                      <span className="text-[11px] font-black text-[#e6ca65]">#I TOPPER</span>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          {/* ─── 5. The Timeless Vault of Scholars Section ─── */}
-          <div className="w-full px-4 sm:px-6 pb-8 bg-[#faf8f5]">
-            <div className="rounded-[36px] bg-gradient-to-b from-[#14121a] via-[#1a1724] to-[#0d0b12] text-[#f7f1e5] pt-11 pb-9 px-6 text-center relative overflow-visible flex flex-col items-center space-y-5 shadow-2xl border-2 border-[#d4af37]/35">
-              
-              {/* Antique Pocket Watch Emblem Resting on Top Cutout */}
-              <div className="absolute -top-9 w-18 h-18 rounded-full bg-gradient-to-tr from-[#d4af37] via-[#f3e5ab] to-[#8b6b23] p-1 shadow-[0_0_35px_rgba(212,175,55,0.6)] flex items-center justify-center border-2 border-[#14121a] animate-pulse">
-                <div className="w-full h-full rounded-full bg-[#1c1822] flex items-center justify-center text-[#d4af37]">
-                  <span className="material-symbols-outlined text-[30px]">hourglass_top</span>
-                </div>
-              </div>
-
-              <div className="space-y-2 max-w-md pt-2">
-                <h3 className="font-serif font-bold text-base sm:text-2xl text-[#f3e5ab] tracking-tight uppercase leading-snug">
-                  The Archive of <br />
-                  <span className="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#f3e5ab] via-[#d4af37] to-[#e6ca65]">
-                    Timeless Board Scholars
-                  </span>
-                </h3>
-                <p className="text-[9px] sm:text-[11px] text-[#c7bcab] leading-relaxed font-serif">
-                  Where time transforms preparation into perfection. Step into India&apos;s classical board arena and master Physics, Chemistry, and Mathematics with surgical precision.
-                </p>
-              </div>
-
-              {/* 3 Classical Brass Seals */}
-              <div className="flex flex-wrap items-center justify-center gap-2 max-w-sm">
-                <div className="bg-[#241f2d] border border-[#d4af37]/40 px-3 py-1 rounded-full text-[8px] font-mono text-[#f3e5ab]">
-                  📜 15,000+ Classical Questions
-                </div>
-                <div className="bg-[#241f2d] border border-[#d4af37]/40 px-3 py-1 rounded-full text-[8px] font-mono text-[#d4af37]">
-                  ⏱️ 99.2% Timed Precision
-                </div>
-                <div className="bg-[#241f2d] border border-[#d4af37]/40 px-3 py-1 rounded-full text-[8px] font-mono text-[#e6ca65]">
-                  👑 All Indian Board Standards
-                </div>
-              </div>
-
-              {/* Antique Gold Buttons */}
-              <div className="pt-2 flex items-center gap-3">
-                <Link
-                  href="/signup"
-                  onClick={playButtonClick}
-                  className="px-6 py-2.5 rounded-full bg-gradient-to-r from-[#d4af37] via-[#c5a059] to-[#a47e2b] text-[#12100e] font-serif font-black text-[10px] uppercase tracking-wider transition-all active:scale-95 shadow-[0_8px_25px_rgba(212,175,55,0.4)] hover:brightness-110"
-                >
-                  Enter The Vault &rarr;
-                </Link>
-
-                <button
-                  type="button"
-                  onClick={scrollToLogin}
-                  className="px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/15 border border-[#d4af37]/40 text-[#f3e5ab] font-serif font-bold text-[10px] uppercase tracking-wider transition-all active:scale-95"
-                >
-                  Ascend to Login ↑
-                </button>
-              </div>
-
-            </div>
+            <button
+              type="button"
+              onClick={scrollToLogin}
+              className="px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-heading font-bold text-[10px] uppercase tracking-wider transition-all active:scale-95"
+            >
+              Back to Login ↑
+            </button>
           </div>
 
           {/* ─── 6. Footer: "WHO WE SERVE" with Board Badges ─── */}
