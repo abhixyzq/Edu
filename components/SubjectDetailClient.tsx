@@ -27,7 +27,7 @@ export function SubjectDetailClient() {
         <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-2">
             <span className="bg-white/20 text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">
-              Class 12 • Gamified Path
+              Board & Competitive Prep • Gamified Path
             </span>
             <h1 className="font-heading text-2xl md:text-3xl font-black tracking-tight mt-1">
               {subject.name} Mastery Tree

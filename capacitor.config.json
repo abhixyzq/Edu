@@ -1,6 +1,6 @@
 {
   "appId": "com.nainixone.prep",
-  "appName": "nainixOne Class 12",
+  "appName": "nainixOne",
   "webDir": "out",
   "server": {
     "androidScheme": "https"

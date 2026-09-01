@@ -96,7 +96,7 @@ export function ResultsClient() {
                     Q{q.id}
                   </span>
                   <span className="text-xs font-semibold text-[#897266] uppercase tracking-wider">
-                    {q.subject || 'Class 12 Prep'}
+                    {q.subject || 'Board & Exam Prep'}
                   </span>
                 </div>
                 <div>

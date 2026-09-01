@@ -10,7 +10,7 @@ import { playButtonClick, playGemDing } from '@/lib/soundEffects';
 function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setTargetBoard, signup, addGems } = useUser();
+  const { setTargetBoard, setClassLevel, signup, addGems } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -18,6 +18,7 @@ function SignupForm() {
   const [username, setUsername] = useState('');
   const [usernameTouched, setUsernameTouched] = useState(false);
   const [contact, setContact] = useState('');
+  const [classLevel, setClassLevelState] = useState('Class 12');
   const [board, setBoard] = useState('cbse');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -58,6 +59,7 @@ function SignupForm() {
 
     if (result.success) {
       setTargetBoard(board);
+      setClassLevel(classLevel);
 
       // If signed up via referral, grant bonus gems!
       if (refCode) {
@@ -227,9 +229,29 @@ function SignupForm() {
                 />
               </div>
 
-              {/* Capsule Input 4: Target Board Selector */}
+              {/* Capsule Input 4: Class / Grade Selector */}
               <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
                 <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
+                  <span className="material-symbols-outlined text-[16px]">school</span>
+                  <span className="text-xs font-black tracking-wide">CLASS</span>
+                </div>
+                <select
+                  value={classLevel}
+                  onChange={(e) => setClassLevelState(e.target.value)}
+                  className="w-full h-full px-3 text-xs sm:text-sm font-bold text-slate-800 focus:outline-hidden bg-transparent cursor-pointer"
+                >
+                  <option value="Class 12">Class 12</option>
+                  <option value="Class 11">Class 11</option>
+                  <option value="Class 10">Class 10</option>
+                  <option value="Class 9">Class 9</option>
+                  <option value="JEE Main / Adv">JEE Main / Adv</option>
+                  <option value="NEET UG">NEET UG</option>
+                </select>
+              </div>
+
+              {/* Capsule Input 5: Target Board Selector */}
+              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
+                <div className="w-22 sm:w-26 h-full bg-[#6d28d9] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
                   <span className="material-symbols-outlined text-[16px]">menu_book</span>
                   <span className="text-xs font-black tracking-wide">BOARD</span>
                 </div>
@@ -238,10 +260,11 @@ function SignupForm() {
                   onChange={(e) => setBoard(e.target.value)}
                   className="w-full h-full px-3 text-xs sm:text-sm font-bold text-slate-800 focus:outline-hidden bg-transparent cursor-pointer"
                 >
-                  <option value="cbse">CBSE Class 12</option>
+                  <option value="cbse">CBSE Board</option>
                   <option value="bseb">Bihar Board (BSEB)</option>
                   <option value="up">UP Board</option>
-                  <option value="icse">ICSE / ISC</option>
+                  <option value="icse">ICSE / ISC Board</option>
+                  <option value="state">Other State Board</option>
                 </select>
               </div>
 
@@ -326,7 +349,7 @@ function SignupForm() {
 
       {/* ─── Footer ─── */}
       <footer className="w-full text-center py-2 text-[11px] font-bold text-slate-400 shrink-0">
-        Class 12 Board Prep • CBSE • BSEB • UP • ICSE
+        All Classes (9th - 12th & Beyond) • CBSE • BSEB • UP • ICSE • State Boards
       </footer>
 
     </div>

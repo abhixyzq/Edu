@@ -1,6 +1,6 @@
 -- ========================================================
--- NAINIXONE CLASS 12 PREP - COMPLETE SUPABASE DATABASE SCHEMA
--- Target Engine: PostgreSQL 15+ / Supabase
+-- NAINIXONE - COMPLETE ALL-CLASSES & BOARD PREP SUPABASE DATABASE SCHEMA
+-- Target Engine: PostgreSQL 15+ / Supabase (Classes 9th to 12th & Competitive Prep)
 -- Status: 100% Production Ready, Fully Idempotent & Migration-Safe
 -- Copy and paste this script directly into Supabase SQL Editor
 -- ========================================================
@@ -14,7 +14,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- ========================================================
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
-  name TEXT NOT NULL DEFAULT 'Class 12 Scholar',
+  name TEXT NOT NULL DEFAULT 'Scholar',
   username TEXT UNIQUE,
   email TEXT NOT NULL UNIQUE,
   avatar_url TEXT DEFAULT NULL,

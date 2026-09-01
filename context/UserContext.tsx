@@ -43,6 +43,7 @@ export interface UserGamifiedState {
 interface UserContextType {
   user: UserGamifiedState;
   setTargetBoard: (boardId: string) => void;
+  setClassLevel: (classLevel: string) => void;
   updateAvatar: (avatarUrl: string) => Promise<void>;
   updateUsername: (username: string) => Promise<{ success: boolean; error?: string }>;
   incrementStreak: () => void;
@@ -398,6 +399,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('edustride_user_board', boardId);
   };
 
+  const setClassLevel = (classLevel: string) => {
+    setUser((prev) => ({ ...prev, classLevel }));
+    localStorage.setItem('edustride_user_class', classLevel);
+    if (isSupabaseConfigured && user.id) {
+      supabase.from('profiles').update({ class_level: classLevel }).eq('id', user.id).then();
+    }
+  };
+
   // ─── Auth (Signup / Login / Logout) ───
   const signup = async (name: string, email: string, password: string, targetBoard = 'cbse', username?: string) => {
     if (!name.trim()) return { success: false, error: 'Name is required.' };
@@ -554,6 +563,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         setTargetBoard,
+        setClassLevel,
         updateAvatar,
         updateUsername,
         incrementStreak,

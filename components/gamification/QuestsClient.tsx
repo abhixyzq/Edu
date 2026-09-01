@@ -46,7 +46,7 @@ export function QuestsClient() {
     {
       id: 'q3',
       title: 'Complete 3 Practice Nodes',
-      desc: 'Master Class 12 topics in Physics or Chemistry',
+      desc: 'Master key chapters in Physics, Chemistry, or Math',
       current: Math.min(3, Object.keys(user.completedNodes).length),
       target: 3,
       xpReward: 40,

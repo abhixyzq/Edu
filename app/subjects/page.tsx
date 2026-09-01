@@ -54,7 +54,7 @@ export default function SubjectsPage() {
       <div className="bg-gradient-to-r from-[#ff8c42] to-[#ba5600] text-white rounded-3xl p-6 sm:p-8 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 border-b-6 border-[#823b00]">
         <div>
           <span className="text-xs font-black uppercase tracking-widest text-[#ffdbc9]">
-            Class 12 Board Prep
+            Board & Competitive Prep
           </span>
           <h1 className="font-heading text-2xl sm:text-3xl font-black mt-1">
             Subject Mastery Paths

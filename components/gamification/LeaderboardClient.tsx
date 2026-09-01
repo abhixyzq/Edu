@@ -104,7 +104,7 @@ export function LeaderboardClient() {
         username: user.username || 'scholar_12',
         avatar: (user.name ? user.name.slice(0, 2) : 'ME').toUpperCase(),
         avatarUrl: user.avatarUrl,
-        board: user.targetBoard === 'bseb' ? 'Bihar Board (BSEB)' : 'CBSE Class 12',
+        board: user.targetBoard === 'bseb' ? 'Bihar Board (BSEB)' : `CBSE ${user.classLevel || 'Class 12'}`,
         specialization: 'Electrodynamics & Calculus',
         xp: Math.max(user.xp, 2180),
         accuracy: 89.6,

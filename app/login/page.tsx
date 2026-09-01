@@ -236,7 +236,7 @@ export default function LoginPage() {
 
       {/* ─── Footer ─── */}
       <footer className="w-full shrink-0 text-center text-[11px] font-black text-slate-400 py-3 z-10">
-        © 2026 nainixOne • Interactive Class 12 Prep Portal
+        © 2026 nainixOne • Interactive Board & Exam Prep Platform
       </footer>
 
       {/* Animation helper styles */}

@@ -19,7 +19,7 @@ const SCHOLAR_AVATARS = [
 ];
 
 export default function ProfilePage() {
-  const { user, setTargetBoard, updateAvatar, updateUsername, logout } = useUser();
+  const { user, setTargetBoard, setClassLevel, updateAvatar, updateUsername, logout } = useUser();
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isUsernameModalOpen, setIsUsernameModalOpen] = useState(false);
   const [usernameInput, setUsernameInput] = useState('');
@@ -299,6 +299,41 @@ export default function ProfilePage() {
                 <span className="text-[10px] text-[#64748b] font-bold">{user.hearts}/5 Remaining</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* ─── Class & Grade Level Selector ─── */}
+        <div className="bg-white rounded-3xl p-5 border-2 border-[#e2e8f0] shadow-xs">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-heading text-sm font-black text-[#1e293b]">
+              Class & Academic Level
+            </h2>
+            <span className="text-[10px] font-black text-[#7c3aed] bg-violet-100 px-2.5 py-0.5 rounded-full border border-violet-200">
+              {user.classLevel || 'Class 12'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            {['Class 12', 'Class 11', 'Class 10', 'Class 9', 'JEE Main/Adv', 'NEET UG'].map((cls) => {
+              const isSelected = (user.classLevel || 'Class 12') === cls;
+              return (
+                <button
+                  key={cls}
+                  onClick={() => {
+                    playButtonClick();
+                    setClassLevel(cls);
+                    playGemDing();
+                  }}
+                  className={`p-2 rounded-2xl text-xs font-black border-b-3 active:border-b-0 active:translate-y-0.5 transition-all text-center cursor-pointer ${
+                    isSelected
+                      ? 'bg-[#7c3aed] text-white border-[#5b21b6] shadow-xs'
+                      : 'bg-[#f8fafc] text-[#64748b] border-[#e2e8f0] hover:bg-slate-100'
+                  }`}
+                >
+                  {cls}
+                </button>
+              );
+            })}
           </div>
         </div>
 

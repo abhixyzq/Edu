@@ -243,8 +243,9 @@ export function FriendsClient() {
   }, [user.username]);
 
   const shareText = useMemo(() => {
-    return `🔥 Join me on nainixOne for Class 12 Board Exam Prep & AI Mock Tests! Use my invite link to get 50 FREE Gems 💎 to refill test lives:\n${referralUrl}`;
-  }, [referralUrl]);
+    const academicLevel = user.classLevel || 'Board & Exam';
+    return `🔥 Join me on nainixOne for ${academicLevel} Prep & AI Mock Tests! Use my invite link to get 50 FREE Gems 💎 to refill test lives:\n${referralUrl}`;
+  }, [referralUrl, user.classLevel]);
 
   const handleCopyInviteLink = () => {
     playButtonClick();
@@ -262,11 +263,12 @@ export function FriendsClient() {
 
   const handleNativeShare = async () => {
     playButtonClick();
+    const academicLevel = user.classLevel || 'School & Board';
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Join nainixOne • Class 12 Board Exam Prep',
-          text: `Practice Class 12 Mock Tests with me and get 50 Free Gems!`,
+          title: `Join nainixOne • ${academicLevel} Exam Prep`,
+          text: `Practice Mock Tests with me and get 50 Free Gems!`,
           url: referralUrl,
         });
       } catch (err) {
@@ -608,7 +610,7 @@ export function FriendsClient() {
                   </span>
                   <div>
                     <h5 className="text-xs font-black text-slate-900">Share your invite link</h5>
-                    <p className="text-[11px] text-slate-500">Send your link to Class 12 friends via WhatsApp or Telegram.</p>
+                    <p className="text-[11px] text-slate-500">Send your link to friends & classmates via WhatsApp or Telegram.</p>
                   </div>
                 </div>
 
@@ -684,7 +686,7 @@ export function FriendsClient() {
                   Suggested Scholars ({discoverList.length})
                 </span>
                 <span className="text-[10px] text-[#7c3aed] font-bold">
-                  Class 12 Peers
+                  Classmates & Peers
                 </span>
               </div>
 
@@ -832,7 +834,7 @@ export function FriendsClient() {
             </h3>
             
             <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-              Share your invite link with your Class 12 friends. When they join, you get <b className="text-[#7c3aed]">50 Gems 💎</b> instantly!
+              Share your invite link with your classmates and study friends. When they join, you get <b className="text-[#7c3aed]">50 Gems 💎</b> instantly!
             </p>
 
             {/* Invite Link Capsule */}
