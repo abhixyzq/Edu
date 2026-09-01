@@ -206,131 +206,154 @@ export default function LoginPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          SCREEN 2: 100% Exact Futuristic Showcase Landing Page (Ref Match)
+          SCREEN 2: Ultra-Premium Dribbble/Stripe Quality Showcase
       ═══════════════════════════════════════════════════════════════ */}
       <section 
         ref={showcaseRef}
-        className="min-h-[100dvh] w-full shrink-0 snap-start bg-[#122238] text-slate-900 overflow-y-auto py-6 px-2 sm:px-6 relative"
+        className="min-h-[100dvh] w-full shrink-0 snap-start bg-[#0f1d30] text-slate-900 overflow-y-auto py-6 px-3 sm:px-8 relative"
       >
-        {/* Main Framed White/Sky Card Container (Matching 100% Image Canvas) */}
-        <div className="max-w-[560px] mx-auto bg-white rounded-[36px] shadow-2xl overflow-hidden border border-slate-200/60 relative">
+        {/* Main Canvas Deck */}
+        <div className="max-w-[500px] sm:max-w-[580px] mx-auto bg-[#eef5fc] rounded-[40px] shadow-[0_30px_70px_rgba(0,0,0,0.5)] overflow-hidden border border-white/40 relative">
           
-          {/* ─── 1. Top Angled 3D Smartphone App Mockup Cards ─── */}
-          <div className="w-full bg-gradient-to-b from-[#b4d4f7] via-[#cce2fa] to-[#e8f1fc] pt-5 px-4 pb-2 relative overflow-hidden flex items-center justify-center">
-            <div className="flex items-center justify-center -space-x-4 sm:-space-x-6 py-2 transform scale-[0.88] sm:scale-100">
+          {/* ─── 1. Top 3D Isometric Mobile App Cards ─── */}
+          <div className="w-full bg-gradient-to-b from-[#b3d3f5] via-[#c9e1fa] to-[#e4f0fd] pt-6 px-4 pb-3 relative overflow-hidden flex items-center justify-center">
+            
+            {/* Ambient Background Glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-36 bg-white/60 blur-2xl pointer-events-none" />
+
+            <div className="flex items-center justify-center -space-x-5 sm:-space-x-7 py-3 relative z-10">
               
-              {/* Left Phone Card */}
-              <div className="w-28 h-44 rounded-2xl bg-white shadow-xl border border-white/60 p-2 transform -rotate-12 -translate-y-2 flex flex-col justify-between opacity-85">
-                <div className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                  <span className="text-[8px] font-black text-blue-950">PAYROT</span>
+              {/* Left Angled Phone Card */}
+              <div className="w-28 sm:w-32 h-44 sm:h-48 rounded-[20px] bg-white/90 backdrop-blur-md shadow-[0_15px_30px_rgba(30,64,175,0.12)] border border-white p-3 transform -rotate-12 -translate-y-2 flex flex-col justify-between opacity-90 hover:opacity-100 transition-all hover:scale-105">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-blue-600 shadow-xs" />
+                  <span className="text-[9px] font-black tracking-wider text-slate-900">NAINIX</span>
                 </div>
-                <div className="text-[7px] text-slate-400 font-bold">Fast Global Transfers</div>
+                <div className="space-y-1">
+                  <div className="w-8 h-1.5 rounded-full bg-slate-200" />
+                  <div className="w-14 h-1.5 rounded-full bg-blue-100" />
+                  <p className="text-[7px] text-slate-400 font-bold pt-2">Fast Practice &bull; AI Mocks</p>
+                </div>
               </div>
 
-              {/* Center Main Phone App Screen */}
-              <div className="w-36 h-52 rounded-2xl bg-[#0d1e3a] text-white shadow-2xl border-2 border-white/40 p-2.5 z-10 flex flex-col justify-between">
-                <div className="space-y-1">
-                  <div className="flex justify-between items-center text-[8px] text-blue-200">
-                    <span>Withdrawal To: BRAC BANK LTD</span>
-                    <span className="text-emerald-400 font-bold">+$780 USD</span>
+              {/* Center Main Dark Phone Screen */}
+              <div className="w-36 sm:w-44 h-56 sm:h-60 rounded-[24px] bg-[#0c1a2e] text-white shadow-[0_20px_45px_rgba(12,26,46,0.5)] border-2 border-white/60 p-3.5 z-20 flex flex-col justify-between relative transform hover:scale-[1.03] transition-all">
+                {/* Phone Speaker Notch */}
+                <div className="w-10 h-1 rounded-full bg-slate-700 mx-auto" />
+
+                <div className="space-y-2 my-auto">
+                  <div className="p-2 rounded-xl bg-white/10 border border-white/10 flex justify-between items-center text-[8px]">
+                    <span className="text-slate-300 font-medium">Daily Streak</span>
+                    <span className="text-amber-400 font-black">🔥 14 Days</span>
                   </div>
-                  <div className="flex justify-between items-center text-[8px] text-blue-200">
-                    <span>Payment From: M. SHAHID ULLAH</span>
-                    <span className="text-blue-300 font-bold">Completed</span>
+                  <div className="p-2 rounded-xl bg-white/10 border border-white/10 flex justify-between items-center text-[8px]">
+                    <span className="text-slate-300 font-medium">Physics Mock #01</span>
+                    <span className="text-emerald-400 font-black">+100 XP</span>
                   </div>
                 </div>
+
+                {/* Floating Bottom Center Action Button */}
                 <div className="flex items-center justify-center">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center shadow-lg border border-blue-400">
-                    <span className="material-symbols-outlined text-[16px] text-white">account_balance_wallet</span>
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-[0_4px_15px_rgba(37,99,235,0.6)] border border-blue-400">
+                    <span className="material-symbols-outlined text-[18px] text-white">quiz</span>
                   </div>
                 </div>
               </div>
 
-              {/* Right Card: Apply for Free Card */}
-              <div className="w-32 h-44 rounded-2xl bg-white shadow-xl border border-white/60 p-3 transform rotate-12 -translate-y-2 flex flex-col justify-between opacity-95">
+              {/* Right Angled Phone Card */}
+              <div className="w-28 sm:w-32 h-44 sm:h-48 rounded-[20px] bg-white/90 backdrop-blur-md shadow-[0_15px_30px_rgba(30,64,175,0.12)] border border-white p-3 transform rotate-12 -translate-y-2 flex flex-col justify-between opacity-90 hover:opacity-100 transition-all hover:scale-105">
                 <div className="space-y-1">
-                  <h4 className="text-[10px] font-black text-slate-800 leading-tight">
-                    Apply for your free <br />
-                    <span className="text-blue-600 font-black">Payrot card</span>
+                  <span className="text-[7px] font-black uppercase text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full">FREE</span>
+                  <h4 className="text-[9px] font-black text-slate-800 leading-tight">
+                    Get your free <br />
+                    <span className="text-blue-600 font-black">Scholar Pass</span>
                   </h4>
                 </div>
-                <span className="text-[7px] text-blue-600 font-bold">VISA Platinum &rarr;</span>
+                <span className="text-[7px] text-blue-600 font-black flex items-center gap-0.5">
+                  <span>Claim Now</span>
+                  <span className="material-symbols-outlined text-[9px]">arrow_forward</span>
+                </span>
               </div>
 
             </div>
           </div>
 
-          {/* ─── 2. Main Hero Area with Giant "PAYROT" Watermark & 3D Blue Parrot ─── */}
-          <div className="w-full bg-gradient-to-b from-[#e8f1fc] via-[#f0f6fd] to-white pt-3 px-4 pb-4 relative overflow-hidden">
+          {/* ─── 2. Main Hero Showcase with Seamless 3D Depth Mascot & Giant Watermark ─── */}
+          <div className="w-full bg-gradient-to-b from-[#e4f0fd] via-[#edf5fd] to-white pt-2 px-4 pb-4 relative overflow-hidden">
             
             {/* Navbar */}
-            <div className="w-full flex items-center justify-between z-20 relative pb-2">
+            <div className="w-full flex items-center justify-between z-30 relative pb-2">
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full bg-blue-600" />
-                <span className="text-xs font-black text-slate-900 tracking-wider">PAYROT</span>
+                <div className="w-3 h-3 rounded-full bg-blue-600 shadow-xs" />
+                <span className="text-xs font-black text-slate-900 tracking-wider">NAINIXONE</span>
               </div>
 
-              <div className="hidden sm:flex items-center gap-4 text-[10px] font-bold text-slate-500">
+              <div className="flex items-center gap-3 text-[10px] font-bold text-slate-600 font-sans">
                 <span className="hover:text-blue-600 cursor-pointer">Features</span>
-                <span className="hover:text-blue-600 cursor-pointer">Saves</span>
-                <span className="hover:text-blue-600 cursor-pointer">Vehicles</span>
+                <span className="hover:text-blue-600 cursor-pointer">Mocks</span>
                 <span className="hover:text-blue-600 cursor-pointer">FAQ</span>
               </div>
 
               <Link
                 href="/signup"
                 onClick={playButtonClick}
-                className="px-3.5 py-1 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-[10px] font-black shadow-xs transition-all cursor-pointer"
+                className="px-3.5 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black shadow-md transition-all active:scale-95 cursor-pointer"
               >
                 Sign In &rarr;
               </Link>
             </div>
 
-            {/* Giant "PAYROT" Watermark Title */}
-            <div className="w-full text-center relative flex items-center justify-center my-1 pointer-events-none select-none">
-              <h1 className="font-heading font-black text-6xl sm:text-7xl text-white tracking-widest uppercase drop-shadow-sm">
-                PAYROT
-              </h1>
+            {/* ══ Giant Outline Watermark Typography & Mascot Container ══ */}
+            <div className="relative w-full min-h-[220px] sm:min-h-[260px] flex items-center justify-center my-1 overflow-visible">
+              
+              {/* Giant Full-Width Watermark Heading Behind Mascot */}
+              <div className="absolute inset-0 flex items-center justify-center z-0 select-none pointer-events-none">
+                <h1 className="font-heading font-black text-6xl sm:text-8xl text-white tracking-[0.15em] uppercase drop-shadow-[0_4px_20px_rgba(37,99,235,0.18)]">
+                  NAINIXONE
+                </h1>
+              </div>
+
+              {/* 3D Blue Mascot with Transparent Cutout (image.png) */}
+              <div className="relative z-10 w-56 sm:w-72 h-56 sm:h-72 flex items-center justify-center -mt-2">
+                <img
+                  src="/images/image.png"
+                  alt="Mascot Cutout"
+                  className="w-full h-full object-contain drop-shadow-[0_20px_35px_rgba(15,23,42,0.3)] transform scale-105"
+                />
+
+                {/* Floating Status Pill */}
+                <div className="absolute top-6 right-2 bg-white/95 backdrop-blur-md border border-slate-200 px-2.5 py-0.5 rounded-full shadow-lg text-[8px] font-black text-slate-800 flex items-center gap-1 z-30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                  <span>10M+ Scholars</span>
+                </div>
+              </div>
+
             </div>
 
-            {/* Center Hero: 3D Blue Macaw Parrot with Floating Cards */}
-            <div className="w-full relative flex items-center justify-between -mt-6 sm:-mt-8 z-10">
+            {/* ══ Floating Left & Right Cards ══ */}
+            <div className="w-full relative flex items-center justify-between -mt-6 sm:-mt-8 z-30">
               
-              {/* Left Floating Card: Earth Globe */}
-              <div className="w-28 sm:w-32 bg-white/95 rounded-2xl p-2.5 shadow-xl border border-blue-100 flex flex-col items-center text-center space-y-1.5 z-20">
-                <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-blue-600 to-teal-400 shadow-md flex items-center justify-center p-0.5 relative overflow-hidden animate-pulse">
-                  <span className="material-symbols-outlined text-[26px] text-white">public</span>
+              {/* Left Floating Card: 3D Earth */}
+              <div className="w-32 sm:w-36 bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-[0_15px_30px_rgba(30,64,175,0.12)] border border-white flex flex-col items-center text-center space-y-1.5 hover:scale-105 transition-all">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-teal-400 shadow-md flex items-center justify-center p-0.5 text-white">
+                  <span className="material-symbols-outlined text-[24px]">public</span>
                 </div>
                 <p className="text-[8px] text-slate-700 font-bold leading-tight">
-                  Send And Receive Money Worldwide Fast, Secure, And Hassle-Free
+                  Master All Board & Exam Curriculums Fast & Hassle-Free
                 </p>
               </div>
 
-              {/* Center 3D Blue Parrot Mascot */}
-              <div className="w-36 h-36 sm:w-44 sm:h-44 relative flex items-center justify-center -mx-3">
-                <img
-                  src="/images/hero_mascot_parrot.png"
-                  alt="Payrot Blue Parrot"
-                  className="w-full h-full object-contain drop-shadow-2xl z-10 transform scale-110"
-                />
-                <div className="absolute -top-1 right-2 bg-white/95 border border-slate-200 px-2 py-0.5 rounded-full shadow-md text-[8px] font-black text-slate-700 z-20 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                  <span>10M+ Users</span>
-                </div>
-              </div>
-
-              {/* Right Floating Card: Blue VISA Card */}
-              <div className="w-28 sm:w-32 bg-gradient-to-br from-[#1d4ed8] to-[#1e3a8a] text-white rounded-2xl p-2.5 shadow-xl border border-blue-300/40 space-y-1 z-20">
+              {/* Right Floating Card: Blue Card */}
+              <div className="w-32 sm:w-36 bg-gradient-to-br from-[#1e40af] to-[#0f172a] text-white rounded-2xl p-3 shadow-[0_15px_30px_rgba(15,23,42,0.3)] border border-blue-400/40 space-y-1.5 hover:scale-105 transition-all">
                 <div className="flex justify-between items-center text-[7px] text-blue-200">
-                  <span>PAYROT</span>
-                  <span className="font-bold text-amber-300">VISA</span>
+                  <span className="font-black tracking-wider">NAINIXONE</span>
+                  <span className="font-black text-amber-300">VISA</span>
                 </div>
-                <div className="w-4 h-3 rounded-sm bg-amber-300/80 my-1" />
+                <div className="w-5 h-3.5 rounded bg-amber-300/80 my-1 shadow-2xs" />
                 <p className="text-[7px] font-mono tracking-wider text-blue-100">0457 5667 0088 5441</p>
                 <div className="flex justify-between text-[6px] text-blue-200 pt-0.5">
                   <span>EXP: 08/29</span>
-                  <span>PLATINUM</span>
+                  <span>SCHOLAR PASS</span>
                 </div>
               </div>
 
@@ -338,18 +361,18 @@ export default function LoginPage() {
 
           </div>
 
-          {/* ─── 3. Curved Dynamic Polygon Ribbon (Matching Exact 3-Pillar Layout) ─── */}
-          <div className="w-full px-3 py-2 -mt-2 relative z-20">
-            <div className="bg-white rounded-3xl p-4 shadow-lg border border-slate-100 grid grid-cols-3 gap-2 items-center text-left">
+          {/* ─── 3. Curved Dynamic 3-Pillar Ribbon ─── */}
+          <div className="w-full px-4 py-2 -mt-1 relative z-30">
+            <div className="bg-white rounded-3xl p-4 shadow-[0_12px_25px_rgba(0,0,0,0.06)] border border-slate-100 grid grid-cols-3 gap-3 items-center text-left">
               
               {/* Left Pillar */}
               <div className="space-y-1">
                 <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-blue-600" />
-                  <span className="w-2 h-2 rounded-full bg-indigo-900" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-indigo-900" />
                 </div>
                 <p className="text-[8px] text-slate-600 font-medium leading-tight">
-                  Payrot empowers users to send and receive payments globally.
+                  Empowering scholars across India to score top percentiles.
                 </p>
                 <span className="text-[7px] font-black text-blue-600 uppercase tracking-wider block hover:underline cursor-pointer">
                   OUR SERVICES &rarr;
@@ -357,26 +380,26 @@ export default function LoginPage() {
               </div>
 
               {/* Center Pillar with Raised Cutout Pill */}
-              <div className="bg-gradient-to-b from-[#e0efff] to-[#f4f9ff] rounded-2xl p-2.5 text-center border border-blue-200/70 shadow-xs space-y-1">
-                <div className="inline-flex items-center gap-0.5 bg-white px-2 py-0.5 rounded-full text-[7px] font-black text-blue-600 border border-blue-200 shadow-2xs">
+              <div className="bg-gradient-to-b from-[#e1f0ff] to-[#f4f9ff] rounded-2xl p-2.5 text-center border border-blue-200 shadow-xs space-y-1">
+                <div className="inline-flex items-center gap-0.5 bg-white px-2 py-0.5 rounded-full text-[7px] font-black text-blue-600 border border-blue-100 shadow-2xs">
                   <span>Open Account</span>
                   <span className="material-symbols-outlined text-[9px]">arrow_forward</span>
                 </div>
-                <h3 className="font-heading font-black text-[10px] sm:text-[11px] text-slate-900 leading-tight uppercase">
-                  FAST SEND, <br />
-                  FAST RECEIVE
+                <h3 className="font-heading font-black text-[10px] text-slate-900 leading-tight uppercase">
+                  FAST PRACTICE, <br />
+                  FAST RESULTS
                 </h3>
               </div>
 
               {/* Right Pillar with 90M+ */}
               <div className="space-y-0.5 text-right pr-1">
                 <span className="text-[7px] text-slate-400 font-bold uppercase tracking-wider block">
-                  TOTAL TRANSFERS
+                  TOTAL QUESTIONS
                 </span>
-                <h3 className="font-heading font-black text-xl sm:text-2xl text-blue-600 leading-none">
+                <h3 className="font-heading font-black text-2xl text-blue-600 leading-none">
                   90M+
                 </h3>
-                <p className="text-[7px] text-slate-400 font-medium">Payment Processed With Payrot</p>
+                <p className="text-[7px] text-slate-400 font-medium">Practiced On nainixOne</p>
                 <span className="text-[7px] font-black text-blue-600 uppercase tracking-wider block hover:underline cursor-pointer">
                   VIEW STATS &rarr;
                 </span>
@@ -385,53 +408,53 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* ─── 4. "HIRE AND PAY GLOBALLY WITH PAYROT" Section ─── */}
+          {/* ─── 4. "LEARN AND COMPETE GLOBALLY" Section ─── */}
           <div className="w-full px-5 py-6 grid grid-cols-2 gap-4 items-center bg-white">
             <div className="space-y-2">
               <h3 className="font-heading font-black text-xs sm:text-sm text-slate-900 tracking-tight uppercase leading-snug">
-                HIRE AND PAY GLOBALLY WITH PAYROT
+                LEARN AND COMPETE GLOBALLY WITH NAINIXONE
               </h3>
-              <p className="text-[8px] sm:text-[9px] text-slate-500 leading-relaxed">
-                Payrot Workforce helps you onboard and pay freelancers or contractors across 150+ countries quickly, securely, and without borders.
+              <p className="text-[8px] sm:text-[9px] text-slate-500 leading-relaxed font-medium">
+                Master CBSE, BSEB, UP Board, ICSE, JEE & NEET syllabus across India quickly, securely, and without boundaries.
               </p>
               <span className="text-[7px] font-black text-blue-600 uppercase tracking-wider block hover:underline cursor-pointer">
-                EXPLORE WORKFORCE TOOLS &rarr;
+                EXPLORE LEARNING TOOLS &rarr;
               </span>
             </div>
 
-            {/* Right Graphic: Professional with Floating Payment Chips */}
+            {/* Right Graphic: Clean Mock Interface Card */}
             <div className="rounded-2xl bg-gradient-to-tr from-[#93c5fd] via-[#bfdbfe] to-[#dbeafe] p-3 relative flex items-center justify-center shadow-inner">
-              <div className="w-24 h-24 rounded-2xl bg-white/90 border border-white shadow-md p-2 flex flex-col items-center justify-center text-center relative">
-                <span className="material-symbols-outlined text-[32px] text-blue-600">laptop_mac</span>
-                <span className="text-[8px] font-bold text-slate-800">Global Team</span>
+              <div className="w-24 h-24 rounded-2xl bg-white border border-white shadow-md p-2 flex flex-col items-center justify-center text-center relative">
+                <span className="material-symbols-outlined text-[30px] text-blue-600">laptop_mac</span>
+                <span className="text-[8px] font-bold text-slate-800">State Ranks</span>
                 
-                {/* Floating Payment Request Chips */}
+                {/* Floating Chips */}
                 <div className="absolute -top-2 -right-3 bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-md text-[6px] font-bold text-slate-700 flex items-center gap-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-                  <span>PAYMENT REQUEST</span>
+                  <span>MOCK TEST</span>
                 </div>
                 <div className="absolute -bottom-2 -left-3 bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-md text-[6px] font-black text-emerald-600">
-                  +$500 USD Paid
+                  +100% Accuracy
                 </div>
               </div>
             </div>
           </div>
 
-          {/* ─── 5. Dark Symmetrical Arch Pod ("GROW BEYOND BORDERS WITH PAYROT") ─── */}
+          {/* ─── 5. Dark Symmetrical Arch Pod ("GROW BEYOND BORDERS WITH NAINIXONE") ─── */}
           <div className="w-full px-4 pb-6 bg-white">
-            <div className="rounded-[32px] bg-[#0c1c2e] text-white pt-8 pb-7 px-5 text-center relative overflow-hidden flex flex-col items-center space-y-3">
+            <div className="rounded-[32px] bg-[#0c1c2e] text-white pt-9 pb-7 px-5 text-center relative overflow-hidden flex flex-col items-center space-y-3 shadow-xl">
               
               {/* Symmetrical Arch Cutout with 3D Globe Resting Inside */}
-              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-500 via-sky-400 to-teal-300 p-0.5 shadow-[0_0_25px_rgba(56,189,248,0.7)] flex items-center justify-center -mt-14 mb-1 animate-pulse">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-500 via-sky-400 to-teal-300 p-0.5 shadow-[0_0_25px_rgba(56,189,248,0.7)] flex items-center justify-center -mt-16 mb-1 animate-pulse">
                 <span className="material-symbols-outlined text-[36px] text-white">public</span>
               </div>
 
               <div className="space-y-1 max-w-xs">
                 <h3 className="font-heading font-black text-xs sm:text-sm text-white tracking-tight uppercase">
-                  GROW BEYOND BORDERS WITH PAYROT
+                  GROW BEYOND BORDERS WITH NAINIXONE
                 </h3>
                 <p className="text-[8px] text-slate-300 leading-relaxed font-medium">
-                  Whether you&apos;re paying a freelancer or a full-scale overseas team, Payrot makes it simple, fast, secure, and with zero card fees to worry about.
+                  Whether you&apos;re preparing for school boards or competitive exams, nainixOne makes it simple, fast, engaging, and rewarding.
                 </p>
               </div>
 
