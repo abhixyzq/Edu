@@ -290,9 +290,29 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* Massive Full-Screen Giant Watermark Behind Mascot (z-0) */}
+            {/* ══ Progressive Depth Watermark: 100% Crisp Unblurred Top + Misty Blurred Bottom (z-0) ══ */}
             <div className="absolute inset-x-0 top-6 sm:top-8 flex items-center justify-center z-0 select-none pointer-events-none w-full overflow-visible px-1">
-              <h1 className="font-heading font-black text-[4.8rem] sm:text-[8.5rem] md:text-[125px] text-white tracking-[0.18em] sm:tracking-[0.28em] uppercase drop-shadow-[0_8px_30px_rgba(255,255,255,0.75)] text-center leading-none whitespace-nowrap pl-3 sm:pl-6 opacity-95">
+              {/* Layer A: 100% Sharp, Crisp, Unblurred Top */}
+              <h1 
+                className="font-heading font-black text-[4.8rem] sm:text-[8.5rem] md:text-[125px] tracking-[0.18em] sm:tracking-[0.28em] uppercase text-center leading-none whitespace-nowrap pl-3 sm:pl-6 text-white drop-shadow-[0_4px_18px_rgba(255,255,255,0.85)]"
+                style={{
+                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0) 65%)',
+                  WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0) 65%)',
+                }}
+              >
+                NAINIX
+              </h1>
+
+              {/* Layer B: Misty Hazy Blurred Bottom fading into clouds */}
+              <h1 
+                className="font-heading font-black text-[4.8rem] sm:text-[8.5rem] md:text-[125px] tracking-[0.18em] sm:tracking-[0.28em] uppercase text-center leading-none whitespace-nowrap pl-3 sm:pl-6 text-white absolute inset-0 flex items-center justify-center"
+                style={{
+                  filter: 'blur(5px)',
+                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0) 25%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.05) 100%)',
+                  WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0) 25%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.05) 100%)',
+                  textShadow: '0 0 25px rgba(255,255,255,0.9), 0 0 50px rgba(186,220,255,0.6)',
+                }}
+              >
                 NAINIX
               </h1>
             </div>
