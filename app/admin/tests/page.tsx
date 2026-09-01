@@ -5,162 +5,354 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { DataTable } from '@/components/admin/DataTable';
 import { Modal, FormField, inputCls, selectCls, PrimaryBtn, DangerBtn } from '@/components/admin/Modal';
+import { playButtonClick, playGemDing } from '@/lib/soundEffects';
 
 interface Test {
   id: string;
   title: string;
   subject_id: string;
-  duration_minutes: number;
+  category: string;
   total_questions: number;
   total_marks: number;
-  passing_marks: number;
-  created_at: string;
+  duration_minutes: number;
 }
 
-interface Subject { id: string; title: string }
+interface Subject {
+  id: string;
+  title: string;
+}
 
-const EMPTY: Omit<Test, 'created_at'> = {
-  id: '', title: '', subject_id: '', duration_minutes: 30,
-  total_questions: 10, total_marks: 40, passing_marks: 14,
+const EMPTY: Test = {
+  id: '',
+  title: '',
+  subject_id: '',
+  category: 'Class 12',
+  total_questions: 10,
+  total_marks: 40,
+  duration_minutes: 20,
 };
+
+const CATEGORIES = [
+  'Class 12',
+  'Class 11',
+  'Class 10',
+  'Class 9',
+  'JEE Main / Adv',
+  'NEET UG',
+  'Mock Test',
+  'Unit Quiz',
+];
 
 export default function AdminTestsPage() {
   const [tests, setTests] = useState<Test[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filterSubject, setFilterSubject] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<Omit<Test, 'created_at'>>(EMPTY);
+  const [editing, setEditing] = useState<Test>(EMPTY);
+  const [isEdit, setIsEdit] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const [isEdit, setIsEdit] = useState(false);
+  const [filterSubject, setFilterSubject] = useState('all');
+  const [filterCategory, setFilterCategory] = useState('all');
 
   async function load() {
     setLoading(true);
-    const [testsRes, subjectsRes] = await Promise.all([
-      supabase.from('tests').select('*').order('created_at', { ascending: false }),
+    const [testsRes, subsRes] = await Promise.all([
+      supabase.from('tests').select('*').order('subject_id'),
       supabase.from('subjects').select('id, title').order('title'),
     ]);
     setTests((testsRes.data as Test[]) ?? []);
-    setSubjects((subjectsRes.data as Subject[]) ?? []);
+    setSubjects((subsRes.data as Subject[]) ?? []);
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
-
-  const filtered = filterSubject ? tests.filter((t) => t.subject_id === filterSubject) : tests;
+  useEffect(() => {
+    load();
+  }, []);
 
   function openAdd() {
+    playButtonClick();
     setIsEdit(false);
-    setEditing({ ...EMPTY, subject_id: subjects[0]?.id ?? '' });
+    setEditing({
+      ...EMPTY,
+      id: `test-${Date.now()}`,
+      subject_id: subjects[0]?.id ?? 'physics',
+    });
     setError('');
     setModalOpen(true);
   }
 
   function openEdit(t: Test) {
+    playButtonClick();
     setIsEdit(true);
-    setEditing({ id: t.id, title: t.title, subject_id: t.subject_id, duration_minutes: t.duration_minutes, total_questions: t.total_questions, total_marks: t.total_marks, passing_marks: t.passing_marks });
+    setEditing({ ...t });
     setError('');
     setModalOpen(true);
   }
 
   async function save() {
-    if (!editing.id.trim() || !editing.title.trim()) { setError('ID and Title are required.'); return; }
+    if (!editing.id.trim() || !editing.title.trim() || !editing.subject_id) {
+      setError('ID, Title, and Subject are required.');
+      return;
+    }
     setSaving(true);
     setError('');
+    const payload = {
+      title: editing.title,
+      subject_id: editing.subject_id,
+      category: editing.category,
+      total_questions: Number(editing.total_questions),
+      total_marks: Number(editing.total_marks),
+      duration_minutes: Number(editing.duration_minutes),
+    };
     const { error: err } = isEdit
-      ? await supabase.from('tests').update({ title: editing.title, subject_id: editing.subject_id, duration_minutes: editing.duration_minutes, total_questions: editing.total_questions, total_marks: editing.total_marks, passing_marks: editing.passing_marks }).eq('id', editing.id)
-      : await supabase.from('tests').insert({ ...editing });
-    if (err) { setError(err.message); setSaving(false); return; }
+      ? await supabase.from('tests').update(payload).eq('id', editing.id)
+      : await supabase.from('tests').insert({ ...payload, id: editing.id });
+
+    if (err) {
+      setError(err.message);
+      setSaving(false);
+      return;
+    }
+    playGemDing();
     setModalOpen(false);
-    await load();
     setSaving(false);
+    await load();
   }
 
   async function del(id: string) {
-    if (!confirm(`Delete test "${id}"? All questions for this test will also be deleted.`)) return;
+    if (!confirm(`Delete test "${id}" and all its questions?`)) return;
     await supabase.from('tests').delete().eq('id', id);
     await load();
   }
 
+  const filtered = tests.filter((t) => {
+    const matchSub = filterSubject === 'all' || t.subject_id === filterSubject;
+    const matchCat = filterCategory === 'all' || t.category === filterCategory;
+    return matchSub && matchCat;
+  });
+
   const columns = [
-    { key: 'id', label: 'ID', render: (r: Test) => <code className="text-xs bg-[#f4fafd] px-2 py-0.5 rounded font-mono">{r.id}</code> },
-    { key: 'title', label: 'Title', render: (r: Test) => <span className="font-semibold text-[#161d1f] text-xs">{r.title}</span> },
-    { key: 'subject_id', label: 'Subject', render: (r: Test) => <span className="capitalize text-xs font-medium text-[#0060ac]">{r.subject_id}</span> },
-    { key: 'duration_minutes', label: 'Duration', render: (r: Test) => <span className="text-xs">{r.duration_minutes} min</span> },
-    { key: 'total_questions', label: 'Qs', render: (r: Test) => <span className="font-bold text-xs">{r.total_questions}</span> },
-    { key: 'total_marks', label: 'Marks', render: (r: Test) => <span className="text-xs">{r.total_marks}</span> },
     {
-      key: 'actions', label: 'Actions',
+      key: 'title',
+      label: 'Test Name',
       render: (r: Test) => (
-        <div className="flex gap-2 flex-wrap">
+        <div>
+          <p className="font-black text-[#1e293b] text-xs sm:text-sm">{r.title}</p>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="text-[10px] font-bold text-[#7c3aed] uppercase bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200">
+              {r.subject_id}
+            </span>
+            <span className="text-[10px] text-slate-400 font-bold">{r.category}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'total_questions',
+      label: 'Questions',
+      render: (r: Test) => (
+        <span className="font-bold text-slate-700 text-xs">{r.total_questions} Questions</span>
+      ),
+    },
+    {
+      key: 'duration_minutes',
+      label: 'Duration & Marks',
+      render: (r: Test) => (
+        <div className="text-xs">
+          <span className="font-bold text-slate-800">⏱️ {r.duration_minutes} mins</span>
+          <span className="text-slate-400 font-medium"> • {r.total_marks} marks</span>
+        </div>
+      ),
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (r: Test) => (
+        <div className="flex items-center gap-1.5 flex-wrap">
           <Link href={`/admin/tests/${r.id}/questions`}>
-            <button className="text-[11px] font-bold text-[#0060ac] border border-[#0060ac]/40 hover:bg-blue-50 px-2.5 py-1.5 rounded-full cursor-pointer">Questions</button>
+            <button className="text-[11px] font-black text-white bg-[#7c3aed] hover:bg-[#6d28d9] px-3 py-1.5 rounded-xl transition-all active:scale-95 shadow-xs cursor-pointer flex items-center gap-1">
+              <span>MCQs</span>
+              <span className="material-symbols-outlined text-[14px]">edit_note</span>
+            </button>
           </Link>
-          <button onClick={() => openEdit(r)} className="text-[11px] font-bold text-[#564338] border border-[#dde4e6] hover:bg-[#f4fafd] px-2.5 py-1.5 rounded-full cursor-pointer">Edit</button>
-          <DangerBtn onClick={() => del(r.id)}><span className="material-symbols-outlined text-[14px]">delete</span></DangerBtn>
+          <button
+            onClick={() => openEdit(r)}
+            className="text-[11px] font-bold text-slate-700 border border-slate-200 hover:bg-slate-100 px-2.5 py-1.5 rounded-xl transition-all cursor-pointer"
+          >
+            Edit
+          </button>
+          <DangerBtn onClick={() => del(r.id)}>
+            <span className="material-symbols-outlined text-[15px]">delete</span>
+          </DangerBtn>
         </div>
       ),
     },
   ];
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-6 max-w-6xl w-full mx-auto">
+    <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-6 max-w-6xl w-full mx-auto font-sans">
+      
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="font-heading text-2xl font-extrabold text-[#161d1f]">Tests & Questions</h1>
-          <p className="text-sm text-[#564338] mt-0.5">{filtered.length} of {tests.length} tests</p>
+          <div className="flex items-center gap-2">
+            <h1 className="font-heading text-xl sm:text-2xl font-black text-[#1e293b]">
+              Tests & Question Banks
+            </h1>
+            <span className="text-xs font-black text-[#7c3aed] bg-violet-100 px-2.5 py-0.5 rounded-full border border-violet-200">
+              {filtered.length} of {tests.length}
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Configure timed tests, mock papers, and unit quizzes for all classes.
+          </p>
         </div>
-        <div className="flex gap-2.5 flex-wrap items-center">
-          <select className={`${selectCls} w-40 text-xs`} value={filterSubject} onChange={(e) => setFilterSubject(e.target.value)}>
-            <option value="">All Subjects</option>
-            {subjects.map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}
+
+        <div className="flex items-center gap-2 flex-wrap">
+          <select
+            value={filterSubject}
+            onChange={(e) => setFilterSubject(e.target.value)}
+            className="bg-white border-2 border-[#e2e8f0] rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 outline-none"
+          >
+            <option value="all">All Subjects</option>
+            {subjects.map((s) => (
+              <option key={s.id} value={s.id}>{s.title}</option>
+            ))}
           </select>
-          <button onClick={openAdd} className="flex items-center gap-2 bg-[#9b4500] hover:bg-[#ff8c42] text-white px-4 py-2.5 rounded-full text-sm font-bold transition-colors cursor-pointer shadow-md">
+
+          <select
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+            className="bg-white border-2 border-[#e2e8f0] rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 outline-none"
+          >
+            <option value="all">All Categories</option>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+
+          <button
+            onClick={openAdd}
+            className="flex items-center gap-1.5 bg-[#ff8c42] hover:bg-[#ff7a24] text-white px-4 py-2 rounded-2xl text-xs font-black transition-all active:scale-95 shadow-md cursor-pointer"
+          >
             <span className="material-symbols-outlined text-[18px]">add</span>
-            Add Test
+            <span>+ Create Test</span>
           </button>
         </div>
       </div>
 
-      <DataTable columns={columns} data={filtered} keyField="id" loading={loading} emptyMessage="No tests yet." />
+      {/* Tests Table */}
+      <DataTable
+        columns={columns}
+        data={filtered}
+        keyField="id"
+        loading={loading}
+        emptyMessage="No tests match the selected filters."
+        searchable
+        searchPlaceholder="Search tests by title or ID..."
+        searchKeys={['title', 'id', 'subject_id']}
+      />
 
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={isEdit ? 'Edit Test' : 'Add Test'} maxWidth="max-w-xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="sm:col-span-2">
-            <FormField label="Test ID" required>
-              <input className={inputCls} value={editing.id} disabled={isEdit} onChange={(e) => setEditing((p) => ({ ...p, id: e.target.value }))} placeholder="e.g. 5" />
+      {/* Add / Edit Test Modal */}
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={isEdit ? 'Edit Test Properties' : 'Create New Test Paper'}
+        subtitle="Manage marks, duration, and subject assignment"
+      >
+        <div className="space-y-4">
+          {error && (
+            <p className="text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-xl">
+              {error}
+            </p>
+          )}
+
+          <FormField label="Test ID / Identifier" required hint="Unique alphanumeric string">
+            <input
+              className={inputCls}
+              placeholder="e.g. phy-mock-01"
+              value={editing.id}
+              disabled={isEdit}
+              onChange={(e) => setEditing({ ...editing, id: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
+            />
+          </FormField>
+
+          <FormField label="Test Title" required hint="e.g. Ray Optics Comprehensive Mock">
+            <input
+              className={inputCls}
+              placeholder="Ray Optics Comprehensive Mock"
+              value={editing.title}
+              onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+            />
+          </FormField>
+
+          <div className="grid grid-cols-2 gap-3">
+            <FormField label="Subject" required>
+              <select
+                className={selectCls}
+                value={editing.subject_id}
+                onChange={(e) => setEditing({ ...editing, subject_id: e.target.value })}
+              >
+                {subjects.map((s) => (
+                  <option key={s.id} value={s.id}>{s.title}</option>
+                ))}
+              </select>
+            </FormField>
+
+            <FormField label="Category / Class">
+              <select
+                className={selectCls}
+                value={editing.category}
+                onChange={(e) => setEditing({ ...editing, category: e.target.value })}
+              >
+                {CATEGORIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
             </FormField>
           </div>
-          <div className="sm:col-span-2">
-            <FormField label="Title" required>
-              <input className={inputCls} value={editing.title} onChange={(e) => setEditing((p) => ({ ...p, title: e.target.value }))} placeholder="e.g. Electric Charges Mock Test" />
+
+          <div className="grid grid-cols-3 gap-2">
+            <FormField label="Questions Count">
+              <input
+                type="number"
+                min={1}
+                className={inputCls}
+                value={editing.total_questions}
+                onChange={(e) => setEditing({ ...editing, total_questions: Number(e.target.value) })}
+              />
+            </FormField>
+
+            <FormField label="Total Marks">
+              <input
+                type="number"
+                min={1}
+                className={inputCls}
+                value={editing.total_marks}
+                onChange={(e) => setEditing({ ...editing, total_marks: Number(e.target.value) })}
+              />
+            </FormField>
+
+            <FormField label="Duration (Mins)">
+              <input
+                type="number"
+                min={1}
+                className={inputCls}
+                value={editing.duration_minutes}
+                onChange={(e) => setEditing({ ...editing, duration_minutes: Number(e.target.value) })}
+              />
             </FormField>
           </div>
-          <FormField label="Subject">
-            <select className={selectCls} value={editing.subject_id} onChange={(e) => setEditing((p) => ({ ...p, subject_id: e.target.value }))}>
-              {subjects.map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}
-            </select>
-          </FormField>
-          <FormField label="Duration (min)">
-            <input type="number" className={inputCls} value={editing.duration_minutes} min={5} onChange={(e) => setEditing((p) => ({ ...p, duration_minutes: Number(e.target.value) }))} />
-          </FormField>
-          <FormField label="Total Questions">
-            <input type="number" className={inputCls} value={editing.total_questions} min={1} onChange={(e) => setEditing((p) => ({ ...p, total_questions: Number(e.target.value) }))} />
-          </FormField>
-          <FormField label="Total Marks">
-            <input type="number" className={inputCls} value={editing.total_marks} min={1} onChange={(e) => setEditing((p) => ({ ...p, total_marks: Number(e.target.value) }))} />
-          </FormField>
-          <FormField label="Passing Marks">
-            <input type="number" className={inputCls} value={editing.passing_marks} min={1} onChange={(e) => setEditing((p) => ({ ...p, passing_marks: Number(e.target.value) }))} />
-          </FormField>
-          {error && <p className="sm:col-span-2 text-xs text-red-600 font-medium">{error}</p>}
-          <div className="sm:col-span-2 flex justify-end gap-3 pt-2">
-            <button onClick={() => setModalOpen(false)} className="text-sm font-bold text-[#564338] px-4 py-2 rounded-full hover:bg-[#e8eff1] cursor-pointer">Cancel</button>
-            <PrimaryBtn loading={saving} onClick={save}>{isEdit ? 'Save Changes' : 'Create Test'}</PrimaryBtn>
+
+          <div className="pt-2">
+            <PrimaryBtn onClick={save} loading={saving}>
+              {isEdit ? 'Save Changes' : 'Create Test & Open Questions'}
+            </PrimaryBtn>
           </div>
         </div>
       </Modal>
+
     </div>
   );
 }

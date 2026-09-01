@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Modal, FormField, inputCls, PrimaryBtn, DangerBtn } from '@/components/admin/Modal';
+import { LatexPreview } from '@/components/admin/LatexPreview';
+import { playButtonClick, playGemDing } from '@/lib/soundEffects';
 
 interface Question {
   id: number;
@@ -15,197 +17,380 @@ interface Question {
   option_b: string;
   option_c: string;
   option_d: string;
-  correct_answer: number; // 0=A, 1=B, 2=C, 3=D
+  correct_answer: number;
   explanation: string;
-  admin_notes: string;
 }
 
-interface Test { id: string; title: string; subject_id: string }
+interface TestInfo {
+  id: string;
+  title: string;
+  subject_id: string;
+  total_marks: number;
+}
 
-const OPTIONS = ['A', 'B', 'C', 'D'];
-const EMPTY_Q: Omit<Question, 'id' | 'test_id'> = {
+const EMPTY_Q: Omit<Question, 'id'> = {
+  test_id: '',
   question_number: 1,
-  question_text: '', option_a: '', option_b: '', option_c: '', option_d: '',
-  correct_answer: 0, explanation: '', admin_notes: '',
+  question_text: '',
+  option_a: '',
+  option_b: '',
+  option_c: '',
+  option_d: '',
+  correct_answer: 0,
+  explanation: '',
 };
 
+const OPTION_KEYS = ['option_a', 'option_b', 'option_c', 'option_d'] as const;
+const OPTION_LABELS = ['A', 'B', 'C', 'D'];
+
 export function AdminQuestionsClient() {
-  const params = useParams();
-  const id = (params?.id as string) || '1';
-  const [test, setTest] = useState<Test | null>(null);
+  const { id } = useParams<{ id: string }>();
+  const [test, setTest] = useState<TestInfo | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<Omit<Question, 'id' | 'test_id'>>(EMPTY_Q);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editing, setEditing] = useState<Omit<Question, 'id'>>({ ...EMPTY_Q, test_id: id });
+  const [editId, setEditId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
   async function load() {
     setLoading(true);
-    const [testRes, qRes] = await Promise.all([
-      supabase.from('tests').select('id, title, subject_id').eq('id', id).single(),
+    const [tRes, qRes] = await Promise.all([
+      supabase.from('tests').select('id, title, subject_id, total_marks').eq('id', id).single(),
       supabase.from('questions').select('*').eq('test_id', id).order('question_number'),
     ]);
-    setTest(testRes.data as Test);
+    setTest((tRes.data as TestInfo) ?? null);
     setQuestions((qRes.data as Question[]) ?? []);
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => {
+    load();
+  }, [id]);
 
   function openAdd() {
-    setEditingId(null);
-    setEditing({ ...EMPTY_Q, question_number: questions.length + 1 });
+    playButtonClick();
+    setEditId(null);
+    setEditing({
+      ...EMPTY_Q,
+      test_id: id,
+      question_number: questions.length + 1,
+    });
     setError('');
     setModalOpen(true);
   }
 
   function openEdit(q: Question) {
-    setEditingId(q.id);
+    playButtonClick();
+    setEditId(q.id);
     setEditing({
-      question_number: q.question_number, question_text: q.question_text,
-      option_a: q.option_a, option_b: q.option_b, option_c: q.option_c, option_d: q.option_d,
-      correct_answer: q.correct_answer, explanation: q.explanation, admin_notes: q.admin_notes ?? '',
+      test_id: q.test_id,
+      question_number: q.question_number,
+      question_text: q.question_text,
+      option_a: q.option_a,
+      option_b: q.option_b,
+      option_c: q.option_c,
+      option_d: q.option_d,
+      correct_answer: q.correct_answer,
+      explanation: q.explanation ?? '',
     });
     setError('');
     setModalOpen(true);
   }
 
   async function save() {
-    if (!editing.question_text.trim() || !editing.option_a || !editing.option_b || !editing.option_c || !editing.option_d) {
-      setError('Question text and all 4 options are required.'); return;
+    if (!editing.question_text.trim()) {
+      setError('Question text is required.');
+      return;
     }
-    if (!editing.explanation.trim()) { setError('Explanation is required.'); return; }
+    if (!editing.option_a.trim() || !editing.option_b.trim()) {
+      setError('At least options A and B are required.');
+      return;
+    }
+
     setSaving(true);
     setError('');
-    const payload = { question_number: editing.question_number, question_text: editing.question_text, option_a: editing.option_a, option_b: editing.option_b, option_c: editing.option_c, option_d: editing.option_d, correct_answer: editing.correct_answer, explanation: editing.explanation, admin_notes: editing.admin_notes };
-    const { error: err } = editingId !== null
-      ? await supabase.from('questions').update(payload).eq('id', editingId)
-      : await supabase.from('questions').insert({ test_id: id, ...payload });
-    if (err) { setError(err.message); setSaving(false); return; }
+    const payload = {
+      test_id: id,
+      question_number: Number(editing.question_number),
+      question_text: editing.question_text,
+      option_a: editing.option_a,
+      option_b: editing.option_b,
+      option_c: editing.option_c,
+      option_d: editing.option_d,
+      correct_answer: Number(editing.correct_answer),
+      explanation: editing.explanation,
+    };
+
+    const { error: err } = editId !== null
+      ? await supabase.from('questions').update(payload).eq('id', editId)
+      : await supabase.from('questions').insert(payload);
+
+    if (err) {
+      setError(err.message);
+      setSaving(false);
+      return;
+    }
+
+    playGemDing();
     setModalOpen(false);
-    await load();
     setSaving(false);
+    await load();
   }
 
   async function del(qid: number) {
-    if (!confirm('Delete this question?')) return;
+    if (!confirm('Delete this question from test paper?')) return;
     await supabase.from('questions').delete().eq('id', qid);
     await load();
   }
 
-  const optionKey = (i: number) => (['option_a', 'option_b', 'option_c', 'option_d'] as const)[i];
-
   return (
-    <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-6 max-w-4xl w-full mx-auto">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-[#564338] flex-wrap">
-        <Link href="/admin/tests" className="hover:text-[#9b4500] font-medium">Tests</Link>
-        <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-        <span className="font-bold text-[#161d1f] truncate max-w-xs">{test?.title ?? id}</span>
-        <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-        <span className="text-[#9b4500] font-bold">Questions</span>
+    <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-6 max-w-5xl w-full mx-auto font-sans">
+      
+      {/* Breadcrumbs */}
+      <div className="flex items-center gap-2 text-xs text-slate-500 flex-wrap">
+        <Link href="/admin/tests" onClick={playButtonClick} className="hover:text-[#7c3aed] font-bold">
+          Tests Studio
+        </Link>
+        <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+        <span className="font-black text-[#1e293b] truncate max-w-xs">{test?.title ?? id}</span>
+        <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+        <span className="text-[#7c3aed] font-black">Question Bank ({questions.length})</span>
       </div>
 
-      <div className="flex items-center justify-between">
+      {/* Header */}
+      <div className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-[#e2e8f0] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-heading text-2xl font-extrabold text-[#161d1f]">Questions</h1>
-          <p className="text-sm text-[#564338] mt-0.5">{questions.length} questions · {test?.title}</p>
+          <div className="flex items-center gap-2">
+            <h1 className="font-heading text-lg sm:text-xl font-black text-[#1e293b]">
+              {test?.title || 'Test Questions'}
+            </h1>
+            <span className="text-[10px] font-black bg-violet-100 text-[#7c3aed] px-2.5 py-0.5 rounded-full border border-violet-200 uppercase">
+              {test?.subject_id || 'Subject'}
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {questions.length} questions configured • {test?.total_marks || 0} Total Marks
+          </p>
         </div>
-        <button onClick={openAdd} className="flex items-center gap-2 bg-[#9b4500] hover:bg-[#ff8c42] text-white px-4 py-2.5 rounded-full text-sm font-bold transition-colors cursor-pointer shadow-md">
+
+        <button
+          onClick={openAdd}
+          className="flex items-center gap-1.5 bg-[#7c3aed] hover:bg-[#6d28d9] text-white px-4 py-2.5 rounded-2xl text-xs font-black transition-all active:scale-95 shadow-md cursor-pointer self-start sm:self-auto"
+        >
           <span className="material-symbols-outlined text-[18px]">add</span>
-          Add Question
+          <span>+ Add Question</span>
         </button>
       </div>
 
+      {/* Questions List */}
       {loading ? (
-        <div className="flex justify-center py-16">
-          <div className="w-7 h-7 border-2 border-[#ff8c42] border-t-transparent rounded-full animate-spin" />
+        <div className="text-center py-16">
+          <div className="w-8 h-8 border-3 border-[#7c3aed] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+          <span className="text-xs font-bold text-slate-500">Loading question bank...</span>
         </div>
       ) : questions.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-[#e8eff1] p-12 flex flex-col items-center gap-3 text-center">
-          <span className="material-symbols-outlined text-[48px] text-[#dde4e6]">quiz</span>
-          <p className="font-bold text-[#564338]">No questions yet</p>
-          <p className="text-xs text-[#897266]">Click "Add Question" to get started.</p>
+        <div className="bg-white rounded-3xl p-10 border-2 border-[#e2e8f0] text-center space-y-2">
+          <span className="material-symbols-outlined text-[48px] text-slate-300">quiz</span>
+          <h3 className="font-heading font-black text-slate-800 text-sm">No Questions Yet</h3>
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+            Click "+ Add Question" to start building MCQ questions with real-time formula rendering.
+          </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
-          {questions.map((q) => (
-            <div key={q.id} className="bg-white rounded-2xl border border-[#e8eff1] overflow-hidden">
+        <div className="space-y-3">
+          {questions.map((q) => {
+            const isExpanded = expandedId === q.id;
+            return (
               <div
-                className="flex items-start gap-4 p-4 cursor-pointer hover:bg-[#f9fbfc] transition-colors"
-                onClick={() => setExpandedId(expandedId === q.id ? null : q.id)}
+                key={q.id}
+                className="bg-white rounded-3xl border-2 border-[#e2e8f0] overflow-hidden shadow-xs hover:border-violet-300 transition-all"
               >
-                <div className="w-8 h-8 rounded-full bg-[#ffdbc9] text-[#9b4500] font-extrabold text-sm flex items-center justify-center shrink-0">
-                  {q.question_number}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-[#161d1f] text-sm line-clamp-2">{q.question_text}</p>
-                  <p className="text-xs text-[#564338] mt-1">Correct: <span className="font-bold text-green-700">{OPTIONS[q.correct_answer]}</span></p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <button onClick={(e) => { e.stopPropagation(); openEdit(q); }} className="text-xs font-bold text-[#564338] border border-[#dde4e6] hover:bg-[#f4fafd] px-2.5 py-1.5 rounded-full cursor-pointer">Edit</button>
-                  <DangerBtn onClick={() => del(q.id)}><span className="material-symbols-outlined text-[14px]">delete</span></DangerBtn>
-                  <span className={`material-symbols-outlined text-[18px] text-[#897266] transition-transform duration-200 ${expandedId === q.id ? 'rotate-180' : ''}`}>expand_more</span>
-                </div>
-              </div>
-              {expandedId === q.id && (
-                <div className="px-4 pb-4 border-t border-[#f0f0f0] pt-3">
-                  <div className="grid grid-cols-2 gap-2 mb-3">
-                    {OPTIONS.map((opt, i) => (
-                      <div key={opt} className={`flex items-start gap-2 p-2.5 rounded-xl text-xs border ${q.correct_answer === i ? 'bg-green-50 border-green-300 text-green-800' : 'bg-[#f4fafd] border-[#e8eff1] text-[#161d1f]'}`}>
-                        <span className="font-extrabold w-4 shrink-0">{opt}.</span>
-                        <span>{q[optionKey(i)]}</span>
+                <div
+                  className="p-4 sm:p-5 flex items-start justify-between gap-3 cursor-pointer select-none"
+                  onClick={() => setExpandedId(isExpanded ? null : q.id)}
+                >
+                  <div className="flex items-start gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-xl bg-violet-100 text-[#7c3aed] font-black text-xs flex items-center justify-center shrink-0 border border-violet-200">
+                      Q{q.question_number}
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="font-black text-[#1e293b] text-xs sm:text-sm leading-relaxed">
+                        {q.question_text}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          Correct: Option {OPTION_LABELS[q.correct_answer]}
+                        </span>
+                        {q.explanation && (
+                          <span className="text-[10px] text-slate-400 font-medium">
+                            Has explanation note
+                          </span>
+                        )}
                       </div>
-                    ))}
+                    </div>
                   </div>
-                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800">
-                    <span className="font-bold">Explanation: </span>{q.explanation}
+
+                  <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      onClick={() => openEdit(q)}
+                      className="p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
+                      title="Edit Question"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">edit</span>
+                    </button>
+                    <DangerBtn onClick={() => del(q.id)}>
+                      <span className="material-symbols-outlined text-[16px]">delete</span>
+                    </DangerBtn>
                   </div>
-                  {q.admin_notes && <p className="mt-2 text-[10px] text-[#897266] italic">Note: {q.admin_notes}</p>}
                 </div>
-              )}
-            </div>
-          ))}
+
+                {/* Collapsible Options Drawer */}
+                {isExpanded && (
+                  <div className="px-5 pb-5 pt-1 border-t border-slate-100 bg-slate-50/50 space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+                      {OPTION_KEYS.map((key, idx) => {
+                        const isCorrect = q.correct_answer === idx;
+                        return (
+                          <div
+                            key={key}
+                            className={`p-3 rounded-2xl border text-xs font-semibold flex items-center gap-2.5 ${
+                              isCorrect
+                                ? 'bg-emerald-100/70 border-emerald-300 text-emerald-950 font-black'
+                                : 'bg-white border-slate-200 text-slate-700'
+                            }`}
+                          >
+                            <span className={`w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center shrink-0 ${
+                              isCorrect ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-600'
+                            }`}>
+                              {OPTION_LABELS[idx]}
+                            </span>
+                            <span className="truncate">{q[key] || '—'}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {q.explanation && (
+                      <div className="p-3 rounded-2xl bg-violet-50 border border-violet-200 text-xs text-violet-950">
+                        <span className="font-black text-[10px] uppercase text-violet-700 block mb-0.5">Solution Note:</span>
+                        {q.explanation}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
-      {/* Add/Edit Modal */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId !== null ? 'Edit Question' : 'Add Question'} maxWidth="max-w-2xl">
-        <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto pr-1">
-          <div className="grid grid-cols-2 gap-4">
-            <FormField label="Question #">
-              <input type="number" className={inputCls} value={editing.question_number} min={1} onChange={(e) => setEditing((p) => ({ ...p, question_number: Number(e.target.value) }))} />
+      {/* Add / Edit Question Studio Modal */}
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editId !== null ? 'Edit Question' : 'Add MCQ Question'}
+        subtitle="Configure 4 options, solution notes, and formula notation"
+        maxWidth="max-w-2xl"
+      >
+        <div className="space-y-4">
+          {error && (
+            <p className="text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-xl">
+              {error}
+            </p>
+          )}
+
+          <div className="grid grid-cols-3 gap-2">
+            <FormField label="Question Number" required>
+              <input
+                type="number"
+                min={1}
+                className={inputCls}
+                value={editing.question_number}
+                onChange={(e) => setEditing({ ...editing, question_number: Number(e.target.value) })}
+              />
             </FormField>
-            <FormField label="Correct Answer">
-              <select className={`${inputCls} cursor-pointer`} value={editing.correct_answer} onChange={(e) => setEditing((p) => ({ ...p, correct_answer: Number(e.target.value) }))}>
-                {OPTIONS.map((o, i) => <option key={o} value={i}>Option {o}</option>)}
-              </select>
-            </FormField>
+
+            <div className="col-span-2">
+              <FormField label="Correct Option" required>
+                <div className="grid grid-cols-4 gap-1.5 pt-0.5">
+                  {OPTION_LABELS.map((label, idx) => (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => setEditing({ ...editing, correct_answer: idx })}
+                      className={`py-2 rounded-xl text-xs font-black transition-all ${
+                        editing.correct_answer === idx
+                          ? 'bg-emerald-600 text-white shadow-xs scale-105'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      Option {label}
+                    </button>
+                  ))}
+                </div>
+              </FormField>
+            </div>
           </div>
-          <FormField label="Question Text" required>
-            <textarea className={`${inputCls} resize-none`} rows={3} value={editing.question_text} onChange={(e) => setEditing((p) => ({ ...p, question_text: e.target.value }))} placeholder="Enter the question…" />
+
+          <FormField label="Question Text / Problem Statement" required hint="LaTeX notation supported">
+            <textarea
+              rows={3}
+              className={inputCls}
+              placeholder="e.g. What is the magnetic flux through a closed Gaussian surface?"
+              value={editing.question_text}
+              onChange={(e) => setEditing({ ...editing, question_text: e.target.value })}
+            />
           </FormField>
-          {OPTIONS.map((opt, i) => (
-            <FormField key={opt} label={`Option ${opt}`} required>
-              <input className={inputCls} value={editing[optionKey(i)]} onChange={(e) => setEditing((p) => ({ ...p, [optionKey(i)]: e.target.value }))} placeholder={`Option ${opt}`} />
-            </FormField>
-          ))}
-          <FormField label="Explanation" required>
-            <textarea className={`${inputCls} resize-none`} rows={3} value={editing.explanation} onChange={(e) => setEditing((p) => ({ ...p, explanation: e.target.value }))} placeholder="Explain the correct answer…" />
+
+          <LatexPreview content={editing.question_text} label="Problem Statement Preview" />
+
+          {/* 4 Options Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            {OPTION_KEYS.map((key, idx) => (
+              <FormField
+                key={key}
+                label={`Option ${OPTION_LABELS[idx]}`}
+                required={idx < 2}
+              >
+                <div className="relative">
+                  <input
+                    className={`${inputCls} pr-8`}
+                    placeholder={`Choice ${OPTION_LABELS[idx]}`}
+                    value={editing[key]}
+                    onChange={(e) => setEditing({ ...editing, [key]: e.target.value })}
+                  />
+                  {editing.correct_answer === idx && (
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-600 font-black text-xs">
+                      ✓
+                    </span>
+                  )}
+                </div>
+              </FormField>
+            ))}
+          </div>
+
+          <FormField label="Solution Explanation (Optional)" hint="Revealed after test submission">
+            <textarea
+              rows={2}
+              className={inputCls}
+              placeholder="Step-by-step reasoning for the correct option..."
+              value={editing.explanation}
+              onChange={(e) => setEditing({ ...editing, explanation: e.target.value })}
+            />
           </FormField>
-          <FormField label="Admin Notes (optional)">
-            <input className={inputCls} value={editing.admin_notes} onChange={(e) => setEditing((p) => ({ ...p, admin_notes: e.target.value }))} placeholder="Internal note for editors" />
-          </FormField>
-          {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
-          <div className="flex justify-end gap-3 pt-2 sticky bottom-0 bg-white py-2">
-            <button onClick={() => setModalOpen(false)} className="text-sm font-bold text-[#564338] px-4 py-2 rounded-full hover:bg-[#e8eff1] cursor-pointer">Cancel</button>
-            <PrimaryBtn loading={saving} onClick={save}>{editingId !== null ? 'Save Changes' : 'Add Question'}</PrimaryBtn>
+
+          <div className="pt-2">
+            <PrimaryBtn onClick={save} loading={saving}>
+              {editId !== null ? 'Save Question Changes' : 'Add Question to Paper'}
+            </PrimaryBtn>
           </div>
         </div>
       </Modal>
+
     </div>
   );
 }

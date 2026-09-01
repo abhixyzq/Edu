@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 interface StatCardProps {
@@ -7,25 +9,45 @@ interface StatCardProps {
   delta?: string;
   deltaPositive?: boolean;
   iconBg?: string;
+  iconColor?: string;
+  accentGradient?: string;
 }
 
-export function StatCard({ icon, label, value, delta, deltaPositive = true, iconBg = 'bg-[#ff8c42]/20' }: StatCardProps) {
+export function StatCard({
+  icon,
+  label,
+  value,
+  delta,
+  deltaPositive = true,
+  iconBg = 'bg-violet-100',
+  iconColor = 'text-[#7c3aed]',
+  accentGradient = 'from-violet-500/10 to-transparent',
+}: StatCardProps) {
   return (
-    <div className="bg-white rounded-2xl p-5 border border-[#e8eff1] hover:shadow-md transition-shadow group">
-      <div className="flex items-start justify-between mb-4">
-        <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-          <span className="material-symbols-outlined text-[22px] text-[#ff8c42]">{icon}</span>
+    <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-[#e2e8f0] hover:border-violet-300 shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+      {/* Background Accent Gradient Glow */}
+      <div className={`absolute top-0 right-0 w-28 h-28 bg-gradient-to-bl ${accentGradient} rounded-bl-full pointer-events-none transition-opacity opacity-50 group-hover:opacity-100`} />
+
+      <div className="relative z-10 flex items-start justify-between mb-3">
+        <div className={`w-11 h-11 rounded-2xl ${iconBg} flex items-center justify-center group-hover:scale-105 group-hover:rotate-3 transition-transform shadow-2xs border border-black/5`}>
+          <span className={`material-symbols-outlined text-[24px] ${iconColor}`}>{icon}</span>
         </div>
+
         {delta && (
-          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-            deltaPositive ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'
+          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border shadow-2xs ${
+            deltaPositive
+              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              : 'bg-rose-50 text-rose-600 border-rose-200'
           }`}>
-            {deltaPositive ? '▲' : '▼'} {delta}
+            {deltaPositive ? '↗' : '↘'} {delta}
           </span>
         )}
       </div>
-      <p className="text-[#564338] text-xs font-semibold mb-1">{label}</p>
-      <p className="font-heading text-2xl font-extrabold text-[#161d1f]">{value}</p>
+
+      <div className="relative z-10">
+        <p className="text-[#64748b] text-xs font-bold uppercase tracking-wider mb-0.5">{label}</p>
+        <p className="font-heading text-2xl sm:text-3xl font-black text-[#1e293b] tracking-tight">{value}</p>
+      </div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { StatCard } from '@/components/admin/StatCard';
+import { playButtonClick } from '@/lib/soundEffects';
 
 interface OverviewStats {
   totalUsers: number;
@@ -19,11 +20,16 @@ interface RecentAttempt {
   total_marks: number;
   accuracy_percent: number;
   attempted_at: string;
-  profiles: { name: string; email: string } | null;
+  profiles: { name: string; email: string; avatar_url?: string; username?: string } | null;
 }
 
 export default function AdminOverviewPage() {
-  const [stats, setStats] = useState<OverviewStats>({ totalUsers: 0, totalTests: 0, totalQuestions: 0, totalAttempts: 0 });
+  const [stats, setStats] = useState<OverviewStats>({
+    totalUsers: 0,
+    totalTests: 0,
+    totalQuestions: 0,
+    totalAttempts: 0,
+  });
   const [recent, setRecent] = useState<RecentAttempt[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,9 +43,9 @@ export default function AdminOverviewPage() {
           supabase.from('user_test_results').select('id', { count: 'exact', head: true }),
           supabase
             .from('user_test_results')
-            .select('id, test_title, score, total_marks, accuracy_percent, attempted_at, profiles(name, email)')
+            .select('id, test_title, score, total_marks, accuracy_percent, attempted_at, profiles(name, email, avatar_url, username)')
             .order('attempted_at', { ascending: false })
-            .limit(8),
+            .limit(10),
         ]);
 
         setStats({
@@ -59,103 +65,237 @@ export default function AdminOverviewPage() {
   }, []);
 
   const fmt = (n: number) => n.toLocaleString();
-  const fmtDate = (iso: string) =>
-    new Date(iso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+  const fmtDate = (iso: string) => {
+    try {
+      return new Date(iso).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' });
+    } catch {
+      return 'Recently';
+    }
+  };
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-6 sm:gap-8 max-w-5xl w-full mx-auto">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="font-heading text-2xl md:text-3xl font-extrabold text-[#161d1f]">Overview</h1>
-          <p className="text-sm text-[#564338] mt-0.5">Platform snapshot at a glance</p>
+    <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-6 sm:gap-8 max-w-6xl w-full mx-auto font-sans">
+      
+      {/* ─── Top Control Banner ─── */}
+      <div className="bg-gradient-to-r from-[#1e1b4b] via-[#2e1065] to-[#4c1d95] rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-5 border border-white/10">
+        
+        {/* Background decorative glows */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-violet-500/20 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="relative z-10 space-y-1.5">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[10px] font-black uppercase tracking-widest text-violet-200">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <span>Control Center Active</span>
+          </div>
+          <h1 className="font-heading text-2xl sm:text-3xl font-black tracking-tight text-white">
+            Admin Master Deck
+          </h1>
+          <p className="text-xs sm:text-sm text-violet-200 max-w-md">
+            Manage curriculum, tests, questions, and students across all classes in real time.
+          </p>
         </div>
-        <div className="flex gap-2.5 flex-wrap">
-          <Link href="/admin/subjects">
-            <button className="flex items-center gap-2 bg-white border border-[#dde4e6] hover:border-[#ff8c42] px-4 py-2 rounded-full text-sm font-bold text-[#161d1f] transition-colors cursor-pointer shadow-xs">
-              <span className="material-symbols-outlined text-[18px] text-[#ff8c42]">add_circle</span>
-              Add Subject
-            </button>
+
+        {/* Quick Hub Buttons */}
+        <div className="relative z-10 flex items-center gap-2.5 flex-wrap">
+          <Link
+            href="/admin/subjects"
+            onClick={playButtonClick}
+            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-4 py-2.5 rounded-2xl text-xs font-black transition-all active:scale-95 shadow-xs cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[18px]">auto_stories</span>
+            <span>+ Subject</span>
           </Link>
-          <Link href="/admin/tests">
-            <button className="flex items-center gap-2 bg-[#9b4500] hover:bg-[#ff8c42] text-white px-4 py-2 rounded-full text-sm font-bold transition-colors cursor-pointer shadow-md">
-              <span className="material-symbols-outlined text-[18px]">quiz</span>
-              Add Test
-            </button>
+
+          <Link
+            href="/admin/tests"
+            onClick={playButtonClick}
+            className="flex items-center gap-2 bg-[#ff8c42] hover:bg-[#ff7a24] text-white px-4 py-2.5 rounded-2xl text-xs font-black transition-all active:scale-95 shadow-md cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[18px]">quiz</span>
+            <span>+ Add Test</span>
           </Link>
         </div>
+
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon="group" label="Registered Users" value={loading ? '—' : fmt(stats.totalUsers)} iconBg="bg-blue-100" />
-        <StatCard icon="quiz" label="Total Tests" value={loading ? '—' : fmt(stats.totalTests)} iconBg="bg-[#ff8c42]/15" />
-        <StatCard icon="help" label="Questions in DB" value={loading ? '—' : fmt(stats.totalQuestions)} iconBg="bg-purple-100" />
-        <StatCard icon="bar_chart" label="Test Attempts" value={loading ? '—' : fmt(stats.totalAttempts)} iconBg="bg-green-100" />
+      {/* ─── 4 Hero KPI Metric Cards ─── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <StatCard
+          icon="group"
+          label="Registered Scholars"
+          value={loading ? '—' : fmt(stats.totalUsers)}
+          delta="+14% this mo"
+          iconBg="bg-blue-100"
+          iconColor="text-blue-600"
+          accentGradient="from-blue-500/15 to-transparent"
+        />
+
+        <StatCard
+          icon="quiz"
+          label="Active Tests"
+          value={loading ? '—' : fmt(stats.totalTests)}
+          delta="All classes"
+          iconBg="bg-amber-100"
+          iconColor="text-amber-600"
+          accentGradient="from-amber-500/15 to-transparent"
+        />
+
+        <StatCard
+          icon="help"
+          label="Questions in DB"
+          value={loading ? '—' : fmt(stats.totalQuestions)}
+          delta="4-option MCQs"
+          iconBg="bg-purple-100"
+          iconColor="text-purple-600"
+          accentGradient="from-purple-500/15 to-transparent"
+        />
+
+        <StatCard
+          icon="bolt"
+          label="Test Sessions"
+          value={loading ? '—' : fmt(stats.totalAttempts)}
+          delta="Live attempts"
+          iconBg="bg-emerald-100"
+          iconColor="text-emerald-600"
+          accentGradient="from-emerald-500/15 to-transparent"
+        />
       </div>
 
-      {/* Quick Actions Grid */}
+      {/* ─── Quick Actions Grid ─── */}
       <div>
-        <h2 className="font-heading text-lg font-bold text-[#161d1f] mb-4">Quick Actions</h2>
+        <div className="flex items-center justify-between mb-3 px-1">
+          <h2 className="font-heading text-sm sm:text-base font-black text-[#1e293b]">
+            Quick Management Hubs
+          </h2>
+          <span className="text-[11px] font-bold text-slate-400">Direct shortcuts</span>
+        </div>
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[
-            { href: '/admin/subjects', icon: 'category', label: 'Manage Subjects', color: 'bg-orange-50 hover:bg-orange-100 text-orange-700' },
-            { href: '/admin/tests', icon: 'quiz', label: 'Manage Tests', color: 'bg-blue-50 hover:bg-blue-100 text-blue-700' },
-            { href: '/admin/users', icon: 'group', label: 'View Users', color: 'bg-purple-50 hover:bg-purple-100 text-purple-700' },
-            { href: '/admin/analytics', icon: 'bar_chart', label: 'Analytics', color: 'bg-green-50 hover:bg-green-100 text-green-700' },
-          ].map((action) => (
-            <Link key={action.href} href={action.href}>
-              <div className={`${action.color} rounded-2xl p-4 flex flex-col items-center gap-2 text-center transition-colors cursor-pointer border border-transparent hover:border-current/20`}>
-                <span className="material-symbols-outlined text-[28px]">{action.icon}</span>
-                <span className="text-xs font-bold">{action.label}</span>
-              </div>
-            </Link>
-          ))}
+          <Link
+            href="/admin/subjects"
+            onClick={playButtonClick}
+            className="p-4 rounded-3xl bg-white border-2 border-[#e2e8f0] hover:border-amber-400 hover:shadow-md transition-all group flex flex-col items-start gap-2.5"
+          >
+            <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-[22px]">category</span>
+            </div>
+            <div>
+              <p className="text-xs font-black text-[#1e293b]">Curriculum</p>
+              <span className="text-[10px] text-slate-400 font-bold">Subjects & chapters</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/admin/tests"
+            onClick={playButtonClick}
+            className="p-4 rounded-3xl bg-white border-2 border-[#e2e8f0] hover:border-blue-400 hover:shadow-md transition-all group flex flex-col items-start gap-2.5"
+          >
+            <div className="w-10 h-10 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-[22px]">quiz</span>
+            </div>
+            <div>
+              <p className="text-xs font-black text-[#1e293b]">Question Studio</p>
+              <span className="text-[10px] text-slate-400 font-bold">Mock tests & MCQs</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/admin/users"
+            onClick={playButtonClick}
+            className="p-4 rounded-3xl bg-white border-2 border-[#e2e8f0] hover:border-purple-400 hover:shadow-md transition-all group flex flex-col items-start gap-2.5"
+          >
+            <div className="w-10 h-10 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-[22px]">group</span>
+            </div>
+            <div>
+              <p className="text-xs font-black text-[#1e293b]">Scholars & Gems</p>
+              <span className="text-[10px] text-slate-400 font-bold">Manage users & perks</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/admin/analytics"
+            onClick={playButtonClick}
+            className="p-4 rounded-3xl bg-white border-2 border-[#e2e8f0] hover:border-emerald-400 hover:shadow-md transition-all group flex flex-col items-start gap-2.5"
+          >
+            <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-[22px]">bar_chart</span>
+            </div>
+            <div>
+              <p className="text-xs font-black text-[#1e293b]">Analytics</p>
+              <span className="text-[10px] text-slate-400 font-bold">Scores & breakdown</span>
+            </div>
+          </Link>
         </div>
       </div>
 
-      {/* Recent Activity */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-heading text-lg font-bold text-[#161d1f]">Recent Test Attempts</h2>
-          <Link href="/admin/analytics" className="text-xs font-bold text-[#9b4500] hover:underline">
-            View Analytics →
+      {/* ─── Recent Live Test Sessions ─── */}
+      <div className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-[#e2e8f0] shadow-xs space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <h3 className="font-heading text-sm sm:text-base font-black text-[#1e293b]">
+              Live Student Attempt Log
+            </h3>
+          </div>
+          <Link
+            href="/admin/analytics"
+            onClick={playButtonClick}
+            className="text-xs font-black text-[#7c3aed] hover:underline"
+          >
+            Full Reports &rarr;
           </Link>
         </div>
 
-        <div className="bg-white rounded-2xl border border-[#e8eff1] overflow-hidden">
-          {loading ? (
-            <div className="flex items-center justify-center py-16">
-              <div className="w-7 h-7 border-2 border-[#ff8c42] border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : recent.length === 0 ? (
-            <p className="text-center py-12 text-xs text-[#897266]">No test attempts yet.</p>
-          ) : (
-            <div className="divide-y divide-[#f0f0f0]">
-              {recent.map((r) => {
-                const pct = Number(r.accuracy_percent);
-                return (
-                  <div key={r.id} className="flex items-center gap-4 px-5 py-3.5 hover:bg-[#f9fbfc] transition-colors">
-                    <div className="w-9 h-9 rounded-full bg-[#ffdbc9] text-[#6a2d00] font-bold text-sm flex items-center justify-center shrink-0">
-                      {r.profiles?.name?.charAt(0)?.toUpperCase() ?? '?'}
+        {recent.length === 0 ? (
+          <div className="text-center py-10 text-slate-400 font-bold text-xs">
+            No live test attempts recorded yet.
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {recent.map((att) => {
+              const acc = Number(att.accuracy_percent || 0);
+              return (
+                <div
+                  key={att.id}
+                  className="p-3 sm:p-3.5 rounded-2xl bg-[#f8fafc] border border-[#e2e8f0] hover:bg-violet-50/30 transition-colors flex items-center justify-between gap-3"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white font-black text-xs flex items-center justify-center shrink-0">
+                      {att.profiles?.name?.charAt(0).toUpperCase() || 'S'}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-[#161d1f] truncate">{r.test_title}</p>
-                      <p className="text-xs text-[#564338] truncate">{r.profiles?.name ?? 'Unknown'} · {fmtDate(r.attempted_at)}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className={`text-sm font-extrabold font-heading ${
-                        pct >= 75 ? 'text-green-700' : pct >= 50 ? 'text-blue-600' : 'text-red-600'
-                      }`}>{pct.toFixed(0)}%</span>
-                      <p className="text-[10px] text-[#564338]">{r.score}/{r.total_marks}</p>
+
+                    <div className="min-w-0">
+                      <h4 className="text-xs font-black text-[#1e293b] truncate">
+                        {att.profiles?.name || 'Scholar'}
+                      </h4>
+                      <p className="text-[10px] text-slate-500 truncate mt-0.5">
+                        {att.test_title} • <span className="font-bold text-slate-700">{att.score}/{att.total_marks} marks</span>
+                      </p>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+
+                  <div className="flex items-center gap-2.5 shrink-0">
+                    <span className={`text-[10px] font-black px-2.5 py-1 rounded-full border ${
+                      acc >= 75
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : acc >= 40
+                        ? 'bg-amber-50 text-amber-700 border-amber-200'
+                        : 'bg-rose-50 text-rose-700 border-rose-200'
+                    }`}>
+                      {acc}% Acc
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-medium hidden sm:inline">
+                      {fmtDate(att.attempted_at)}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
+
     </div>
   );
 }
