@@ -336,7 +336,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   const nodePoints: Point[] = nodes.map((_, i) => getNodePoint(i));
   const totalTrackHeight = Y_OFFSET + (nodes.length - 1) * ROW_HEIGHT + 110;
 
-  const getElbowPath = (p1: Point, p2: Point, r: number = 36) => {
+  const getElbowPath = (p1: Point, p2: Point, r: number = 38) => {
     if (p1.x === p2.x) {
       return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`;
     }
@@ -366,45 +366,52 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   }, [activeSubject, user.completedNodes]);
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-[#b494f6] via-[#a37def] to-[#9065e8] text-slate-900 pb-36 font-sans select-none relative overflow-hidden">
+    <div className="w-full min-h-screen bg-[#9574ea] text-slate-900 pb-36 font-sans select-none relative overflow-hidden">
       
-      {/* ─── Dreamy Pastel Background Elements (Circus Tent, Balloons, Candies) ─── */}
-      
+      {/* ─── Atmospheric Dreamy Lavender Background Canvas with Cloud Hills ─── */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#9e7df1] via-[#9472e9] to-[#8660dd] pointer-events-none" />
+
+      {/* Floating Cloud Silhouettes in Background */}
+      <div className="absolute top-28 -left-20 w-80 h-32 rounded-full bg-[#8b65e2]/40 blur-sm pointer-events-none" />
+      <div className="absolute top-96 -right-20 w-96 h-40 rounded-full bg-[#825cd9]/45 blur-sm pointer-events-none" />
+      <div className="absolute top-[680px] -left-10 w-80 h-36 rounded-full bg-[#825cd9]/50 blur-sm pointer-events-none" />
+      <div className="absolute top-[1020px] right-0 w-88 h-40 rounded-full bg-[#784ecc]/50 blur-sm pointer-events-none" />
+
+      {/* Twinkling Dream Stars */}
+      <div className="absolute top-16 left-12 text-white/35 text-xs font-black pointer-events-none animate-pulse">✦</div>
+      <div className="absolute top-44 right-16 text-white/40 text-sm font-black pointer-events-none animate-pulse">✦</div>
+      <div className="absolute top-80 left-8 text-white/30 text-xs font-black pointer-events-none">✦</div>
+      <div className="absolute top-[520px] right-10 text-white/35 text-sm font-black pointer-events-none">✦</div>
+      <div className="absolute top-[720px] left-16 text-white/40 text-xs font-black pointer-events-none animate-pulse">✦</div>
+      <div className="absolute top-[920px] right-20 text-white/35 text-sm font-black pointer-events-none">✦</div>
+
       {/* Circus Tent on the Left */}
-      <div className="absolute top-52 -left-6 w-32 h-32 pointer-events-none opacity-85 z-0 select-none">
+      <div className="absolute top-52 -left-6 w-32 h-32 pointer-events-none opacity-90 z-0 select-none">
         <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
-          {/* Tent Roof */}
-          <path d="M50 15 L15 55 L85 55 Z" fill="#e9d5ff" stroke="#c084fc" strokeWidth="2" />
+          <path d="M50 15 L15 55 L85 55 Z" fill="#f3e8ff" stroke="#c084fc" strokeWidth="2" />
           <path d="M50 15 L35 55 L65 55 Z" fill="#fed7aa" />
-          {/* Flag */}
           <path d="M50 15 L50 6 L64 10 L50 15" fill="#f59e0b" />
-          {/* Base Wall */}
-          <path d="M18 55 L82 55 L82 85 L18 85 Z" fill="#f3e8ff" stroke="#c084fc" strokeWidth="2" />
-          {/* Door */}
+          <path d="M18 55 L82 55 L82 85 L18 85 Z" fill="#faf5ff" stroke="#c084fc" strokeWidth="2" />
           <path d="M40 85 C40 70 60 70 60 85 Z" fill="#7e22ce" />
         </svg>
       </div>
 
       {/* Gift Box with Balloons on the Right */}
-      <div className="absolute top-[460px] right-2 w-28 h-36 pointer-events-none opacity-90 z-0 select-none">
+      <div className="absolute top-[470px] right-2 w-28 h-36 pointer-events-none opacity-90 z-0 select-none">
         <svg viewBox="0 0 100 130" className="w-full h-full drop-shadow-md">
-          {/* Balloons */}
           <ellipse cx="35" cy="30" rx="16" ry="20" fill="#fef08a" />
           <ellipse cx="65" cy="25" rx="16" ry="20" fill="#fbcfe8" />
           <ellipse cx="50" cy="42" rx="16" ry="20" fill="#fed7aa" />
-          {/* Strings */}
-          <path d="M35 50 Q45 65 50 80" stroke="#cbd5e1" strokeWidth="1.5" fill="none" />
-          <path d="M65 45 Q55 65 50 80" stroke="#cbd5e1" strokeWidth="1.5" fill="none" />
-          {/* Gift Box */}
+          <path d="M35 50 Q45 65 50 80" stroke="#ffffff" strokeWidth="1.5" fill="none" opacity="0.6" />
+          <path d="M65 45 Q55 65 50 80" stroke="#ffffff" strokeWidth="1.5" fill="none" opacity="0.6" />
           <rect x="25" y="80" width="50" height="42" rx="6" fill="#d8b4fe" stroke="#a855f7" strokeWidth="2" />
           <rect x="20" y="75" width="60" height="14" rx="4" fill="#e9d5ff" stroke="#a855f7" strokeWidth="2" />
-          {/* Ribbon */}
           <rect x="44" y="75" width="12" height="47" fill="#fde047" />
         </svg>
       </div>
 
       {/* Candy Cane on the Bottom Left */}
-      <div className="absolute top-[780px] left-3 w-20 h-28 pointer-events-none opacity-80 z-0 select-none">
+      <div className="absolute top-[780px] left-3 w-20 h-28 pointer-events-none opacity-85 z-0 select-none">
         <svg viewBox="0 0 60 90" className="w-full h-full drop-shadow-sm">
           <path d="M20 80 L20 30 C20 10 50 10 50 30" stroke="#f472b6" strokeWidth="12" strokeLinecap="round" fill="none" />
           <path d="M20 80 L20 30 C20 10 50 10 50 30" stroke="#ffffff" strokeWidth="8" strokeDasharray="6 8" strokeLinecap="round" fill="none" />
@@ -412,10 +419,10 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
       </div>
 
       {/* Rocking Unicorn on the Top Right */}
-      <div className="absolute top-24 right-4 w-28 h-28 pointer-events-none opacity-85 z-0 select-none">
+      <div className="absolute top-24 right-4 w-28 h-28 pointer-events-none opacity-90 z-0 select-none">
         <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-sm">
           <path d="M20 75 Q50 85 80 75" stroke="#fde047" strokeWidth="6" strokeLinecap="round" fill="none" />
-          <path d="M35 75 L45 45 L65 45 L70 75" fill="#e9d5ff" stroke="#c084fc" strokeWidth="2" />
+          <path d="M35 75 L45 45 L65 45 L70 75" fill="#f3e8ff" stroke="#c084fc" strokeWidth="2" />
           <circle cx="42" cy="35" r="14" fill="#fbcfe8" />
         </svg>
       </div>
@@ -487,7 +494,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
 
       </div>
 
-      {/* ─── The Winding Road Canvas with Dashed Center Markings ─── */}
+      {/* ─── The Winding Road Canvas with Dashed Center Markings (Exact Reference) ─── */}
       <div
         className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-3 z-10"
         style={{ height: `${totalTrackHeight}px` }}
@@ -497,7 +504,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
           className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible"
           viewBox={`0 0 ${CONTAINER_WIDTH} ${totalTrackHeight}`}
         >
-          {/* Broad Winding Road Base */}
+          {/* Broad Translucent White Road Ribbon (Exact Screenshot) */}
           {nodes.slice(0, -1).map((node, index) => {
             const p1 = nodePoints[index];
             const p2 = nodePoints[index + 1];
@@ -508,11 +515,10 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
                 key={`road-base-${node.id}`}
                 d={d}
                 fill="none"
-                stroke="#d8b4fe"
-                strokeWidth="52"
+                stroke="rgba(255, 255, 255, 0.28)"
+                strokeWidth="56"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                opacity="0.6"
               />
             );
           })}
@@ -528,16 +534,15 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
                 key={`road-surface-${node.id}`}
                 d={d}
                 fill="none"
-                stroke="#e9d5ff"
-                strokeWidth="42"
+                stroke="rgba(255, 255, 255, 0.45)"
+                strokeWidth="44"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                opacity="0.8"
               />
             );
           })}
 
-          {/* Dashed Center Road Line (Matching Exact Screenshot) */}
+          {/* Dashed Center Road Line (Exact Screenshot) */}
           {nodes.slice(0, -1).map((node, index) => {
             const p1 = nodePoints[index];
             const p2 = nodePoints[index + 1];
@@ -548,12 +553,11 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
                 key={`road-dash-${node.id}`}
                 d={d}
                 fill="none"
-                stroke="#a855f7"
+                stroke="rgba(147, 112, 230, 0.65)"
                 strokeWidth="3.5"
                 strokeDasharray="9 9"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                opacity="0.45"
               />
             );
           })}
