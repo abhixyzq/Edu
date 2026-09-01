@@ -290,10 +290,15 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* ══ Seamless Giant NAINIX Watermark Behind Mascot (z-0) ══ */}
+            {/* ══ Elegant Geometric Watermark Matching PAYROT Font Style (z-0) ══ */}
             <div className="absolute inset-x-0 top-6 sm:top-8 flex items-center justify-center z-0 select-none pointer-events-none w-full overflow-visible px-1">
               <h1 
-                className="font-heading font-black text-[4.8rem] sm:text-[8.5rem] md:text-[125px] tracking-[0.18em] sm:tracking-[0.28em] uppercase text-center leading-none whitespace-nowrap pl-3 sm:pl-6 text-transparent bg-clip-text bg-gradient-to-b from-white via-white/80 to-white/5 drop-shadow-[0_8px_30px_rgba(255,255,255,0.7)]"
+                className="text-[4.5rem] sm:text-[8.5rem] md:text-[128px] tracking-[0.25em] sm:tracking-[0.35em] uppercase text-center leading-none whitespace-nowrap pl-4 sm:pl-8 text-white/95 drop-shadow-[0_4px_25px_rgba(255,255,255,0.7)]"
+                style={{
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontWeight: 300,
+                  letterSpacing: '0.3em',
+                }}
               >
                 NAINIX
               </h1>
