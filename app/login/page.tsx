@@ -290,37 +290,15 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* ══ Massive Full-Screen Giant Watermark Behind Mascot (z-0) ══ */}
-            <div className="absolute inset-x-0 top-8 sm:top-10 flex items-center justify-center z-0 select-none pointer-events-none w-full overflow-visible px-1">
+            {/* Massive Full-Screen Giant Watermark Behind Mascot (z-0) */}
+            <div className="absolute inset-x-0 top-6 sm:top-8 flex items-center justify-center z-0 select-none pointer-events-none w-full overflow-visible px-1">
               <h1 className="font-heading font-black text-[4.8rem] sm:text-[8.5rem] md:text-[125px] text-white tracking-[0.18em] sm:tracking-[0.28em] uppercase drop-shadow-[0_8px_30px_rgba(255,255,255,0.75)] text-center leading-none whitespace-nowrap pl-3 sm:pl-6 opacity-95">
                 NAINIX
               </h1>
             </div>
 
-            {/* Navbar (z-30) */}
-            <div className="w-full flex items-center justify-between z-30 relative pb-2 backdrop-blur-[2px]">
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-blue-600 shadow-xs" />
-                <span className="text-xs font-black text-slate-900 tracking-wider">NAINIXONE</span>
-              </div>
-
-              <div className="flex items-center gap-3 text-[10px] font-bold text-slate-700 font-sans">
-                <span className="hover:text-blue-600 cursor-pointer">Features</span>
-                <span className="hover:text-blue-600 cursor-pointer">Mocks</span>
-                <span className="hover:text-blue-600 cursor-pointer">FAQ</span>
-              </div>
-
-              <Link
-                href="/signup"
-                onClick={playButtonClick}
-                className="px-3.5 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black shadow-md transition-all active:scale-95 cursor-pointer"
-              >
-                Sign In &rarr;
-              </Link>
-            </div>
-
             {/* Floating Status Pill (z-30) */}
-            <div className="w-full flex justify-end pr-2 z-30 my-auto pointer-events-none">
+            <div className="w-full flex justify-end pr-3 pt-2 z-30 pointer-events-none">
               <div className="bg-white/95 backdrop-blur-md border border-white/80 px-2.5 py-0.5 rounded-full shadow-lg text-[8px] font-black text-slate-800 flex items-center gap-1 pointer-events-auto">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
                 <span>10M+ Scholars</span>
