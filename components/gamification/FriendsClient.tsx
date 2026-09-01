@@ -203,7 +203,7 @@ const INITIAL_ACTIVITIES: FriendActivity[] = [
 ];
 
 export function FriendsClient() {
-  const { user, addGems } = useUser();
+  const { user } = useUser();
   const [activeTab, setActiveTab] = useState<'friends' | 'refer' | 'find' | 'activity'>('friends');
   const [searchQuery, setSearchQuery] = useState('');
   const [friendsList, setFriendsList] = useState<FriendUser[]>(INITIAL_SUGGESTED_FRIENDS);
@@ -243,7 +243,7 @@ export function FriendsClient() {
   }, [user.username]);
 
   const shareText = useMemo(() => {
-    return `🔥 Join me on nainixOne for Class 12 Board Exam Prep & AI Mock Tests! Use my invite link to get 50 FREE Gems 💎 to unlock test lives:\n${referralUrl}`;
+    return `🔥 Join me on nainixOne for Class 12 Board Exam Prep & AI Mock Tests! Use my invite link to get 50 FREE Gems 💎 to refill test lives:\n${referralUrl}`;
   }, [referralUrl]);
 
   const handleCopyInviteLink = () => {
@@ -334,7 +334,7 @@ export function FriendsClient() {
     <main className="w-full min-h-screen bg-[#f4f5fa] pb-32 font-sans select-none overflow-x-hidden">
       
       {/* ─── 1. Header Hero (Friends & Connections + Refer Highlight) ─── */}
-      <div className="w-full bg-gradient-to-b from-[#ddd6fe] via-[#ede9fe] to-[#f4f5fa] pt-4 pb-4 px-4 sm:px-6">
+      <div className="w-full bg-gradient-to-b from-[#ddd6fe] via-[#ede9fe] to-[#f4f5fa] pt-4 pb-3 px-4 sm:px-6">
         <div className="max-w-md mx-auto space-y-3">
           
           {/* Header Title & Status */}
@@ -371,52 +371,56 @@ export function FriendsClient() {
             </button>
           </div>
 
-          {/* ─── 💎 Refer & Earn 50 Gems Hero Card ─── */}
-          <div className="bg-gradient-to-br from-[#6d28d9] via-[#7c3aed] to-[#9333ea] text-white rounded-3xl p-4 shadow-md border-b-4 border-[#5521b5] relative overflow-hidden">
-            <div className="flex items-start justify-between gap-3 relative z-10">
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="px-2 py-0.5 rounded-full bg-amber-400 text-amber-950 text-[9px] font-black uppercase tracking-wider shadow-2xs">
-                    🎁 Referral Reward
-                  </span>
-                  <span className="text-[10px] text-violet-200 font-bold">
-                    Unlimited
-                  </span>
+          {/* ─── 🐱 Study Friends Mascot & Referral Banner (Updated with uploaded Image) ─── */}
+          <div className="bg-white rounded-3xl p-3.5 sm:p-4 border-2 border-b-4 border-[#e2e8f0] shadow-sm relative overflow-hidden">
+            <div className="flex items-center justify-between gap-3">
+              
+              {/* Left Content */}
+              <div className="min-w-0 flex-1">
+                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-100 text-[#7c3aed] text-[9px] font-black uppercase tracking-wider mb-1">
+                  <span>✨</span>
+                  <span>Study Together</span>
                 </div>
-                <h3 className="font-heading text-base font-black text-white leading-tight">
-                  Invite Friends, Get 50 Gems! 💎
+                <h3 className="font-heading text-sm sm:text-base font-black text-slate-900 leading-tight">
+                  Study With Friends & Get 50 Gems! 💎
                 </h3>
-                <p className="text-[11px] text-violet-100 mt-0.5 leading-relaxed">
-                  When a friend registers with your invite link, you instantly earn <b className="text-amber-300">50 Free Gems</b> to refill hearts & streak freeze!
+                <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                  Invite classmates to practice mock tests, compare rankings, and earn free bonus gems.
                 </p>
+
+                {/* Quick 1-Tap Action */}
+                <div className="flex items-center gap-2 mt-2.5">
+                  <button
+                    type="button"
+                    onClick={handleWhatsAppShare}
+                    className="py-1.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-[11px] transition-all active:scale-95 flex items-center gap-1 shadow-2xs cursor-pointer"
+                  >
+                    <span>💬</span>
+                    <span>Invite</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleCopyInviteLink}
+                    className="py-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] transition-all active:scale-95 flex items-center gap-1 border border-slate-200 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[13px]">
+                      {copiedLink ? 'check' : 'content_copy'}
+                    </span>
+                    <span>{copiedLink ? 'Copied' : 'Link'}</span>
+                  </button>
+                </div>
               </div>
 
-              <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-xs border border-white/30 flex items-center justify-center text-2xl shrink-0 shadow-inner">
-                💎
+              {/* Right Study Friends Cat Illustration */}
+              <div className="w-28 sm:w-32 shrink-0 flex items-center justify-center">
+                <img
+                  src="/images/study_friends.png"
+                  alt="Study Friends Cat Scholars"
+                  className="w-full h-auto object-contain drop-shadow-md hover:scale-105 transition-transform"
+                />
               </div>
-            </div>
 
-            {/* Quick Share Buttons Bar */}
-            <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-white/20">
-              <button
-                type="button"
-                onClick={handleWhatsAppShare}
-                className="py-2 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-black text-xs transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
-              >
-                <span>💬</span>
-                <span>WhatsApp</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleCopyInviteLink}
-                className="py-2 px-3 rounded-xl bg-white/20 hover:bg-white/30 text-white font-black text-xs transition-all active:scale-95 flex items-center justify-center gap-1.5 backdrop-blur-xs border border-white/30 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[15px]">
-                  {copiedLink ? 'check' : 'content_copy'}
-                </span>
-                <span>{copiedLink ? 'Copied!' : 'Copy Link'}</span>
-              </button>
             </div>
           </div>
 
@@ -449,15 +453,19 @@ export function FriendsClient() {
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-4 sm:px-6 space-y-3 mt-2">
+      <div className="max-w-md mx-auto px-4 sm:px-6 space-y-3 mt-1">
 
         {/* ─── TAB 1: MY FRIENDS / FOLLOWING LIST ─── */}
         {activeTab === 'friends' && (
           <div className="space-y-2.5">
             {myFriends.length === 0 ? (
               <div className="bg-white rounded-3xl p-6 text-center border-2 border-[#e2e8f0] space-y-3">
-                <div className="w-16 h-16 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center mx-auto text-3xl">
-                  👥
+                <div className="w-24 h-24 mx-auto mb-1">
+                  <img
+                    src="/images/study_friends.png"
+                    alt="Study Friends"
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <h3 className="font-heading font-black text-slate-800 text-base">
                   No Study Friends Yet
@@ -558,13 +566,23 @@ export function FriendsClient() {
             
             {/* Referral Stats Summary Card */}
             <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-[#e2e8f0] shadow-sm">
-              <div className="text-center mb-3">
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-                  Your Referral Rewards
-                </span>
-                <h4 className="font-heading text-lg font-black text-slate-900 mt-0.5">
-                  {(referralCount * 50).toLocaleString()} Gems Earned
-                </h4>
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                    Your Referral Rewards
+                  </span>
+                  <h4 className="font-heading text-lg font-black text-slate-900 mt-0.5">
+                    {(referralCount * 50).toLocaleString()} Gems Earned
+                  </h4>
+                </div>
+
+                <div className="w-14 h-14">
+                  <img
+                    src="/images/study_friends.png"
+                    alt="Study Group"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-center my-3">
@@ -791,14 +809,18 @@ export function FriendsClient() {
 
       </div>
 
-      {/* ─── Dedicated Refer & Earn 50 Gems Popup Modal ─── */}
+      {/* ─── Dedicated Refer & Earn 50 Gems Popup Modal (Updated with Study Cats Image) ─── */}
       {isReferModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
           <div className="bg-white rounded-t-3xl sm:rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 animate-in slide-in-from-bottom-5 duration-200 text-center">
             
-            {/* Header Icon */}
-            <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-amber-400 to-yellow-300 border-2 border-slate-900 shadow-[4px_4px_0px_#0f172a] flex items-center justify-center mx-auto text-3xl mb-3">
-              💎
+            {/* Header Study Cats Mascot */}
+            <div className="w-32 h-20 mx-auto mb-2 flex items-center justify-center">
+              <img
+                src="/images/study_friends.png"
+                alt="Study Friends Cat Mascot"
+                className="w-full h-full object-contain drop-shadow-sm"
+              />
             </div>
 
             <span className="px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-900 border border-cyan-300 text-[10px] font-black uppercase tracking-wider">
@@ -821,7 +843,7 @@ export function FriendsClient() {
               <button
                 type="button"
                 onClick={handleCopyInviteLink}
-                className="px-3 py-1.5 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-black text-xs shrink-0 transition-all active:scale-95 shadow-xs"
+                className="px-3 py-1.5 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-black text-xs shrink-0 transition-all active:scale-95 shadow-xs cursor-pointer"
               >
                 {copiedLink ? 'Copied!' : 'Copy'}
               </button>
