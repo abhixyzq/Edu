@@ -278,22 +278,20 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* ─── 2. Main Hero Showcase with Full-Screen Mascot & Depth Typography ─── */}
-          <div className="w-full min-h-[360px] sm:min-h-[420px] pt-3 px-4 pb-4 relative overflow-hidden flex flex-col justify-between bg-gradient-to-b from-[#b8d6f5] via-[#d7e9fa] to-white">
+          {/* ─── 2. Main Hero Showcase with Full-Height Mascot & Spacious Depth ─── */}
+          <div className="w-full min-h-[440px] sm:min-h-[520px] pt-3 px-4 pb-6 relative overflow-hidden flex flex-col justify-between bg-gradient-to-b from-[#b8d6f5] via-[#d7e9fa] to-white">
             
             {/* ══ Edge-to-Edge Fitted Mascot ══ */}
-            <div className="absolute inset-0 w-full h-full z-10 pointer-events-none select-none flex items-end justify-center">
+            <div className="absolute inset-0 w-full h-full z-10 pointer-events-none select-none flex items-center justify-center">
               <img
                 src="/images/image.png"
                 alt="Parrot Mascot Full Fit"
-                className="w-full h-full object-cover object-top sm:object-center transform scale-100"
+                className="w-full h-full object-contain object-center transform scale-100 sm:scale-105"
               />
-              {/* Soft seamless cloud baseline spanning 100% width across both sides */}
-              <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white via-white/70 to-transparent z-10" />
             </div>
 
             {/* ══ Giant Watermark Behind Mascot (z-0) ══ */}
-            <div className="absolute inset-x-0 top-12 sm:top-14 flex items-center justify-center z-0 select-none pointer-events-none">
+            <div className="absolute inset-x-0 top-14 sm:top-16 flex items-center justify-center z-0 select-none pointer-events-none">
               <h1 className="font-heading font-black text-5xl sm:text-7xl text-white/95 tracking-[0.2em] uppercase drop-shadow-[0_4px_25px_rgba(30,64,175,0.3)] text-center">
                 NAINIXONE
               </h1>
@@ -329,8 +327,8 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* ══ Floating Left & Right Cards Overlapping Cloud Base (z-30) ══ */}
-            <div className="w-full relative flex items-center justify-between mt-auto z-30">
+            {/* ══ Floating Left & Right Cards Shifted Downwards Below Clouds (z-30) ══ */}
+            <div className="w-full relative flex items-center justify-between mt-auto z-30 pt-10">
               
               {/* Left Floating Card: 3D Earth */}
               <div className="w-32 sm:w-36 bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-[0_15px_30px_rgba(30,64,175,0.15)] border border-white flex flex-col items-center text-center space-y-1.5 hover:scale-105 transition-all">
