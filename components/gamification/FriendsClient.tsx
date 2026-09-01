@@ -237,9 +237,8 @@ export function FriendsClient() {
 
   const referralUrl = useMemo(() => {
     const handle = user.username || 'scholar_12';
-    return typeof window !== 'undefined'
-      ? `${window.location.origin}/signup?ref=${handle}`
-      : `https://one.nainix.me/signup?ref=${handle}`;
+    // Always use official live domain so shared links via WhatsApp/app work for any friend on web/mobile
+    return `https://one.nainix.me/signup?ref=${handle}`;
   }, [user.username]);
 
   const shareText = useMemo(() => {
