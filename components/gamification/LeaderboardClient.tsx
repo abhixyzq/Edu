@@ -32,7 +32,7 @@ export function LeaderboardClient() {
   const [selectedBoard, setSelectedBoard] = useState<BoardCategory>('all');
   const [selectedUser, setSelectedUser] = useState<LeaderboardUser | null>(null);
 
-  // Mock competitive roster with realistic student performance
+  // Mock competitive 15-student league roster
   const rawRoster: LeaderboardUser[] = useMemo(() => {
     return [
       {
@@ -217,6 +217,51 @@ export function LeaderboardClient() {
         trend: 'down',
         trendValue: 1,
       },
+      {
+        id: 'usr-13',
+        rank: 13,
+        name: 'Vikas Yadav',
+        username: 'vikas_up',
+        avatar: 'VY',
+        board: 'UP Board',
+        specialization: 'Magnetism & Optics',
+        xp: 940,
+        accuracy: 73.5,
+        streak: 2,
+        testsCompleted: 9,
+        trend: 'down',
+        trendValue: 1,
+      },
+      {
+        id: 'usr-14',
+        rank: 14,
+        name: 'Riya Sen',
+        username: 'riya_cbse',
+        avatar: 'RS',
+        board: 'CBSE Class 12',
+        specialization: 'Organic Reactions',
+        xp: 860,
+        accuracy: 70.0,
+        streak: 1,
+        testsCompleted: 7,
+        trend: 'down',
+        trendValue: 2,
+      },
+      {
+        id: 'usr-15',
+        rank: 15,
+        name: 'Suraj Paswan',
+        username: 'suraj_bseb',
+        avatar: 'SP',
+        board: 'Bihar Board (BSEB)',
+        specialization: 'Thermodynamics',
+        xp: 750,
+        accuracy: 67.5,
+        streak: 1,
+        testsCompleted: 6,
+        trend: 'down',
+        trendValue: 1,
+      },
     ];
   }, [user.name, user.username, user.xp, user.streakDays, user.targetBoard, user.avatarUrl]);
 
@@ -243,10 +288,23 @@ export function LeaderboardClient() {
     return rawRoster.find((u) => u.isCurrentUser) || rawRoster[3];
   }, [rawRoster]);
 
-  const pointsToPodium = useMemo(() => {
-    if (!top3) return 0;
-    return Math.max(0, top3.xp - currentUserData.xp + 10);
-  }, [top3, currentUserData]);
+  const rank7Player = useMemo(() => {
+    return rawRoster.find((u) => u.rank === 7);
+  }, [rawRoster]);
+
+  const rank12Player = useMemo(() => {
+    return rawRoster.find((u) => u.rank === 12);
+  }, [rawRoster]);
+
+  const pointsToPromote = useMemo(() => {
+    if (!rank7Player) return 0;
+    return Math.max(0, rank7Player.xp - currentUserData.xp + 10);
+  }, [rank7Player, currentUserData]);
+
+  const pointsToAvoidDemote = useMemo(() => {
+    if (!rank12Player) return 0;
+    return Math.max(0, rank12Player.xp - currentUserData.xp + 10);
+  }, [rank12Player, currentUserData]);
 
   return (
     <main className="w-full min-h-screen bg-[#09090b] text-white pb-28 font-sans select-none overflow-x-hidden relative">
@@ -264,8 +322,9 @@ export function LeaderboardClient() {
               <h1 className="font-heading text-lg sm:text-xl font-black text-white leading-none tracking-tight">
                 Rankings
               </h1>
-              <span className="px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/40 text-[9px] font-black uppercase tracking-wider">
-                {user.leagueTier || 'Silver'}
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[9px] font-black uppercase tracking-wider flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Top 7 Promote 🟢
               </span>
             </div>
 
@@ -324,7 +383,7 @@ export function LeaderboardClient() {
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-3.5 sm:px-6 space-y-3 mt-1">
+      <div className="max-w-md mx-auto px-3.5 sm:px-6 space-y-2 mt-1">
 
         {/* ─── 2. Compact Horizontal Micro-Podium Strip (Zero Wasted Space) ─── */}
         {top1 && (
@@ -439,98 +498,146 @@ export function LeaderboardClient() {
           </div>
         )}
 
-        {/* ─── 3. Tight High-Density Roster Feed (#4 to #12) ─── */}
+        {/* ─── 3. High-Density Roster Feed with Duolingo-style Promotion & Demotion Zones ─── */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between px-1">
             <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
-              Roster ({filteredList.length})
+              15 Scholars League
             </span>
-            <span className="text-[10px] text-zinc-500 font-medium">
-              Tap to inspect stats
+            <span className="text-[10px] text-emerald-400 font-bold">
+              Top 7 Advance 🟢
             </span>
           </div>
 
           {remainingPlayers.map((player) => {
             const isUser = player.isCurrentUser;
+            const isPromotion = player.rank <= 7;
+            const isDemotion = player.rank >= 13;
 
             return (
-              <div
-                key={player.id}
-                onClick={() => {
-                  playButtonClick();
-                  setSelectedUser(player);
-                }}
-                className={`w-full rounded-xl px-2.5 py-2 flex items-center justify-between gap-2.5 border transition-all cursor-pointer active:scale-98 ${
-                  isUser
-                    ? 'bg-violet-950/40 border-violet-500/60 shadow-[0_0_15px_rgba(124,58,237,0.2)] ring-1 ring-violet-500/40'
-                    : 'bg-[#121216] border-white/[0.06] hover:border-white/15'
-                }`}
-              >
-                {/* Left: Rank & Avatar & Info */}
-                <div className="flex items-center gap-2.5 min-w-0">
-                  {/* Rank Number */}
-                  <span className={`w-5 text-center font-heading font-black text-xs ${isUser ? 'text-violet-400 font-black' : 'text-zinc-400'}`}>
-                    #{player.rank}
-                  </span>
+              <React.Fragment key={player.id}>
+                
+                {/* Candidate Row Card */}
+                <div
+                  onClick={() => {
+                    playButtonClick();
+                    setSelectedUser(player);
+                  }}
+                  className={`w-full rounded-xl px-2.5 py-2 flex items-center justify-between gap-2.5 border transition-all cursor-pointer active:scale-98 ${
+                    isUser
+                      ? 'bg-violet-950/40 border-violet-500/60 shadow-[0_0_15px_rgba(124,58,237,0.2)] ring-1 ring-violet-500/40'
+                      : isPromotion
+                      ? 'bg-[#121216] border-emerald-500/20 hover:border-emerald-500/40'
+                      : isDemotion
+                      ? 'bg-[#141010] border-rose-500/20 hover:border-rose-500/40'
+                      : 'bg-[#121216] border-white/[0.06] hover:border-white/15'
+                  }`}
+                >
+                  {/* Left: Rank & Avatar & Info */}
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    {/* Rank Number with Zone Color */}
+                    <div className="w-5 text-center flex flex-col items-center">
+                      <span className={`font-heading font-black text-xs ${
+                        isUser 
+                          ? 'text-violet-400' 
+                          : isPromotion 
+                          ? 'text-emerald-400' 
+                          : isDemotion 
+                          ? 'text-rose-400' 
+                          : 'text-zinc-400'
+                      }`}>
+                        #{player.rank}
+                      </span>
+                    </div>
 
-                  {/* Avatar Thumbnail */}
-                  <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-white/10 flex items-center justify-center font-bold text-[11px] text-zinc-300 overflow-hidden shrink-0">
-                    {player.avatarUrl || (isUser && user.avatarUrl) ? (
-                      <img src={player.avatarUrl || user.avatarUrl} alt={player.name} className="w-full h-full object-cover" />
-                    ) : (
-                      player.avatar
-                    )}
-                  </div>
+                    {/* Avatar Thumbnail */}
+                    <div className={`w-8 h-8 rounded-lg bg-zinc-800 border flex items-center justify-center font-bold text-[11px] text-zinc-300 overflow-hidden shrink-0 ${
+                      isPromotion ? 'border-emerald-500/30' : isDemotion ? 'border-rose-500/30' : 'border-white/10'
+                    }`}>
+                      {player.avatarUrl || (isUser && user.avatarUrl) ? (
+                        <img src={player.avatarUrl || user.avatarUrl} alt={player.name} className="w-full h-full object-cover" />
+                      ) : (
+                        player.avatar
+                      )}
+                    </div>
 
-                  {/* Name, Handle & Board */}
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <h4 className={`text-xs font-bold truncate leading-none ${isUser ? 'text-white font-black' : 'text-zinc-200'}`}>
-                        {player.name}
-                      </h4>
-                      {isUser && (
-                        <span className="px-1 py-0.2 rounded-sm bg-violet-600 text-white text-[8px] font-black uppercase tracking-tight">
-                          YOU
+                    {/* Name, Handle & Board */}
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <h4 className={`text-xs font-bold truncate leading-none ${isUser ? 'text-white font-black' : 'text-zinc-200'}`}>
+                          {player.name}
+                        </h4>
+                        {isUser && (
+                          <span className="px-1 py-0.2 rounded-sm bg-violet-600 text-white text-[8px] font-black uppercase tracking-tight">
+                            YOU
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        <span className="text-[10px] font-bold text-violet-400 truncate leading-tight">
+                          @{player.username}
                         </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      <span className="text-[10px] font-bold text-violet-400 truncate leading-tight">
-                        @{player.username}
-                      </span>
-                      <span className="text-[8px] text-zinc-600">•</span>
-                      <span className="text-[10px] text-zinc-400 truncate leading-tight">
-                        {player.board.replace(' Class 12', '').replace(' (BSEB)', '')}
-                      </span>
+                        <span className="text-[8px] text-zinc-600">•</span>
+                        <span className="text-[10px] font-medium text-zinc-400 truncate leading-tight">
+                          {player.board.replace(' Class 12', '').replace(' (BSEB)', '')}
+                        </span>
+                      </div>
                     </div>
                   </div>
+
+                  {/* Right: Score & Trend */}
+                  <div className="text-right shrink-0 flex items-center gap-2">
+                    <div className="flex flex-col items-end">
+                      <span className="font-heading text-xs font-black text-white leading-tight">
+                        {player.xp.toLocaleString()} <span className="text-[9px] font-normal text-zinc-500">XP</span>
+                      </span>
+                      
+                      <div className="flex items-center gap-1 mt-0.5">
+                        {player.trend === 'up' && (
+                          <span className="text-[9px] font-bold text-emerald-400">▲{player.trendValue}</span>
+                        )}
+                        {player.trend === 'down' && (
+                          <span className="text-[9px] font-bold text-rose-400">▼{player.trendValue}</span>
+                        )}
+                        {player.trend === 'neutral' && (
+                          <span className="text-[9px] text-zinc-500">—</span>
+                        )}
+                        <span className="text-[8px] font-medium text-zinc-400 bg-white/[0.05] px-1 rounded-xs">
+                          {player.accuracy}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
 
-                {/* Right: Score & Trend */}
-                <div className="text-right shrink-0 flex items-center gap-2">
-                  <div className="flex flex-col items-end">
-                    <span className="font-heading text-xs font-black text-white leading-tight">
-                      {player.xp.toLocaleString()} <span className="text-[9px] font-normal text-zinc-500">XP</span>
+                {/* 🟢 Duolingo Green Promotion Zone Divider Line after Rank #7 */}
+                {player.rank === 7 && (
+                  <div className="my-2 py-1 px-3 rounded-lg bg-emerald-950/60 border border-emerald-500/40 flex items-center justify-between shadow-[0_0_10px_rgba(16,185,129,0.15)]">
+                    <div className="flex items-center gap-1.5 text-[10px] font-black text-emerald-300 uppercase tracking-wider">
+                      <span className="text-xs">🟢</span>
+                      <span>Promotion Zone (Top 7 Advance)</span>
+                    </div>
+                    <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/20 px-1.5 py-0.5 rounded-sm">
+                      Next League ⬆
                     </span>
-                    
-                    <div className="flex items-center gap-1 mt-0.5">
-                      {player.trend === 'up' && (
-                        <span className="text-[9px] font-bold text-emerald-400">▲{player.trendValue}</span>
-                      )}
-                      {player.trend === 'down' && (
-                        <span className="text-[9px] font-bold text-rose-400">▼{player.trendValue}</span>
-                      )}
-                      {player.trend === 'neutral' && (
-                        <span className="text-[9px] text-zinc-500">—</span>
-                      )}
-                      <span className="text-[8px] font-medium text-zinc-400 bg-white/[0.05] px-1 rounded-xs">
-                        {player.accuracy}%
-                      </span>
-                    </div>
                   </div>
-                </div>
+                )}
 
-              </div>
+                {/* 🔴 Demotion Zone Divider Line before Rank #13 */}
+                {player.rank === 12 && (
+                  <div className="my-2 py-1 px-3 rounded-lg bg-rose-950/60 border border-rose-500/40 flex items-center justify-between shadow-[0_0_10px_rgba(244,63,94,0.15)]">
+                    <div className="flex items-center gap-1.5 text-[10px] font-black text-rose-300 uppercase tracking-wider">
+                      <span className="text-xs">🔴</span>
+                      <span>Demotion Zone (Bottom 3 Drop)</span>
+                    </div>
+                    <span className="text-[9px] font-bold text-rose-400 bg-rose-500/20 px-1.5 py-0.5 rounded-sm">
+                      Relegation ⬇
+                    </span>
+                  </div>
+                )}
+
+              </React.Fragment>
             );
           })}
         </div>
@@ -543,7 +650,13 @@ export function LeaderboardClient() {
           
           {/* User Info */}
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-700 border border-violet-400/40 flex items-center justify-center font-black text-[11px] overflow-hidden shrink-0">
+            <div className={`w-8 h-8 rounded-xl border flex items-center justify-center font-black text-[11px] overflow-hidden shrink-0 ${
+              currentUserData.rank <= 7
+                ? 'bg-emerald-600/30 border-emerald-400/60 text-emerald-300'
+                : currentUserData.rank >= 13
+                ? 'bg-rose-600/30 border-rose-400/60 text-rose-300'
+                : 'bg-zinc-800 border-white/20 text-white'
+            }`}>
               {user.avatarUrl ? (
                 <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
               ) : (
@@ -555,10 +668,14 @@ export function LeaderboardClient() {
                 <span className="text-xs font-bold text-white truncate">{currentUserData.name}</span>
                 <span className="text-[10px] font-bold text-violet-400">@{currentUserData.username}</span>
               </div>
-              <p className="text-[10px] text-zinc-400 truncate mt-0.5">
-                {currentUserData.rank <= 3
-                  ? '🏅 Podium Secured'
-                  : `🔥 +${pointsToPodium} XP for Top 3`}
+              <p className="text-[10px] truncate mt-0.5">
+                {currentUserData.rank <= 7 ? (
+                  <span className="text-emerald-400 font-bold">🟢 In Promotion Zone (# {currentUserData.rank})</span>
+                ) : currentUserData.rank >= 13 ? (
+                  <span className="text-rose-400 font-bold">🔴 Danger • +{pointsToAvoidDemote} XP to safe</span>
+                ) : (
+                  <span className="text-zinc-300">🔥 +{pointsToPromote} XP to reach Top 7</span>
+                )}
               </p>
             </div>
           </div>
@@ -567,7 +684,9 @@ export function LeaderboardClient() {
           <Link
             href="/tests"
             onClick={playButtonClick}
-            className="px-3 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs transition-all active:scale-95 shadow-md shrink-0 flex items-center gap-1"
+            className={`px-3 py-1.5 rounded-xl text-white font-bold text-xs transition-all active:scale-95 shadow-md shrink-0 flex items-center gap-1 ${
+              currentUserData.rank <= 7 ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-violet-600 hover:bg-violet-500'
+            }`}
           >
             <span>Practice</span>
             <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
@@ -608,13 +727,32 @@ export function LeaderboardClient() {
                 </div>
               </div>
               
-              <span className="text-xs font-bold text-zinc-300 bg-white/10 px-2 py-0.5 rounded-full border border-white/15">
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${
+                selectedUser.rank <= 7
+                  ? 'text-emerald-300 bg-emerald-950/60 border-emerald-500/40'
+                  : selectedUser.rank >= 13
+                  ? 'text-rose-300 bg-rose-950/60 border-rose-500/40'
+                  : 'text-zinc-300 bg-white/10 border-white/15'
+              }`}>
                 Rank #{selectedUser.rank}
               </span>
             </div>
 
+            {/* Status Zone Banner in Modal */}
+            <div className={`my-2 p-2 rounded-xl border text-center ${
+              selectedUser.rank <= 7
+                ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-300'
+                : selectedUser.rank >= 13
+                ? 'bg-rose-950/40 border-rose-500/30 text-rose-300'
+                : 'bg-white/[0.03] border-white/[0.06] text-zinc-400'
+            }`}>
+              <span className="text-[10px] font-black uppercase tracking-wider">
+                {selectedUser.rank <= 7 ? '🟢 Promotion Zone • Advancing to Next League' : selectedUser.rank >= 13 ? '🔴 Relegation Zone • Risk of Demotion' : '⚪ Safe Zone • Retaining Current League'}
+              </span>
+            </div>
+
             {/* Specialization */}
-            <div className="my-2.5 p-2 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+            <div className="my-2 p-2 rounded-xl bg-white/[0.03] border border-white/[0.06]">
               <span className="text-[9px] uppercase font-bold text-zinc-400 block">
                 Focus Area
               </span>
