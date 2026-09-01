@@ -291,44 +291,15 @@ export default function LoginPage() {
             </div>
 
             {/* ══ Authentic Depth Watermark Positioned Behind Parrot Head (z-0) ══ */}
-            <div className="absolute inset-x-0 top-12 sm:top-18 flex items-center justify-center z-0 select-none pointer-events-none w-full overflow-visible px-2">
+            <div className="absolute inset-x-0 top-7.5 sm:top-18 flex items-center justify-center z-0 select-none pointer-events-none w-full overflow-visible px-2">
               <h1 
-                className="font-heading font-bold text-[4.2rem] sm:text-[7.2rem] md:text-[110px] tracking-[0.15em] sm:tracking-[0.22em] uppercase text-center leading-none whitespace-nowrap pl-3 sm:pl-6 text-transparent bg-clip-text bg-gradient-to-b from-white/95 via-white/45 to-white/5 drop-shadow-[0_6px_20px_rgba(255,255,255,0.5)]"
+                className="font-heading font-bold text-[5rem] sm:text-[7.2rem] md:text-[100px] tracking-[0.15em] sm:tracking-[0.22em] uppercase text-center leading-none whitespace-nowrap pl-3 sm:pl-6 text-transparent bg-clip-text bg-gradient-to-b from-white/95 via-white/45 to-white/5 drop-shadow-[0_6px_20px_rgba(255,255,255,0.5)]"
                 style={{
                   fontFamily: "'Outfit', 'Montserrat', sans-serif",
                 }}
               >
                 NAINIX
               </h1>
-            </div>
-
-            {/* ══ Floating Left & Right Cards Shifted Downwards Below Clouds (z-30) ══ */}
-            <div className="w-full relative flex items-center justify-between mt-auto z-30 pt-10">
-              
-              {/* Left Floating Card: 3D Earth */}
-              <div className="w-32 sm:w-36 bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-[0_15px_30px_rgba(30,64,175,0.15)] border border-white flex flex-col items-center text-center space-y-1.5 hover:scale-105 transition-all">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-teal-400 shadow-md flex items-center justify-center p-0.5 text-white">
-                  <span className="material-symbols-outlined text-[24px]">public</span>
-                </div>
-                <p className="text-[8px] text-slate-700 font-bold leading-tight">
-                  Master All Board & Exam Curriculums Fast & Hassle-Free
-                </p>
-              </div>
-
-              {/* Right Floating Card: Blue Card */}
-              <div className="w-32 sm:w-36 bg-gradient-to-br from-[#1e40af] to-[#0f172a] text-white rounded-2xl p-3 shadow-[0_15px_30px_rgba(15,23,42,0.35)] border border-blue-400/40 space-y-1.5 hover:scale-105 transition-all">
-                <div className="flex justify-between items-center text-[7px] text-blue-200">
-                  <span className="font-black tracking-wider">NAINIXONE</span>
-                  <span className="font-black text-amber-300">VISA</span>
-                </div>
-                <div className="w-5 h-3.5 rounded bg-amber-300/80 my-1 shadow-2xs" />
-                <p className="text-[7px] font-mono tracking-wider text-blue-100">0457 5667 0088 5441</p>
-                <div className="flex justify-between text-[6px] text-blue-200 pt-0.5">
-                  <span>EXP: 08/29</span>
-                  <span>SCHOLAR PASS</span>
-                </div>
-              </div>
-
             </div>
 
           </div>
