@@ -85,10 +85,11 @@ export default function LoginPage() {
 
           {/* 3D Bubble "LOGIN" Heading */}
           <h1
-            className="font-heading font-black text-5xl sm:text-6xl tracking-wider select-none text-[#ff8fb3]"
+            className="font-bubble font-black text-5xl sm:text-6xl tracking-wider select-none text-[#ff8fb3]"
             style={{
-              WebkitTextStroke: '4px #ffffff',
-              filter: 'drop-shadow(0 6px 0 rgba(190, 24, 93, 0.4)) drop-shadow(0 12px 16px rgba(0,0,0,0.12))',
+              WebkitTextStroke: '5px #ffffff',
+              paintOrder: 'stroke fill',
+              filter: 'drop-shadow(0 5px 0 #9f5074) drop-shadow(0 10px 14px rgba(0,0,0,0.15))',
             }}
           >
             LOGIN
