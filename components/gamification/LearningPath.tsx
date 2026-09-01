@@ -37,7 +37,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       testId: '1',
       unit: 1,
       unitTitle: 'Unit 1 • Electrostatics & Fields',
-      themeColor: '#10b981', // Emerald Teal
+      themeColor: '#10b981',
     },
     {
       id: 'phy-2',
@@ -63,7 +63,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       testId: '2',
       unit: 2,
       unitTitle: 'Unit 2 • Potential & Capacitance',
-      themeColor: '#3b82f6', // Royal Blue
+      themeColor: '#3b82f6',
     },
     {
       id: 'phy-4',
@@ -102,7 +102,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       testId: '2',
       unit: 3,
       unitTitle: 'Unit 3 • Advanced Circuit Mastery',
-      themeColor: '#8b5cf6', // Violet Purple
+      themeColor: '#8b5cf6',
     },
     {
       id: 'phy-boss-1',
@@ -116,7 +116,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       isBoss: true,
       unit: 3,
       unitTitle: 'Unit 3 • Advanced Circuit Mastery',
-      themeColor: '#f59e0b', // Amber Gold
+      themeColor: '#f59e0b',
     },
   ],
   chemistry: [
@@ -291,7 +291,6 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
 
   const nodes = LESSON_PATH[activeSubject] || LESSON_PATH.physics;
 
-  // Find index of first incomplete node (active level)
   const firstIncompleteIdx = nodes.findIndex((n) => !user.completedNodes[n.id]);
   const currentActiveIdx = firstIncompleteIdx === -1 ? nodes.length - 1 : firstIncompleteIdx;
   const currentActiveNode = nodes[currentActiveIdx] || nodes[0];
@@ -367,27 +366,65 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   }, [activeSubject, user.completedNodes]);
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-[#ede9fe]/70 via-[#f4f5fa] to-[#f8fafc] text-slate-900 pb-36 font-sans select-none relative overflow-hidden">
+    <div className="w-full min-h-screen bg-gradient-to-b from-[#b494f6] via-[#a37def] to-[#9065e8] text-slate-900 pb-36 font-sans select-none relative overflow-hidden">
       
-      {/* ─── Ambient Architectural Dot Grid Backdrop ─── */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-45"
-        style={{
-          backgroundImage: 'radial-gradient(#c4b5fd 1.2px, transparent 1.2px)',
-          backgroundSize: '24px 24px',
-        }}
-      />
+      {/* ─── Dreamy Pastel Background Elements (Circus Tent, Balloons, Candies) ─── */}
+      
+      {/* Circus Tent on the Left */}
+      <div className="absolute top-52 -left-6 w-32 h-32 pointer-events-none opacity-85 z-0 select-none">
+        <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+          {/* Tent Roof */}
+          <path d="M50 15 L15 55 L85 55 Z" fill="#e9d5ff" stroke="#c084fc" strokeWidth="2" />
+          <path d="M50 15 L35 55 L65 55 Z" fill="#fed7aa" />
+          {/* Flag */}
+          <path d="M50 15 L50 6 L64 10 L50 15" fill="#f59e0b" />
+          {/* Base Wall */}
+          <path d="M18 55 L82 55 L82 85 L18 85 Z" fill="#f3e8ff" stroke="#c084fc" strokeWidth="2" />
+          {/* Door */}
+          <path d="M40 85 C40 70 60 70 60 85 Z" fill="#7e22ce" />
+        </svg>
+      </div>
 
-      {/* Floating Subtle Ambient Glow Orbs */}
-      <div className="absolute top-12 left-1/2 -translate-x-1/2 w-96 h-96 bg-violet-400/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-[480px] left-8 w-72 h-72 bg-cyan-400/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-[900px] right-4 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Gift Box with Balloons on the Right */}
+      <div className="absolute top-[460px] right-2 w-28 h-36 pointer-events-none opacity-90 z-0 select-none">
+        <svg viewBox="0 0 100 130" className="w-full h-full drop-shadow-md">
+          {/* Balloons */}
+          <ellipse cx="35" cy="30" rx="16" ry="20" fill="#fef08a" />
+          <ellipse cx="65" cy="25" rx="16" ry="20" fill="#fbcfe8" />
+          <ellipse cx="50" cy="42" rx="16" ry="20" fill="#fed7aa" />
+          {/* Strings */}
+          <path d="M35 50 Q45 65 50 80" stroke="#cbd5e1" strokeWidth="1.5" fill="none" />
+          <path d="M65 45 Q55 65 50 80" stroke="#cbd5e1" strokeWidth="1.5" fill="none" />
+          {/* Gift Box */}
+          <rect x="25" y="80" width="50" height="42" rx="6" fill="#d8b4fe" stroke="#a855f7" strokeWidth="2" />
+          <rect x="20" y="75" width="60" height="14" rx="4" fill="#e9d5ff" stroke="#a855f7" strokeWidth="2" />
+          {/* Ribbon */}
+          <rect x="44" y="75" width="12" height="47" fill="#fde047" />
+        </svg>
+      </div>
 
-      {/* ─── Top Subject & Unit Progress Hero Card ─── */}
-      <div className="relative z-10 max-w-md mx-auto px-4 pt-3 pb-1">
+      {/* Candy Cane on the Bottom Left */}
+      <div className="absolute top-[780px] left-3 w-20 h-28 pointer-events-none opacity-80 z-0 select-none">
+        <svg viewBox="0 0 60 90" className="w-full h-full drop-shadow-sm">
+          <path d="M20 80 L20 30 C20 10 50 10 50 30" stroke="#f472b6" strokeWidth="12" strokeLinecap="round" fill="none" />
+          <path d="M20 80 L20 30 C20 10 50 10 50 30" stroke="#ffffff" strokeWidth="8" strokeDasharray="6 8" strokeLinecap="round" fill="none" />
+        </svg>
+      </div>
+
+      {/* Rocking Unicorn on the Top Right */}
+      <div className="absolute top-24 right-4 w-28 h-28 pointer-events-none opacity-85 z-0 select-none">
+        <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-sm">
+          <path d="M20 75 Q50 85 80 75" stroke="#fde047" strokeWidth="6" strokeLinecap="round" fill="none" />
+          <path d="M35 75 L45 45 L65 45 L70 75" fill="#e9d5ff" stroke="#c084fc" strokeWidth="2" />
+          <circle cx="42" cy="35" r="14" fill="#fbcfe8" />
+        </svg>
+      </div>
+
+      {/* ─── Top Subject Navigation Header ─── */}
+      <div className="relative z-20 max-w-md mx-auto px-4 pt-3 pb-1">
         
-        {/* Subject Navigation Tabs */}
-        <div className="bg-white/80 backdrop-blur-md p-1 rounded-2xl border-2 border-[#e2e8f0] shadow-2xs flex items-center justify-between gap-1 overflow-x-auto no-scrollbar mb-3">
+        {/* Subject Segmented Pills */}
+        <div className="bg-white/85 backdrop-blur-md p-1.5 rounded-2xl border-2 border-white/60 shadow-md flex items-center justify-between gap-1 overflow-x-auto no-scrollbar mb-3">
           {SUBJECTS.map((s) => {
             const isSel = activeSubject === s.id;
             return (
@@ -400,8 +437,8 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
                 }}
                 className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap text-center ${
                   isSel
-                    ? 'bg-[#7c3aed] text-white shadow-xs scale-[1.02]'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
+                    ? 'bg-[#7c3aed] text-white shadow-sm scale-[1.02]'
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/50'
                 }`}
               >
                 {s.name}
@@ -411,7 +448,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
         </div>
 
         {/* Current Active Unit Banner */}
-        <div className="bg-white/90 backdrop-blur-md rounded-3xl p-4 border-2 border-b-4 border-[#e2e8f0] shadow-xs relative overflow-hidden flex items-center justify-between gap-3">
+        <div className="bg-white/95 backdrop-blur-md rounded-3xl p-4 border-2 border-b-4 border-white/80 shadow-lg relative overflow-hidden flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 mb-1 flex-wrap">
               <span className="text-[10px] font-black uppercase tracking-wider bg-violet-100 text-[#6d28d9] px-2.5 py-0.5 rounded-full border border-violet-200">
@@ -426,7 +463,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
               {currentActiveNode.unitTitle}
             </h2>
             <p className="text-[11px] text-slate-500 truncate mt-0.5">
-              Next up: <span className="font-bold text-slate-700">{currentActiveNode.title}</span>
+              Next: <span className="font-bold text-slate-800">{currentActiveNode.title}</span>
             </p>
 
             {/* Progress Bar */}
@@ -438,7 +475,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
             </div>
           </div>
 
-          {/* Trophy Mascot Graphic */}
+          {/* Mascot Graphic */}
           <div className="w-14 sm:w-16 shrink-0 flex items-center justify-center">
             <img
               src="/images/trophy_cat.png"
@@ -450,68 +487,79 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
 
       </div>
 
-      {/* ─── The Winding Learning Road Canvas ─── */}
+      {/* ─── The Winding Road Canvas with Dashed Center Markings ─── */}
       <div
         className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-3 z-10"
         style={{ height: `${totalTrackHeight}px` }}
       >
-        {/* SVG Continuous Elbow Path Tracks */}
+        {/* SVG Road Pathway */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible"
           viewBox={`0 0 ${CONTAINER_WIDTH} ${totalTrackHeight}`}
         >
-          {/* Depth Shadow Layer for Pipeline Track */}
+          {/* Broad Winding Road Base */}
           {nodes.slice(0, -1).map((node, index) => {
             const p1 = nodePoints[index];
             const p2 = nodePoints[index + 1];
-            const d = getElbowPath(p1, p2, 34);
+            const d = getElbowPath(p1, p2, 42);
 
             return (
               <path
-                key={`shadow-${node.id}`}
+                key={`road-base-${node.id}`}
                 d={d}
                 fill="none"
-                stroke="#cbd5e1"
-                strokeWidth="18"
+                stroke="#d8b4fe"
+                strokeWidth="52"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                opacity="0.35"
+                opacity="0.6"
               />
             );
           })}
 
-          {/* Foreground Colored Track Layer */}
+          {/* Road Surface */}
           {nodes.slice(0, -1).map((node, index) => {
             const p1 = nodePoints[index];
             const p2 = nodePoints[index + 1];
-            const d = getElbowPath(p1, p2, 34);
-
-            const isSegmentCompleted = index < currentActiveIdx;
-            const isSegmentActive = index === currentActiveIdx - 1;
-            
-            let strokeColor = '#e2e8f0'; // Clean neutral inactive track
-            if (isSegmentCompleted) {
-              strokeColor = node.themeColor;
-            } else if (isSegmentActive) {
-              strokeColor = node.themeColor;
-            }
+            const d = getElbowPath(p1, p2, 42);
 
             return (
               <path
-                key={`segment-${node.id}`}
+                key={`road-surface-${node.id}`}
                 d={d}
                 fill="none"
-                stroke={strokeColor}
-                strokeWidth="14"
+                stroke="#e9d5ff"
+                strokeWidth="42"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="transition-colors duration-300"
+                opacity="0.8"
+              />
+            );
+          })}
+
+          {/* Dashed Center Road Line (Matching Exact Screenshot) */}
+          {nodes.slice(0, -1).map((node, index) => {
+            const p1 = nodePoints[index];
+            const p2 = nodePoints[index + 1];
+            const d = getElbowPath(p1, p2, 42);
+
+            return (
+              <path
+                key={`road-dash-${node.id}`}
+                d={d}
+                fill="none"
+                stroke="#a855f7"
+                strokeWidth="3.5"
+                strokeDasharray="9 9"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                opacity="0.45"
               />
             );
           })}
         </svg>
 
-        {/* ─── Nodes Layer ─── */}
+        {/* ─── 3D Stepping Nodes Layer ─── */}
         {nodes.map((node, index) => {
           const status = getNodeStatus(node, index);
           const isCurrentActive = status === 'active' && index === currentActiveIdx;
@@ -557,10 +605,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
             {/* Modal Header */}
             <div className="flex items-start justify-between gap-3 mb-3">
               <div>
-                <span
-                  style={{ backgroundColor: `${selectedNode.themeColor}18`, color: selectedNode.themeColor }}
-                  className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full inline-block mb-1"
-                >
+                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full inline-block mb-1 bg-violet-100 text-[#7c3aed] border border-violet-200">
                   {selectedNode.unitTitle}
                 </span>
                 <h3 className="font-heading font-black text-lg text-slate-900 leading-tight">
