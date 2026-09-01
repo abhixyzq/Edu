@@ -304,50 +304,81 @@ export default function LoginPage() {
 
           </div>
 
-          {/* ─── 3. Curved Dynamic 3-Pillar Ribbon ─── */}
-          <div className="w-full px-4 py-2 -mt-1 relative z-30">
-            <div className="bg-white rounded-3xl p-4 shadow-[0_12px_25px_rgba(0,0,0,0.06)] border border-slate-100 grid grid-cols-3 gap-3 items-center text-left">
-              
-              {/* Left Pillar */}
-              <div className="space-y-1">
-                <div className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-indigo-900" />
+          {/* ─── 3. Exact Sculpted Cut-Out Contour Ribbon Matching Reference Design ─── */}
+          <div className="w-full relative z-30 -mt-32 sm:-mt-44 pt-0">
+            {/* SVG Sculpted White Background Contour with Center Trapezoid Cut-Out */}
+            <div className="w-full relative">
+              <svg 
+                viewBox="0 0 1000 240" 
+                preserveAspectRatio="none" 
+                className="w-full h-[180px] sm:h-[220px] drop-shadow-[0_-8px_20px_rgba(30,64,175,0.05)]"
+              >
+                <path 
+                  d="M 0,0 L 330,0 Q 355,0 370,30 L 400,105 Q 415,130 445,130 L 555,130 Q 585,130 600,105 L 630,30 Q 645,0 670,0 L 1000,0 L 1000,240 L 0,240 Z" 
+                  fill="#ffffff" 
+                />
+              </svg>
+
+              {/* Foreground 3-Pillar Content Overlay */}
+              <div className="absolute inset-0 w-full grid grid-cols-12 px-3 sm:px-6 pt-3 sm:pt-4">
+                
+                {/* Left Block */}
+                <div className="col-span-4 flex flex-col justify-between pr-2 pb-4">
+                  <div className="flex items-center gap-1.5 mb-1 sm:mb-2">
+                    <span className="w-3.5 h-3.5 rounded-full bg-[#0f172a] shadow-2xs flex items-center justify-center text-[7px] text-white font-bold">N</span>
+                    <span className="w-3.5 h-3.5 rounded-full bg-blue-600 shadow-2xs" />
+                  </div>
+                  <p className="text-[7.5px] sm:text-[9.5px] text-slate-600 font-medium leading-tight mb-1 sm:mb-2">
+                    nainixOne empowers scholars across India to score top percentiles.
+                  </p>
+                  <Link
+                    href="/subjects"
+                    className="text-[7px] sm:text-[8px] font-black text-blue-600 uppercase tracking-wider hover:underline flex items-center gap-0.5 mt-auto"
+                  >
+                    <span>OUR SERVICES</span>
+                    <span>&rarr;</span>
+                  </Link>
                 </div>
-                <p className="text-[8px] text-slate-600 font-medium leading-tight">
-                  Empowering scholars across India to score top percentiles.
-                </p>
-                <span className="text-[7px] font-black text-blue-600 uppercase tracking-wider block hover:underline cursor-pointer">
-                  OUR SERVICES &rarr;
-                </span>
-              </div>
 
-              {/* Center Pillar with Raised Cutout Pill */}
-              <div className="bg-gradient-to-b from-[#e1f0ff] to-[#f4f9ff] rounded-2xl p-2.5 text-center border border-blue-200 shadow-xs space-y-1">
-                <div className="inline-flex items-center gap-0.5 bg-white px-2 py-0.5 rounded-full text-[7px] font-black text-blue-600 border border-blue-100 shadow-2xs">
-                  <span>Open Account</span>
-                  <span className="material-symbols-outlined text-[9px]">arrow_forward</span>
+                {/* Center Dip (Sits in the Sky Gradient Channel) */}
+                <div className="col-span-4 flex flex-col items-center justify-start text-center pt-2 sm:pt-3 px-1">
+                  <Link
+                    href="/signup"
+                    onClick={playButtonClick}
+                    className="inline-flex items-center gap-1 bg-white/80 hover:bg-white backdrop-blur-md border border-white/90 px-3 py-1 rounded-full shadow-sm text-[8px] sm:text-[9px] font-bold text-slate-800 transition-all hover:scale-105 active:scale-95 mb-1.5"
+                  >
+                    <span>Open Account</span>
+                    <span className="material-symbols-outlined text-[10px]">arrow_forward</span>
+                  </Link>
+                  <h3 className="font-heading font-black text-[11px] sm:text-base text-white tracking-tight uppercase leading-tight drop-shadow-[0_2px_8px_rgba(30,64,175,0.6)]">
+                    FAST PRACTICE, <br />
+                    FAST RESULTS
+                  </h3>
                 </div>
-                <h3 className="font-heading font-black text-[10px] text-slate-900 leading-tight uppercase">
-                  FAST PRACTICE, <br />
-                  FAST RESULTS
-                </h3>
-              </div>
 
-              {/* Right Pillar with 90M+ */}
-              <div className="space-y-0.5 text-right pr-1">
-                <span className="text-[7px] text-slate-400 font-bold uppercase tracking-wider block">
-                  TOTAL QUESTIONS
-                </span>
-                <h3 className="font-heading font-black text-2xl text-blue-600 leading-none">
-                  90M+
-                </h3>
-                <p className="text-[7px] text-slate-400 font-medium">Practiced On nainixOne</p>
-                <span className="text-[7px] font-black text-blue-600 uppercase tracking-wider block hover:underline cursor-pointer">
-                  VIEW STATS &rarr;
-                </span>
-              </div>
+                {/* Right Block (Stats) */}
+                <div className="col-span-4 flex flex-col justify-between pl-2 pb-4 text-left">
+                  <div className="inline-block self-start border border-slate-200 bg-slate-50/80 px-2 py-0.5 rounded-full text-[6.5px] sm:text-[7.5px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                    TOTAL PRACTICE
+                  </div>
+                  <div className="my-auto">
+                    <h3 className="font-heading font-black text-2xl sm:text-3xl text-blue-600 leading-none tracking-tight">
+                      90M+
+                    </h3>
+                    <p className="text-[7px] sm:text-[8px] text-slate-500 font-medium leading-tight mt-0.5">
+                      Questions Practiced With nainixOne
+                    </p>
+                  </div>
+                  <Link
+                    href="/leaderboard"
+                    className="text-[7px] sm:text-[8px] font-black text-blue-600 uppercase tracking-wider hover:underline flex items-center gap-0.5 mt-auto"
+                  >
+                    <span>VIEW STATS</span>
+                    <span>&uarr;</span>
+                  </Link>
+                </div>
 
+              </div>
             </div>
           </div>
 
