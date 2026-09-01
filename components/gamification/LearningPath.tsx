@@ -385,48 +385,6 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
       <div className="absolute top-[720px] left-16 text-white/40 text-xs font-black pointer-events-none animate-pulse">✦</div>
       <div className="absolute top-[920px] right-20 text-white/35 text-sm font-black pointer-events-none">✦</div>
 
-      {/* Circus Tent on the Left */}
-      <div className="absolute top-52 -left-6 w-32 h-32 pointer-events-none opacity-90 z-0 select-none">
-        <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
-          <path d="M50 15 L15 55 L85 55 Z" fill="#f3e8ff" stroke="#c084fc" strokeWidth="2" />
-          <path d="M50 15 L35 55 L65 55 Z" fill="#fed7aa" />
-          <path d="M50 15 L50 6 L64 10 L50 15" fill="#f59e0b" />
-          <path d="M18 55 L82 55 L82 85 L18 85 Z" fill="#faf5ff" stroke="#c084fc" strokeWidth="2" />
-          <path d="M40 85 C40 70 60 70 60 85 Z" fill="#7e22ce" />
-        </svg>
-      </div>
-
-      {/* Gift Box with Balloons on the Right */}
-      <div className="absolute top-[470px] right-2 w-28 h-36 pointer-events-none opacity-90 z-0 select-none">
-        <svg viewBox="0 0 100 130" className="w-full h-full drop-shadow-md">
-          <ellipse cx="35" cy="30" rx="16" ry="20" fill="#fef08a" />
-          <ellipse cx="65" cy="25" rx="16" ry="20" fill="#fbcfe8" />
-          <ellipse cx="50" cy="42" rx="16" ry="20" fill="#fed7aa" />
-          <path d="M35 50 Q45 65 50 80" stroke="#ffffff" strokeWidth="1.5" fill="none" opacity="0.6" />
-          <path d="M65 45 Q55 65 50 80" stroke="#ffffff" strokeWidth="1.5" fill="none" opacity="0.6" />
-          <rect x="25" y="80" width="50" height="42" rx="6" fill="#d8b4fe" stroke="#a855f7" strokeWidth="2" />
-          <rect x="20" y="75" width="60" height="14" rx="4" fill="#e9d5ff" stroke="#a855f7" strokeWidth="2" />
-          <rect x="44" y="75" width="12" height="47" fill="#fde047" />
-        </svg>
-      </div>
-
-      {/* Candy Cane on the Bottom Left */}
-      <div className="absolute top-[780px] left-3 w-20 h-28 pointer-events-none opacity-85 z-0 select-none">
-        <svg viewBox="0 0 60 90" className="w-full h-full drop-shadow-sm">
-          <path d="M20 80 L20 30 C20 10 50 10 50 30" stroke="#f472b6" strokeWidth="12" strokeLinecap="round" fill="none" />
-          <path d="M20 80 L20 30 C20 10 50 10 50 30" stroke="#ffffff" strokeWidth="8" strokeDasharray="6 8" strokeLinecap="round" fill="none" />
-        </svg>
-      </div>
-
-      {/* Rocking Unicorn on the Top Right */}
-      <div className="absolute top-24 right-4 w-28 h-28 pointer-events-none opacity-90 z-0 select-none">
-        <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-sm">
-          <path d="M20 75 Q50 85 80 75" stroke="#fde047" strokeWidth="6" strokeLinecap="round" fill="none" />
-          <path d="M35 75 L45 45 L65 45 L70 75" fill="#f3e8ff" stroke="#c084fc" strokeWidth="2" />
-          <circle cx="42" cy="35" r="14" fill="#fbcfe8" />
-        </svg>
-      </div>
-
       {/* ─── Top Subject Navigation Header ─── */}
       <div className="relative z-20 max-w-md mx-auto px-4 pt-3 pb-1">
         
