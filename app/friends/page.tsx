@@ -1,6 +1,6 @@
 import React from 'react';
 import { FriendsClient } from '@/components/gamification/FriendsClient';
 
-export default function ShopPage() {
+export default function FriendsPage() {
   return <FriendsClient />;
 }

@@ -21,7 +21,7 @@ export const Navbar: React.FC = () => {
   const bottomTabs = [
     { href: '/', label: 'Learn', icon: 'school' },
     { href: '/tests', label: 'Practice', icon: 'bolt' },
-    { href: '/shop', label: 'MAX', icon: 'verified', hasDot: true },
+    { href: '/friends', label: 'Friends', icon: 'group', hasDot: false },
     { href: '/leaderboard', label: 'Rankings', icon: 'emoji_events' },
     { href: '/profile', label: 'Profile', icon: 'account_circle' },
   ];
