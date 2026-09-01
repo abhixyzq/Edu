@@ -14,11 +14,21 @@ export default function SignupPage() {
   const [error, setError] = useState('');
 
   const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
+  const [usernameTouched, setUsernameTouched] = useState(false);
   const [contact, setContact] = useState('');
   const [board, setBoard] = useState('cbse');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [agreedTerms, setAgreedTerms] = useState(true);
+
+  const handleNameChange = (val: string) => {
+    setFullName(val);
+    if (!usernameTouched) {
+      const generated = val.toLowerCase().trim().replace(/[^a-z0-9]/g, '_').slice(0, 15);
+      setUsername(generated);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,11 +36,13 @@ export default function SignupPage() {
     playButtonClick();
 
     if (!fullName.trim()) return setError('Please enter your full name.');
+    if (!username.trim() || username.length < 3) return setError('Username must be 3-20 characters.');
     if (!contact.includes('@')) return setError('Please enter a valid email address.');
     if (password.length < 6) return setError('Password must be at least 6 characters.');
     
     setLoading(true);
-    const result = await signup(fullName.trim(), contact.trim().toLowerCase(), password, board);
+    const cleanUser = username.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    const result = await signup(fullName.trim(), contact.trim().toLowerCase(), password, board, cleanUser);
     setLoading(false);
 
     if (result.success) {
@@ -133,8 +145,29 @@ export default function SignupPage() {
                   type="text"
                   required
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  onChange={(e) => handleNameChange(e.target.value)}
                   placeholder="Rahul Sharma"
+                  className="w-full h-full bg-transparent px-3.5 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 outline-none"
+                />
+              </div>
+
+              {/* Capsule Input: Unique Handle @username */}
+              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
+                <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
+                  <span className="text-xs font-black">@</span>
+                  <span className="text-[10px] font-black tracking-tight">HANDLE</span>
+                </div>
+                <input
+                  id="username"
+                  type="text"
+                  required
+                  value={username}
+                  onChange={(e) => {
+                    setUsernameTouched(true);
+                    setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''));
+                  }}
+                  placeholder="rahul_12"
+                  maxLength={20}
                   className="w-full h-full bg-transparent px-3.5 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 outline-none"
                 />
               </div>

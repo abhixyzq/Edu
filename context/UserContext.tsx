@@ -19,6 +19,7 @@ export interface UserInventory {
 export interface UserGamifiedState {
   id?: string;
   name: string;
+  username: string;
   email: string;
   classLevel: string;
   streakDays: number;
@@ -43,6 +44,7 @@ interface UserContextType {
   user: UserGamifiedState;
   setTargetBoard: (boardId: string) => void;
   updateAvatar: (avatarUrl: string) => Promise<void>;
+  updateUsername: (username: string) => Promise<{ success: boolean; error?: string }>;
   incrementStreak: () => void;
   addXP: (amount: number) => { newXP: number; leveledUp: boolean; newLevel: number };
   addGems: (amount: number) => void;
@@ -52,14 +54,15 @@ interface UserContextType {
   completeNode: (nodeId: string, stars: number, score: number, nextNodeId?: string) => void;
   buyShopItem: (itemId: 'streak_freeze' | 'heart_refill' | 'infinite_hearts' | 'double_xp', costGems: number) => boolean;
   toggleSound: () => void;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  signup: (name: string, email: string, password: string, targetBoard?: string) => Promise<{ success: boolean; error?: string }>;
+  login: (identifier: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signup: (name: string, email: string, password: string, targetBoard?: string, username?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
 }
 
 const DEFAULT_USER: UserGamifiedState = {
   id: '',
-  name: 'Class 12 Scholar',
+  name: 'Abhishek Kumar',
+  username: 'abhishek_12',
   email: '',
   classLevel: 'Class 12',
   streakDays: 7,
@@ -85,6 +88,14 @@ const DEFAULT_USER: UserGamifiedState = {
   soundMuted: false,
 };
 
+export const sanitizeUsername = (raw: string): string => {
+  return raw
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9_]/g, '')
+    .slice(0, 20);
+};
+
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -95,6 +106,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // 1. Restore local storage
     const storedAuth = localStorage.getItem('edustride_logged_in');
     const storedName = localStorage.getItem('edustride_user_name');
+    const storedUsername = localStorage.getItem('edustride_user_username');
     const storedEmail = localStorage.getItem('edustride_user_email');
     const storedBoard = localStorage.getItem('edustride_user_board');
     const storedXP = localStorage.getItem('edustride_user_xp');
@@ -110,10 +122,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser((prev) => {
       const xpVal = storedXP ? parseInt(storedXP, 10) : prev.xp;
       const levelVal = Math.floor(xpVal / 100) + 1;
+      const cleanName = storedName || prev.name;
+      const cleanUser = storedUsername || sanitizeUsername(cleanName.replace(/\s+/g, '_')) || 'scholar_12';
+
       return {
         ...prev,
         isLoggedIn: storedAuth === 'true' && !!storedEmail,
-        name: storedName || prev.name,
+        name: cleanName,
+        username: cleanUser,
         email: storedEmail || prev.email,
         targetBoard: storedBoard || prev.targetBoard,
         xp: xpVal,
@@ -159,6 +175,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .maybeSingle();
 
       const name = profile?.name || email.split('@')[0] || 'Student';
+      const username = profile?.username || sanitizeUsername(name.replace(/\s+/g, '_')) || 'scholar_12';
       const board = profile?.target_board || 'cbse';
       const streak = profile?.streak_days || 7;
       const xpVal = profile?.xp_points || 320;
@@ -166,12 +183,13 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const heartsVal = profile?.hearts || 5;
       const isAdmin = profile?.is_admin === true;
 
-      persistLocalSession(name, email, board, xpVal, gemsVal, heartsVal);
+      persistLocalSession(name, email, board, xpVal, gemsVal, heartsVal, username);
 
       setUser((prev) => ({
         ...prev,
         id: userId,
         name,
+        username,
         email,
         targetBoard: board,
         streakDays: streak,
@@ -187,9 +205,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const persistLocalSession = (name: string, email: string, board: string, xp?: number, gems?: number, hearts?: number) => {
+  const persistLocalSession = (name: string, email: string, board: string, xp?: number, gems?: number, hearts?: number, username?: string) => {
     localStorage.setItem('edustride_logged_in', 'true');
     localStorage.setItem('edustride_user_name', name);
+    if (username) localStorage.setItem('edustride_user_username', username);
     localStorage.setItem('edustride_user_email', email);
     localStorage.setItem('edustride_user_board', board);
     if (xp !== undefined) localStorage.setItem('edustride_user_xp', xp.toString());
@@ -200,6 +219,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const clearLocalSession = () => {
     localStorage.removeItem('edustride_logged_in');
     localStorage.removeItem('edustride_user_name');
+    localStorage.removeItem('edustride_user_username');
     localStorage.removeItem('edustride_user_email');
     setUser(DEFAULT_USER);
   };
@@ -344,15 +364,17 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // ─── Auth (Signup / Login / Logout) ───
-  const signup = async (name: string, email: string, password: string, targetBoard = 'cbse') => {
+  const signup = async (name: string, email: string, password: string, targetBoard = 'cbse', username?: string) => {
     if (!name.trim()) return { success: false, error: 'Name is required.' };
     if (!email.includes('@')) return { success: false, error: 'Invalid email address.' };
     if (password.length < 6) return { success: false, error: 'Password must be at least 6 characters.' };
 
+    const cleanUsername = sanitizeUsername(username || name.replace(/\s+/g, '_')) || 'scholar_12';
+
     try {
       if (!isSupabaseConfigured) {
-        persistLocalSession(name, email, targetBoard);
-        setUser((prev) => ({ ...prev, name, email, targetBoard, isLoggedIn: true }));
+        persistLocalSession(name.trim(), email.trim().toLowerCase(), targetBoard, 320, 150, 5, cleanUsername);
+        setUser((prev) => ({ ...prev, name: name.trim(), username: cleanUsername, email: email.trim().toLowerCase(), targetBoard, isLoggedIn: true }));
         return { success: true };
       }
 
@@ -365,10 +387,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (authError) return { success: false, error: authError.message };
 
       const userId = data?.user?.id;
+
       if (userId) {
         await supabase.from('profiles').upsert({
           id: userId,
           name: name.trim(),
+          username: cleanUsername,
           email: email.trim().toLowerCase(),
           target_board: targetBoard,
           xp_points: 320,
@@ -377,11 +401,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }, { onConflict: 'id' });
       }
 
-      persistLocalSession(name.trim(), email.trim().toLowerCase(), targetBoard);
+      persistLocalSession(name.trim(), email.trim().toLowerCase(), targetBoard, 320, 150, 5, cleanUsername);
       setUser((prev) => ({
         ...prev,
         id: userId || '',
         name: name.trim(),
+        username: cleanUsername,
         email: email.trim().toLowerCase(),
         targetBoard,
         isLoggedIn: true,
@@ -393,20 +418,36 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const login = async (email: string, password: string) => {
-    if (!email.trim()) return { success: false, error: 'Email is required.' };
+  const login = async (identifier: string, password: string) => {
+    const rawId = identifier.trim().toLowerCase().replace(/^@/, '');
+    if (!rawId) return { success: false, error: 'Email or @username is required.' };
     if (!password) return { success: false, error: 'Password is required.' };
 
     try {
       if (!isSupabaseConfigured) {
-        const name = email.split('@')[0] || 'Student';
-        persistLocalSession(name, email, 'cbse');
-        setUser((prev) => ({ ...prev, name, email, isLoggedIn: true }));
+        const name = rawId.includes('@') ? rawId.split('@')[0] : rawId;
+        const cleanUser = sanitizeUsername(name);
+        persistLocalSession(name, rawId.includes('@') ? rawId : `${cleanUser}@nainixone.prep`, 'cbse', 320, 150, 5, cleanUser);
+        setUser((prev) => ({ ...prev, name, username: cleanUser, email: rawId, isLoggedIn: true }));
         return { success: true };
       }
 
+      // If user typed a username without @, find their email from profiles
+      let authEmail = rawId;
+      if (!rawId.includes('@')) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('username', rawId)
+          .maybeSingle();
+
+        if (profile?.email) {
+          authEmail = profile.email;
+        }
+      }
+
       const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email: email.trim().toLowerCase(),
+        email: authEmail,
         password,
       });
 
@@ -414,13 +455,44 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const userId = data?.user?.id;
       if (userId) {
-        await fetchAndSyncProfile(userId, data.user?.email || email);
+        await fetchAndSyncProfile(userId, data.user?.email || authEmail);
       }
 
       return { success: true };
     } catch (err: any) {
       return { success: false, error: err.message || 'Login failed.' };
     }
+  };
+
+  const updateUsername = async (newUsername: string) => {
+    const clean = sanitizeUsername(newUsername);
+    if (clean.length < 3) {
+      return { success: false, error: 'Username must be at least 3 characters (letters, numbers, underscore).' };
+    }
+
+    // Check if taken in Supabase
+    if (isSupabaseConfigured && user.id) {
+      try {
+        const { data: existing } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('username', clean)
+          .neq('id', user.id)
+          .maybeSingle();
+
+        if (existing) {
+          return { success: false, error: `@${clean} is already taken. Try another unique handle.` };
+        }
+
+        await supabase.from('profiles').update({ username: clean }).eq('id', user.id);
+      } catch (e) {
+        console.warn('Could not sync username to Supabase:', e);
+      }
+    }
+
+    setUser((prev) => ({ ...prev, username: clean }));
+    localStorage.setItem('edustride_user_username', clean);
+    return { success: true };
   };
 
   const updateAvatar = async (avatarUrl: string) => {
@@ -448,6 +520,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         setTargetBoard,
         updateAvatar,
+        updateUsername,
         incrementStreak,
         addXP,
         addGems,

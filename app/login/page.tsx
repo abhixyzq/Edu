@@ -127,7 +127,7 @@ export default function LoginPage() {
                   required
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="Email or Student ID"
+                  placeholder="Email or @username"
                   className="w-full h-full bg-transparent px-4 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 outline-none"
                 />
               </div>

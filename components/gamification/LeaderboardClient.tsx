@@ -12,6 +12,7 @@ interface LeaderboardUser {
   id: string;
   rank: number;
   name: string;
+  username: string;
   avatar: string;
   avatarUrl?: string;
   board: string;
@@ -47,6 +48,7 @@ export function LeaderboardClient() {
         id: 'usr-1',
         rank: 1,
         name: 'Aarav Sharma',
+        username: 'aarav_cbse',
         avatar: 'AS',
         board: 'CBSE Class 12',
         specialization: 'Physics & Mathematics',
@@ -61,6 +63,7 @@ export function LeaderboardClient() {
         id: 'usr-2',
         rank: 2,
         name: 'Rohan Gupta',
+        username: 'rohan_bseb',
         avatar: 'RG',
         board: 'Bihar Board (BSEB)',
         specialization: 'Mathematics & Chemistry',
@@ -75,6 +78,7 @@ export function LeaderboardClient() {
         id: 'usr-3',
         rank: 3,
         name: 'Priya Verma',
+        username: 'priya_cbse',
         avatar: 'PV',
         board: 'CBSE Class 12',
         specialization: 'Organic Chemistry',
@@ -89,6 +93,7 @@ export function LeaderboardClient() {
         id: 'usr-4',
         rank: 4,
         name: user.name || 'You',
+        username: user.username || 'scholar_12',
         avatar: (user.name ? user.name.slice(0, 2) : 'ME').toUpperCase(),
         avatarUrl: user.avatarUrl,
         board: user.targetBoard === 'bseb' ? 'Bihar Board (BSEB)' : 'CBSE Class 12',
@@ -105,6 +110,7 @@ export function LeaderboardClient() {
         id: 'usr-5',
         rank: 5,
         name: 'Devansh Pandey',
+        username: 'devansh_up',
         avatar: 'DP',
         board: 'UP Board',
         specialization: 'Optics & Mechanics',
@@ -119,6 +125,7 @@ export function LeaderboardClient() {
         id: 'usr-6',
         rank: 6,
         name: 'Sneha Kulkarni',
+        username: 'sneha_k',
         avatar: 'SK',
         board: 'CBSE Class 12',
         specialization: 'Physical Chemistry',
@@ -133,6 +140,7 @@ export function LeaderboardClient() {
         id: 'usr-7',
         rank: 7,
         name: 'Kavya Nair',
+        username: 'kavya_isc',
         avatar: 'KN',
         board: 'ICSE / ISC',
         specialization: 'Genetics & Biology',
@@ -147,41 +155,44 @@ export function LeaderboardClient() {
         id: 'usr-8',
         rank: 8,
         name: 'Arjun Singh',
+        username: 'arjun_bseb',
         avatar: 'AS',
         board: 'Bihar Board (BSEB)',
-        specialization: 'Coordinate Geometry',
-        xp: 1530,
-        accuracy: 83.4,
+        specialization: 'Inorganic Chemistry',
+        xp: 1540,
+        accuracy: 84.3,
         streak: 8,
         testsCompleted: 19,
-        trend: 'down',
+        trend: 'up',
         trendValue: 1,
       },
       {
         id: 'usr-9',
         rank: 9,
-        name: 'Tanvi Joshi',
-        avatar: 'TJ',
+        name: 'Ananya Roy',
+        username: 'ananya_cbse',
+        avatar: 'AR',
         board: 'CBSE Class 12',
-        specialization: 'Thermodynamics',
+        specialization: 'Integral Calculus',
         xp: 1410,
-        accuracy: 82.0,
-        streak: 6,
-        testsCompleted: 16,
+        accuracy: 82.7,
+        streak: 7,
+        testsCompleted: 17,
         trend: 'neutral',
         trendValue: 0,
       },
       {
         id: 'usr-10',
         rank: 10,
-        name: 'Vikram Mehta',
-        avatar: 'VM',
+        name: 'Mohit Sharma',
+        username: 'mohit_up',
+        avatar: 'MS',
         board: 'UP Board',
         specialization: 'Modern Physics',
         xp: 1280,
-        accuracy: 79.5,
-        streak: 4,
-        testsCompleted: 14,
+        accuracy: 81.0,
+        streak: 5,
+        testsCompleted: 15,
         trend: 'down',
         trendValue: 3,
       },
@@ -189,6 +200,7 @@ export function LeaderboardClient() {
         id: 'usr-11',
         rank: 11,
         name: 'Aditi Rao',
+        username: 'aditi_cbse',
         avatar: 'AR',
         board: 'CBSE Class 12',
         specialization: 'Inorganic Chemistry',
@@ -203,6 +215,7 @@ export function LeaderboardClient() {
         id: 'usr-12',
         rank: 12,
         name: 'Manish Kumar',
+        username: 'manish_bseb',
         avatar: 'MK',
         board: 'Bihar Board (BSEB)',
         specialization: 'Differential Equations',
@@ -214,7 +227,7 @@ export function LeaderboardClient() {
         trendValue: 1,
       },
     ];
-  }, [user.name, user.xp, user.streakDays, user.targetBoard, user.avatarUrl]);
+  }, [user.name, user.username, user.xp, user.streakDays, user.targetBoard, user.avatarUrl]);
 
   // Filtering
   const filteredList = useMemo(() => {
@@ -394,7 +407,11 @@ export function LeaderboardClient() {
                       <h3 className="text-sm font-bold text-white group-hover:text-slate-200 transition-colors">
                         {top2.name}
                       </h3>
-                      <p className="text-[11px] text-zinc-400">{top2.board}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[10px] font-bold text-violet-400">@{top2.username}</span>
+                        <span className="text-[10px] text-zinc-500">•</span>
+                        <p className="text-[10px] text-zinc-400">{top2.board}</p>
+                      </div>
                     </div>
                   </div>
                   <span className="text-xs font-bold text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded-md border border-slate-700">
@@ -444,7 +461,11 @@ export function LeaderboardClient() {
                     <h3 className="text-sm font-bold text-white group-hover:text-amber-200 transition-colors">
                       {top1.name}
                     </h3>
-                    <p className="text-[11px] text-amber-300/80">{top1.board}</p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[10px] font-bold text-amber-300">@{top1.username}</span>
+                      <span className="text-[10px] text-amber-400/50">•</span>
+                      <p className="text-[10px] text-amber-300/80">{top1.board}</p>
+                    </div>
                   </div>
                 </div>
                 <span className="text-xs font-black text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded-md border border-amber-500/40">
@@ -458,10 +479,8 @@ export function LeaderboardClient() {
                   <span className="font-semibold text-amber-200">{top1.accuracy}%</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-amber-400/60 block uppercase font-medium">Top Score</span>
-                  <span className="font-black text-amber-400 tracking-wide text-sm">
-                    {top1.xp.toLocaleString()} XP
-                  </span>
+                  <span className="text-[10px] text-amber-400/60 block uppercase font-medium">Score</span>
+                  <span className="font-black text-amber-300 tracking-wide">{top1.xp.toLocaleString()} XP</span>
                 </div>
               </div>
             </div>
@@ -473,11 +492,11 @@ export function LeaderboardClient() {
                   playButtonClick();
                   setSelectedUser(top3);
                 }}
-                className="relative bg-[#121216] border border-amber-900/40 rounded-2xl p-5 hover:border-amber-700/60 transition-all cursor-pointer flex flex-col justify-between group md:order-3"
+                className="relative bg-[#121216] border border-amber-900/30 rounded-2xl p-5 hover:border-amber-700/50 transition-all cursor-pointer flex flex-col justify-between group md:order-3"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl bg-amber-950/70 border border-amber-700/50 text-amber-200 font-bold text-sm flex items-center justify-center overflow-hidden shrink-0">
+                    <div className="w-11 h-11 rounded-xl bg-amber-950/40 border border-amber-800/40 text-amber-300 font-bold text-sm flex items-center justify-center overflow-hidden shrink-0">
                       {top3.avatarUrl || (top3.isCurrentUser && user.avatarUrl) ? (
                         <img
                           src={top3.avatarUrl || user.avatarUrl}
@@ -492,7 +511,11 @@ export function LeaderboardClient() {
                       <h3 className="text-sm font-bold text-white group-hover:text-zinc-200 transition-colors">
                         {top3.name}
                       </h3>
-                      <p className="text-[11px] text-zinc-400">{top3.board}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[10px] font-bold text-amber-400">@{top3.username}</span>
+                        <span className="text-[10px] text-zinc-500">•</span>
+                        <p className="text-[10px] text-zinc-400">{top3.board}</p>
+                      </div>
                     </div>
                   </div>
                   <span className="text-xs font-bold text-amber-500 bg-amber-950/40 px-2 py-0.5 rounded-md border border-amber-900/50">
@@ -567,9 +590,12 @@ export function LeaderboardClient() {
                       )}
                     </div>
                     <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <span className={`font-semibold truncate ${isUser ? 'text-white font-bold' : 'text-zinc-200'}`}>
                           {player.name}
+                        </span>
+                        <span className="text-[10px] font-medium text-violet-400">
+                          @{player.username}
                         </span>
                         {isUser && (
                           <span className="px-1.5 py-0.2 bg-violet-600 text-white font-bold text-[9px] rounded-sm tracking-wider uppercase shrink-0">
@@ -577,7 +603,7 @@ export function LeaderboardClient() {
                           </span>
                         )}
                       </div>
-                      <span className="text-[11px] text-zinc-500 block truncate">{player.board}</span>
+                      <span className="text-[10px] text-zinc-500 block truncate">{player.board}</span>
                     </div>
                   </div>
 
@@ -622,6 +648,7 @@ export function LeaderboardClient() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-white">{currentUserData.name}</span>
+                <span className="text-[11px] font-semibold text-violet-400">@{currentUserData.username}</span>
                 <span className="text-[11px] text-zinc-400">({currentUserData.board})</span>
               </div>
               <p className="text-[11px] text-zinc-400">
@@ -677,7 +704,8 @@ export function LeaderboardClient() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">{selectedUser.name}</h3>
-                  <p className="text-xs text-zinc-400">{selectedUser.board}</p>
+                  <p className="text-xs font-bold text-violet-400">@{selectedUser.username}</p>
+                  <p className="text-[11px] text-zinc-400">{selectedUser.board}</p>
                 </div>
               </div>
               <span className="text-xs font-bold text-zinc-400 bg-white/[0.06] px-2.5 py-1 rounded-md border border-white/10">

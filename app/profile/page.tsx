@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
-import { useUser } from '@/context/UserContext';
+import { useUser, sanitizeUsername } from '@/context/UserContext';
 import { BOARDS } from '@/lib/mockData';
 import { Mascot } from '@/components/gamification/Mascot';
 import { playButtonClick, playGemDing } from '@/lib/soundEffects';
@@ -19,8 +19,12 @@ const SCHOLAR_AVATARS = [
 ];
 
 export default function ProfilePage() {
-  const { user, setTargetBoard, updateAvatar, logout } = useUser();
+  const { user, setTargetBoard, updateAvatar, updateUsername, logout } = useUser();
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  const [isUsernameModalOpen, setIsUsernameModalOpen] = useState(false);
+  const [usernameInput, setUsernameInput] = useState('');
+  const [usernameError, setUsernameError] = useState('');
+  const [isSavingUsername, setIsSavingUsername] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -86,6 +90,29 @@ export default function ProfilePage() {
     setIsAvatarModalOpen(false);
   };
 
+  const handleSaveUsername = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUsernameError('');
+    setIsSavingUsername(true);
+    playButtonClick();
+
+    const clean = sanitizeUsername(usernameInput);
+    if (!clean || clean.length < 3) {
+      setIsSavingUsername(false);
+      return setUsernameError('Username must be 3-20 characters with letters, numbers, or underscore.');
+    }
+
+    const res = await updateUsername(clean);
+    setIsSavingUsername(false);
+
+    if (res.success) {
+      playGemDing();
+      setIsUsernameModalOpen(false);
+    } else {
+      setUsernameError(res.error || 'Failed to update username.');
+    }
+  };
+
   return (
     <main className="w-full min-h-screen bg-[#f4f5fa] pb-28 font-sans">
       
@@ -137,10 +164,30 @@ export default function ProfilePage() {
                     {user.leagueTier} League
                   </span>
                 </div>
+                
                 <h1 className="font-heading text-lg sm:text-xl font-black text-[#1e293b] leading-tight">
                   {user.name}
                 </h1>
-                <p className="text-xs text-[#64748b] mt-0.5">
+
+                {/* Unique Instagram-Style @username Handle */}
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playButtonClick();
+                      setUsernameInput(user.username || 'scholar_12');
+                      setUsernameError('');
+                      setIsUsernameModalOpen(true);
+                    }}
+                    className="text-xs font-black text-[#7c3aed] bg-[#ede9fe]/90 hover:bg-[#ddd6fe] px-2.5 py-0.5 rounded-full border border-[#c4b5fd] flex items-center gap-1 transition-colors cursor-pointer active:scale-95"
+                    title="Change your unique @handle"
+                  >
+                    <span>@{user.username || 'scholar_12'}</span>
+                    <span className="material-symbols-outlined text-[13px]">edit</span>
+                  </button>
+                </div>
+
+                <p className="text-[11px] text-[#64748b] mt-1">
                   {user.email || 'student@nainixone.prep'}
                 </p>
               </div>
@@ -321,7 +368,77 @@ export default function ProfilePage() {
 
       </div>
 
-      {/* ─── Photo Upload & Avatar Picker Modal ─── */}
+      {/* ─── 1. Edit @Username Handle Modal ─── */}
+      {isUsernameModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
+            
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-full bg-violet-100 text-[#7c3aed] flex items-center justify-center font-black text-sm">
+                  @
+                </span>
+                <h3 className="font-heading font-black text-base text-slate-900">
+                  Edit Unique ID
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsUsernameModalOpen(false)}
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveUsername} className="my-4 space-y-3.5">
+              <div>
+                <label className="text-xs font-black text-slate-700 block mb-1">
+                  Choose your Instagram-style Handle
+                </label>
+                <div className="relative border-2 border-slate-200 rounded-2xl bg-slate-50 flex items-center overflow-hidden focus-within:border-[#7c3aed] focus-within:bg-white focus-within:ring-4 focus-within:ring-violet-500/15 transition-all">
+                  <div className="pl-3.5 pr-1 font-black text-violet-600 text-sm">
+                    @
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    value={usernameInput}
+                    onChange={(e) => {
+                      setUsernameInput(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''));
+                      setUsernameError('');
+                    }}
+                    placeholder="your_handle"
+                    maxLength={20}
+                    className="w-full bg-transparent py-2.5 px-1 text-sm font-bold text-slate-900 outline-none"
+                  />
+                </div>
+                <p className="text-[11px] text-slate-400 font-semibold mt-1">
+                  3-20 characters: letters, numbers, and underscores only.
+                </p>
+              </div>
+
+              {usernameError && (
+                <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold p-2.5 rounded-xl flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px]">error</span>
+                  <span>{usernameError}</span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isSavingUsername}
+                className="w-full py-3 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] disabled:opacity-60 text-white font-black text-xs shadow-md shadow-violet-200 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              >
+                {isSavingUsername ? 'Saving...' : 'Save Unique Handle'}
+              </button>
+            </form>
+
+          </div>
+        </div>
+      )}
+
+      {/* ─── 2. Photo Upload & Avatar Picker Modal ─── */}
       {isAvatarModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
@@ -355,6 +472,9 @@ export default function ProfilePage() {
               <p className="text-xs font-semibold text-slate-500">
                 {user.name}
               </p>
+              <span className="text-[11px] font-black text-violet-600 mt-0.5">
+                @{user.username || 'scholar_12'}
+              </span>
             </div>
 
             {/* Upload Button */}
