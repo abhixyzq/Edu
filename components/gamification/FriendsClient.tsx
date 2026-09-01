@@ -203,17 +203,23 @@ const INITIAL_ACTIVITIES: FriendActivity[] = [
 ];
 
 export function FriendsClient() {
-  const { user } = useUser();
-  const [activeTab, setActiveTab] = useState<'friends' | 'find' | 'activity'>('friends');
+  const { user, addGems } = useUser();
+  const [activeTab, setActiveTab] = useState<'friends' | 'refer' | 'find' | 'activity'>('friends');
   const [searchQuery, setSearchQuery] = useState('');
   const [friendsList, setFriendsList] = useState<FriendUser[]>(INITIAL_SUGGESTED_FRIENDS);
   const [activities, setActivities] = useState<FriendActivity[]>(INITIAL_ACTIVITIES);
   const [selectedFriend, setSelectedFriend] = useState<FriendUser | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [isReferModalOpen, setIsReferModalOpen] = useState(false);
 
-  // Restore follow status from local storage
+  // Simulated referral counts from localStorage
+  const [referralCount, setReferralCount] = useState(2);
+
   useEffect(() => {
     try {
+      const storedCount = localStorage.getItem('edustride_referral_count');
+      if (storedCount) setReferralCount(parseInt(storedCount, 10));
+
       const savedFollowing = localStorage.getItem('edustride_following_ids');
       if (savedFollowing) {
         const ids: string[] = JSON.parse(savedFollowing);
@@ -228,6 +234,48 @@ export function FriendsClient() {
       console.warn('Failed to load friends state:', e);
     }
   }, []);
+
+  const referralUrl = useMemo(() => {
+    const handle = user.username || 'scholar_12';
+    return typeof window !== 'undefined'
+      ? `${window.location.origin}/signup?ref=${handle}`
+      : `https://one.nainix.me/signup?ref=${handle}`;
+  }, [user.username]);
+
+  const shareText = useMemo(() => {
+    return `🔥 Join me on nainixOne for Class 12 Board Exam Prep & AI Mock Tests! Use my invite link to get 50 FREE Gems 💎 to unlock test lives:\n${referralUrl}`;
+  }, [referralUrl]);
+
+  const handleCopyInviteLink = () => {
+    playButtonClick();
+    navigator.clipboard?.writeText(referralUrl);
+    setCopiedLink(true);
+    playGemDing();
+    setTimeout(() => setCopiedLink(false), 2500);
+  };
+
+  const handleWhatsAppShare = () => {
+    playButtonClick();
+    const encoded = encodeURIComponent(shareText);
+    window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+  };
+
+  const handleNativeShare = async () => {
+    playButtonClick();
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Join nainixOne • Class 12 Board Exam Prep',
+          text: `Practice Class 12 Mock Tests with me and get 50 Free Gems!`,
+          url: referralUrl,
+        });
+      } catch (err) {
+        handleCopyInviteLink();
+      }
+    } else {
+      handleCopyInviteLink();
+    }
+  };
 
   const toggleFollow = (id: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -263,15 +311,6 @@ export function FriendsClient() {
     );
   };
 
-  const handleCopyInviteLink = () => {
-    playButtonClick();
-    const handle = user.username || 'scholar';
-    const inviteUrl = `https://one.nainix.me/@${handle}`;
-    navigator.clipboard?.writeText(inviteUrl);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2500);
-  };
-
   const myFriends = useMemo(() => {
     return friendsList.filter((f) => f.isFollowing);
   }, [friendsList]);
@@ -294,7 +333,7 @@ export function FriendsClient() {
   return (
     <main className="w-full min-h-screen bg-[#f4f5fa] pb-32 font-sans select-none overflow-x-hidden">
       
-      {/* ─── 1. Header Hero (Friends & Connections) ─── */}
+      {/* ─── 1. Header Hero (Friends & Connections + Refer Highlight) ─── */}
       <div className="w-full bg-gradient-to-b from-[#ddd6fe] via-[#ede9fe] to-[#f4f5fa] pt-4 pb-4 px-4 sm:px-6">
         <div className="max-w-md mx-auto space-y-3">
           
@@ -305,8 +344,9 @@ export function FriendsClient() {
                 <span className="px-2.5 py-0.5 rounded-full bg-[#7c3aed] text-white text-[10px] font-black uppercase tracking-wider shadow-2xs">
                   Study Network
                 </span>
-                <span className="text-[10px] font-black text-violet-700 bg-violet-100 px-2 py-0.5 rounded-full border border-violet-200">
-                  {myFriends.length} Following
+                <span className="text-[10px] font-black text-cyan-800 bg-cyan-100 px-2 py-0.5 rounded-full border border-cyan-300 flex items-center gap-1">
+                  <span>💎</span>
+                  <span>+50 Gems / Referral</span>
                 </span>
               </div>
               <h1 className="font-heading text-xl sm:text-2xl font-black text-[#1e293b] mt-1 leading-tight">
@@ -314,58 +354,79 @@ export function FriendsClient() {
               </h1>
             </div>
 
-            {/* Invite Button Icon */}
+            {/* Refer & Earn 50 Gems Main Button */}
             <button
               type="button"
-              onClick={handleCopyInviteLink}
-              className="px-3 py-2 rounded-2xl bg-white border-2 border-slate-900 shadow-[3px_3px_0px_#0f172a] flex items-center gap-1.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#0f172a] transition-all cursor-pointer shrink-0"
-              title="Share your invite profile link"
+              onClick={() => {
+                playButtonClick();
+                setIsReferModalOpen(true);
+              }}
+              className="px-3 py-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-400 border-2 border-slate-900 shadow-[3px_3px_0px_#0f172a] flex items-center gap-1.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#0f172a] transition-all cursor-pointer shrink-0 animate-bounce"
+              title="Refer friends & get 50 Free Gems!"
             >
-              <span className="material-symbols-outlined text-[18px] text-[#7c3aed]">
-                {copiedLink ? 'check' : 'person_add'}
-              </span>
-              <span className="text-xs font-black text-slate-900">
-                {copiedLink ? 'Copied!' : 'Invite'}
+              <span className="text-sm">💎</span>
+              <span className="text-xs font-black text-slate-950">
+                +50 Free
               </span>
             </button>
           </div>
 
-          {/* User's Shareable Handle Capsule */}
-          <div className="p-3 rounded-2xl bg-white border-2 border-[#e2e8f0] shadow-xs flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#7c3aed] to-[#9333ea] text-white font-black text-xs flex items-center justify-center overflow-hidden shrink-0 border border-violet-300">
-                {user.avatarUrl ? (
-                  <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
-                ) : (
-                  <span>{user.name.charAt(0).toUpperCase()}</span>
-                )}
-              </div>
+          {/* ─── 💎 Refer & Earn 50 Gems Hero Card ─── */}
+          <div className="bg-gradient-to-br from-[#6d28d9] via-[#7c3aed] to-[#9333ea] text-white rounded-3xl p-4 shadow-md border-b-4 border-[#5521b5] relative overflow-hidden">
+            <div className="flex items-start justify-between gap-3 relative z-10">
               <div className="min-w-0">
-                <p className="text-[11px] font-black text-slate-800 leading-tight truncate">
-                  Your Unique Study Handle
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="px-2 py-0.5 rounded-full bg-amber-400 text-amber-950 text-[9px] font-black uppercase tracking-wider shadow-2xs">
+                    🎁 Referral Reward
+                  </span>
+                  <span className="text-[10px] text-violet-200 font-bold">
+                    Unlimited
+                  </span>
+                </div>
+                <h3 className="font-heading text-base font-black text-white leading-tight">
+                  Invite Friends, Get 50 Gems! 💎
+                </h3>
+                <p className="text-[11px] text-violet-100 mt-0.5 leading-relaxed">
+                  When a friend registers with your invite link, you instantly earn <b className="text-amber-300">50 Free Gems</b> to refill hearts & streak freeze!
                 </p>
-                <p className="text-xs font-extrabold text-[#7c3aed] truncate">
-                  @{user.username || 'scholar_12'}
-                </p>
+              </div>
+
+              <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-xs border border-white/30 flex items-center justify-center text-2xl shrink-0 shadow-inner">
+                💎
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={handleCopyInviteLink}
-              className="px-2.5 py-1 rounded-xl bg-violet-50 hover:bg-violet-100 text-violet-700 font-bold text-[11px] border border-violet-200 transition-colors shrink-0 flex items-center gap-1"
-            >
-              <span className="material-symbols-outlined text-[14px]">content_copy</span>
-              <span>{copiedLink ? 'Copied' : 'Copy Link'}</span>
-            </button>
+            {/* Quick Share Buttons Bar */}
+            <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-white/20">
+              <button
+                type="button"
+                onClick={handleWhatsAppShare}
+                className="py-2 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-black text-xs transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+              >
+                <span>💬</span>
+                <span>WhatsApp</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleCopyInviteLink}
+                className="py-2 px-3 rounded-xl bg-white/20 hover:bg-white/30 text-white font-black text-xs transition-all active:scale-95 flex items-center justify-center gap-1.5 backdrop-blur-xs border border-white/30 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[15px]">
+                  {copiedLink ? 'check' : 'content_copy'}
+                </span>
+                <span>{copiedLink ? 'Copied!' : 'Copy Link'}</span>
+              </button>
+            </div>
           </div>
 
-          {/* Segmented Tab Switcher (Friends / Find / Activity) */}
+          {/* Segmented Tab Switcher (Friends / Refer / Find / Activity) */}
           <div className="bg-white/90 p-1 rounded-2xl border-2 border-[#e2e8f0] shadow-2xs flex items-center">
             {[
-              { id: 'friends', label: `My Friends (${myFriends.length})`, icon: 'group' },
-              { id: 'find', label: 'Find Peers', icon: 'person_search' },
-              { id: 'activity', label: 'Activity', icon: 'notifications_active' },
+              { id: 'friends', label: `Friends (${myFriends.length})`, icon: 'group' },
+              { id: 'refer', label: 'Refer & Earn', icon: 'card_giftcard' },
+              { id: 'find', label: 'Find', icon: 'person_search' },
+              { id: 'activity', label: 'Feed', icon: 'bolt' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -373,14 +434,14 @@ export function FriendsClient() {
                   playButtonClick();
                   setActiveTab(tab.id as any);
                 }}
-                className={`flex-1 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1 ${
                   activeTab === tab.id
                     ? 'bg-[#7c3aed] text-white shadow-xs'
                     : 'text-[#64748b] hover:text-[#1e293b]'
                 }`}
               >
-                <span className="material-symbols-outlined text-[16px]">{tab.icon}</span>
-                <span>{tab.label}</span>
+                <span className="material-symbols-outlined text-[15px]">{tab.icon}</span>
+                <span className="hidden xxs:inline">{tab.label}</span>
               </button>
             ))}
           </div>
@@ -402,14 +463,14 @@ export function FriendsClient() {
                   No Study Friends Yet
                 </h3>
                 <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                  Follow your classmates and peer scholars to track their progress, send high-fives, and compete on leaderboards!
+                  Invite your classmates or follow peer scholars to earn gems, send cheers, and compete on leaderboards!
                 </p>
                 <button
                   type="button"
-                  onClick={() => setActiveTab('find')}
+                  onClick={() => setIsReferModalOpen(true)}
                   className="px-4 py-2 rounded-2xl bg-[#7c3aed] text-white font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer"
                 >
-                  Discover Classmates 🔍
+                  Invite Friends & Get 50 Gems 💎
                 </button>
               </div>
             ) : (
@@ -491,7 +552,96 @@ export function FriendsClient() {
           </div>
         )}
 
-        {/* ─── TAB 2: FIND & DISCOVER FRIENDS ─── */}
+        {/* ─── TAB 2: REFER & EARN 50 GEMS DETAILS ─── */}
+        {activeTab === 'refer' && (
+          <div className="space-y-3">
+            
+            {/* Referral Stats Summary Card */}
+            <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-[#e2e8f0] shadow-sm">
+              <div className="text-center mb-3">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                  Your Referral Rewards
+                </span>
+                <h4 className="font-heading text-lg font-black text-slate-900 mt-0.5">
+                  {(referralCount * 50).toLocaleString()} Gems Earned
+                </h4>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-center my-3">
+                <div className="p-3 rounded-2xl bg-cyan-50 border border-cyan-200">
+                  <span className="text-[10px] text-cyan-700 uppercase font-black block">Total Joined</span>
+                  <span className="text-base font-black text-cyan-950 mt-0.5 block">{referralCount} Friends</span>
+                </div>
+                <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200">
+                  <span className="text-[10px] text-amber-700 uppercase font-black block">Per Invite</span>
+                  <span className="text-base font-black text-amber-950 mt-0.5 block">+50 Gems 💎</span>
+                </div>
+              </div>
+
+              {/* How it works 3-step guide */}
+              <div className="space-y-2.5 mt-4 pt-4 border-t border-slate-100">
+                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider block">
+                  How Refer & Earn Works
+                </span>
+
+                <div className="flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-[#7c3aed] text-white font-black text-xs flex items-center justify-center shrink-0">
+                    1
+                  </span>
+                  <div>
+                    <h5 className="text-xs font-black text-slate-900">Share your invite link</h5>
+                    <p className="text-[11px] text-slate-500">Send your link to Class 12 friends via WhatsApp or Telegram.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-[#7c3aed] text-white font-black text-xs flex items-center justify-center shrink-0">
+                    2
+                  </span>
+                  <div>
+                    <h5 className="text-xs font-black text-slate-900">Friend signs up</h5>
+                    <p className="text-[11px] text-slate-500">They create their account using your referral link.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-black text-xs flex items-center justify-center shrink-0">
+                    3
+                  </span>
+                  <div>
+                    <h5 className="text-xs font-black text-emerald-900">You both get 50 Gems! 💎</h5>
+                    <p className="text-[11px] text-slate-500">50 Gems are instantly credited to your study wallet.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action */}
+              <div className="mt-4 pt-3 space-y-2">
+                <button
+                  type="button"
+                  onClick={handleWhatsAppShare}
+                  className="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs transition-all active:scale-95 shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>💬</span>
+                  <span>Share on WhatsApp (+50 Gems)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleNativeShare}
+                  className="w-full py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-all active:scale-95 border border-slate-200 flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[16px]">share</span>
+                  <span>More Share Options</span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        )}
+
+        {/* ─── TAB 3: FIND & DISCOVER FRIENDS ─── */}
         {activeTab === 'find' && (
           <div className="space-y-3">
             
@@ -576,7 +726,7 @@ export function FriendsClient() {
           </div>
         )}
 
-        {/* ─── TAB 3: FRIEND ACTIVITY FEED ─── */}
+        {/* ─── TAB 4: FRIEND ACTIVITY FEED ─── */}
         {activeTab === 'activity' && (
           <div className="space-y-2.5">
             <div className="flex items-center justify-between px-1">
@@ -640,6 +790,69 @@ export function FriendsClient() {
         )}
 
       </div>
+
+      {/* ─── Dedicated Refer & Earn 50 Gems Popup Modal ─── */}
+      {isReferModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 animate-in slide-in-from-bottom-5 duration-200 text-center">
+            
+            {/* Header Icon */}
+            <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-amber-400 to-yellow-300 border-2 border-slate-900 shadow-[4px_4px_0px_#0f172a] flex items-center justify-center mx-auto text-3xl mb-3">
+              💎
+            </div>
+
+            <span className="px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-900 border border-cyan-300 text-[10px] font-black uppercase tracking-wider">
+              Referral Bonus
+            </span>
+
+            <h3 className="font-heading font-black text-xl text-slate-900 mt-1">
+              Invite & Earn 50 Gems
+            </h3>
+            
+            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+              Share your invite link with your Class 12 friends. When they join, you get <b className="text-[#7c3aed]">50 Gems 💎</b> instantly!
+            </p>
+
+            {/* Invite Link Capsule */}
+            <div className="my-4 p-2.5 rounded-2xl bg-slate-50 border-2 border-[#e2e8f0] flex items-center justify-between gap-2">
+              <span className="text-[11px] font-bold text-slate-600 truncate text-left flex-1 pl-1">
+                {referralUrl}
+              </span>
+              <button
+                type="button"
+                onClick={handleCopyInviteLink}
+                className="px-3 py-1.5 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-black text-xs shrink-0 transition-all active:scale-95 shadow-xs"
+              >
+                {copiedLink ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+
+            {/* Actions */}
+            <div className="space-y-2 mt-2">
+              <button
+                type="button"
+                onClick={handleWhatsAppShare}
+                className="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs transition-all active:scale-95 shadow-md flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>💬</span>
+                <span>Share via WhatsApp</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  playButtonClick();
+                  setIsReferModalOpen(false);
+                }}
+                className="w-full py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* ─── Friend Details Inspection Modal ─── */}
       {selectedFriend && (

@@ -1,15 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
 import { BrandLogo } from '@/components/BrandLogo';
 import { playButtonClick, playGemDing } from '@/lib/soundEffects';
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter();
-  const { setTargetBoard, signup } = useUser();
+  const searchParams = useSearchParams();
+  const { setTargetBoard, signup, addGems } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -21,6 +22,16 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [agreedTerms, setAgreedTerms] = useState(true);
+
+  // Referral code from URL (?ref=username)
+  const [refCode, setRefCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    const ref = searchParams.get('ref');
+    if (ref) {
+      setRefCode(ref.toLowerCase().trim().replace(/[^a-z0-9_]/g, ''));
+    }
+  }, [searchParams]);
 
   const handleNameChange = (val: string) => {
     setFullName(val);
@@ -47,6 +58,19 @@ export default function SignupPage() {
 
     if (result.success) {
       setTargetBoard(board);
+
+      // If signed up via referral, grant bonus gems!
+      if (refCode) {
+        addGems(50); // New user gets 50 Gems
+        // Award referral count to local state if on same device or notify
+        try {
+          const currentCount = parseInt(localStorage.getItem('edustride_referral_count') || '0', 10);
+          localStorage.setItem('edustride_referral_count', (currentCount + 1).toString());
+        } catch (e) {
+          // ignore
+        }
+      }
+
       playGemDing();
       router.push('/');
     } else {
@@ -118,10 +142,25 @@ export default function SignupPage() {
           <div className="p-5 sm:p-7 flex flex-col items-center">
             
             {/* User Icon Circle (Brand Purple Theme) */}
-            <div className="w-18 h-18 rounded-full bg-[#7c3aed] border-[3px] border-slate-900 flex items-center justify-center text-white shadow-sm mb-4 relative overflow-hidden">
+            <div className="w-18 h-18 rounded-full bg-[#7c3aed] border-[3px] border-slate-900 flex items-center justify-center text-white shadow-sm mb-3 relative overflow-hidden">
               <span className="material-symbols-outlined text-[44px] text-white">person_add</span>
               <div className="absolute top-1 left-2 w-14 h-7 bg-white/20 rounded-t-full pointer-events-none" />
             </div>
+
+            {/* 🎁 Referral Invitation Banner */}
+            {refCode && (
+              <div className="w-full mb-3 p-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-2 border-slate-900 shadow-xs flex items-center gap-2.5 animate-bounce">
+                <span className="text-2xl shrink-0">🎁</span>
+                <div className="min-w-0">
+                  <p className="text-xs font-black leading-tight truncate">
+                    Invited by @{refCode}!
+                  </p>
+                  <p className="text-[10px] text-cyan-100 font-bold">
+                    You + @{refCode} will both get <b>+50 Free Gems 💎</b>!
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Error Message */}
             {error && (
@@ -138,194 +177,166 @@ export default function SignupPage() {
               <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
                 <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
                   <span className="material-symbols-outlined text-[16px]">person</span>
-                  <span className="text-[10px] font-black tracking-tight">NAME</span>
+                  <span className="text-xs font-black tracking-wide">NAME</span>
                 </div>
                 <input
-                  id="fullName"
                   type="text"
                   required
                   value={fullName}
                   onChange={(e) => handleNameChange(e.target.value)}
-                  placeholder="Rahul Sharma"
-                  className="w-full h-full bg-transparent px-3.5 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 outline-none"
+                  placeholder="e.g. Abhishek Kumar"
+                  className="w-full h-full px-3.5 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 focus:outline-hidden bg-transparent"
                 />
               </div>
 
-              {/* Capsule Input: Unique Handle @username */}
+              {/* Capsule Input 2: Instagram-style Unique @username */}
               <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
-                <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
-                  <span className="text-xs font-black">@</span>
-                  <span className="text-[10px] font-black tracking-tight">HANDLE</span>
+                <div className="w-22 sm:w-26 h-full bg-[#6d28d9] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
+                  <span className="material-symbols-outlined text-[16px]">alternate_email</span>
+                  <span className="text-xs font-black tracking-wide">HANDLE</span>
                 </div>
-                <input
-                  id="username"
-                  type="text"
-                  required
-                  value={username}
-                  onChange={(e) => {
-                    setUsernameTouched(true);
-                    setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''));
-                  }}
-                  placeholder="rahul_12"
-                  maxLength={20}
-                  className="w-full h-full bg-transparent px-3.5 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 outline-none"
-                />
+                <div className="flex items-center w-full px-3.5">
+                  <span className="text-xs font-black text-[#7c3aed] mr-1">@</span>
+                  <input
+                    type="text"
+                    required
+                    value={username}
+                    onChange={(e) => {
+                      setUsernameTouched(true);
+                      setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 20));
+                    }}
+                    placeholder="unique_username"
+                    className="w-full h-full text-xs sm:text-sm font-bold text-[#6d28d9] placeholder:text-slate-400 focus:outline-hidden bg-transparent"
+                  />
+                </div>
               </div>
 
-              {/* Capsule Input 2: Email Address */}
+              {/* Capsule Input 3: Email */}
               <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
                 <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
                   <span className="material-symbols-outlined text-[16px]">mail</span>
-                  <span className="text-[10px] font-black tracking-tight">EMAIL</span>
+                  <span className="text-xs font-black tracking-wide">EMAIL</span>
                 </div>
                 <input
-                  id="contact"
                   type="email"
                   required
                   value={contact}
                   onChange={(e) => setContact(e.target.value)}
-                  placeholder="rahul@example.com"
-                  className="w-full h-full bg-transparent px-3.5 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 outline-none"
+                  placeholder="student@gmail.com"
+                  className="w-full h-full px-3.5 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 focus:outline-hidden bg-transparent"
                 />
               </div>
 
-              {/* Capsule Input 3: Target Board */}
-              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all relative">
-                <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
-                  <span className="material-symbols-outlined text-[16px]">school</span>
-                  <span className="text-[10px] font-black tracking-tight">BOARD</span>
-                </div>
-                <select
-                  id="board"
-                  value={board}
-                  onChange={(e) => setBoard(e.target.value)}
-                  className="w-full h-full bg-transparent px-3.5 pr-8 text-xs sm:text-sm font-extrabold text-slate-800 outline-none appearance-none cursor-pointer"
-                >
-                  <option value="cbse">CBSE Class 12</option>
-                  <option value="bihar">Bihar Board (BSEB)</option>
-                  <option value="up">UP Board (UPMSP)</option>
-                  <option value="icse">ICSE / ISC 12th</option>
-                </select>
-                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500">
-                  <span className="material-symbols-outlined text-[18px]">expand_more</span>
-                </div>
-              </div>
-
-              {/* Capsule Input 4: Password */}
+              {/* Capsule Input 4: Target Board Selector */}
               <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
                 <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
-                  <span className="material-symbols-outlined text-[16px]">key</span>
-                  <span className="text-[10px] font-black tracking-tight">PASS</span>
+                  <span className="material-symbols-outlined text-[16px]">menu_book</span>
+                  <span className="text-xs font-black tracking-wide">BOARD</span>
+                </div>
+                <select
+                  value={board}
+                  onChange={(e) => setBoard(e.target.value)}
+                  className="w-full h-full px-3 text-xs sm:text-sm font-bold text-slate-800 focus:outline-hidden bg-transparent cursor-pointer"
+                >
+                  <option value="cbse">CBSE Class 12</option>
+                  <option value="bseb">Bihar Board (BSEB)</option>
+                  <option value="up">UP Board</option>
+                  <option value="icse">ICSE / ISC</option>
+                </select>
+              </div>
+
+              {/* Capsule Input 5: Password */}
+              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all relative">
+                <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
+                  <span className="material-symbols-outlined text-[16px]">lock</span>
+                  <span className="text-xs font-black tracking-wide">PASS</span>
                 </div>
                 <input
-                  id="password"
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="At least 6 characters"
-                  className="w-full h-full bg-transparent px-3.5 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 outline-none tracking-widest"
+                  placeholder="Min 6 characters"
+                  className="w-full h-full px-3.5 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 focus:outline-hidden bg-transparent pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="pr-3.5 flex items-center text-slate-400 hover:text-slate-700 cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[18px]">
-                    {showPassword ? 'visibility' : 'visibility_off'}
+                    {showPassword ? 'visibility_off' : 'visibility'}
                   </span>
                 </button>
               </div>
 
               {/* Terms Checkbox */}
-              <div className="flex items-center gap-2 pt-1 px-1">
+              <label className="flex items-center gap-2 px-1 cursor-pointer select-none mt-1">
                 <input
-                  id="terms"
                   type="checkbox"
                   checked={agreedTerms}
                   onChange={(e) => setAgreedTerms(e.target.checked)}
-                  className="w-4 h-4 rounded border-2 border-slate-900 text-[#7c3aed] focus:ring-[#7c3aed] cursor-pointer accent-[#7c3aed]"
+                  className="w-4 h-4 rounded-sm border-2 border-slate-900 text-[#7c3aed] focus:ring-[#7c3aed] accent-[#7c3aed]"
                 />
-                <label htmlFor="terms" className="text-[11px] font-bold text-slate-600 cursor-pointer">
-                  I agree to the <span className="text-[#7c3aed] font-black underline">Terms & Conditions</span>
-                </label>
-              </div>
+                <span className="text-[11px] font-semibold text-slate-600">
+                  I agree to Practice Rules & Academic Integrity
+                </span>
+              </label>
 
-              {/* Submit Action Button */}
+              {/* ─── Big 3D Duolingo Action Button (Brand Purple Theme) ─── */}
               <button
                 type="submit"
-                disabled={!agreedTerms || loading}
-                className="w-full mt-1 h-12 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] disabled:opacity-50 text-white font-black text-sm border-2 border-slate-900 shadow-[0_4px_0_#0f172a] active:shadow-none active:translate-y-1 transition-all duration-100 cursor-pointer flex items-center justify-center gap-2"
+                disabled={loading || !agreedTerms}
+                className="w-full mt-2 py-3.5 bg-[#7c3aed] hover:bg-[#6d28d9] active:bg-[#5b21b6] text-white font-black text-sm tracking-wider uppercase rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_#0f172a] active:translate-y-1 active:shadow-[1px_1px_0px_#0f172a] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
-                  <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <>
+                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Creating Profile...</span>
+                  </>
                 ) : (
                   <>
-                    <span>Create Free Account</span>
-                    <span className="material-symbols-outlined text-[18px]">rocket_launch</span>
+                    <span>Start Practicing</span>
+                    <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
                   </>
                 )}
               </button>
 
             </form>
 
-            {/* Login Navigation Link */}
-            <div className="mt-4 text-center pt-3 border-t border-slate-100 w-full">
+            {/* Already have an account link */}
+            <div className="mt-4 pt-3 border-t-2 border-slate-100 w-full text-center">
               <p className="text-xs font-bold text-slate-500">
-                Already have an account?{' '}
+                Already registered?{' '}
                 <Link
                   href="/login"
                   onClick={playButtonClick}
-                  className="font-black text-[#7c3aed] hover:underline ml-1"
+                  className="font-black text-[#7c3aed] hover:underline"
                 >
-                  Log In
+                  Log In here
                 </Link>
               </p>
             </div>
 
           </div>
-        </div>
 
-        {/* ─── Bottom Interlocking Mechanical Gears (Brand Purple Theme) ─── */}
-        <div className="relative w-full max-w-[280px] h-12 -mt-3 flex items-center justify-center z-20 pointer-events-none">
-          <div className="w-14 h-14 rounded-full bg-[#7c3aed] border-2 border-slate-900 flex items-center justify-center shadow-md animate-spin-slow">
-            <div className="w-5 h-5 rounded-full bg-white border-2 border-slate-900" />
-          </div>
-
-          <div className="w-10 h-10 -ml-2 -mt-4 rounded-full bg-[#8b5cf6] border-2 border-slate-900 flex items-center justify-center shadow-md animate-spin-reverse-slow">
-            <div className="w-3.5 h-3.5 rounded-full bg-white border border-slate-900" />
-          </div>
-
-          <div className="w-8 h-8 -ml-1 mt-2 rounded-full bg-[#6d28d9] border-2 border-slate-900 flex items-center justify-center shadow-xs">
-            <div className="w-2.5 h-2.5 rounded-full bg-white border border-slate-900" />
-          </div>
         </div>
 
       </main>
 
       {/* ─── Footer ─── */}
-      <footer className="w-full shrink-0 text-center text-[11px] font-black text-slate-400 py-3 z-10">
-        © 2026 nainixOne • Interactive Class 12 Prep Portal
+      <footer className="w-full text-center py-2 text-[11px] font-bold text-slate-400 shrink-0">
+        Class 12 Board Prep • CBSE • BSEB • UP • ICSE
       </footer>
 
-      {/* Animation helper styles */}
-      <style jsx global>{`
-        @keyframes spinSlow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes spinReverseSlow {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0deg); }
-        }
-        .animate-spin-slow {
-          animation: spinSlow 20s linear infinite;
-        }
-        .animate-spin-reverse-slow {
-          animation: spinReverseSlow 15s linear infinite;
-        }
-      `}</style>
-
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center"><span className="text-xs font-bold text-slate-500">Loading...</span></div>}>
+      <SignupForm />
+    </Suspense>
   );
 }
