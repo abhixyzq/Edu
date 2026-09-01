@@ -137,39 +137,33 @@ export const PathNode: React.FC<PathNodeProps> = ({
         </button>
       </div>
 
-      {/* ─── Floating Cute Side Card (Matching Screenshot Frozen Card Style) ─── */}
+      {/* ─── Clean Floating Topic Name (Direct Text Without Card Box or Level Badge) ─── */}
       <div
         className={`absolute top-1/2 -translate-y-1/2 z-20 pointer-events-none flex flex-col ${
           textSide === 'left'
-            ? 'right-full mr-4 items-end text-right'
-            : 'left-full ml-4 items-start text-left'
+            ? 'right-full mr-3.5 items-end text-right'
+            : 'left-full ml-3.5 items-start text-left'
         }`}
       >
-        <div className="max-w-[140px] sm:max-w-[170px] pointer-events-auto bg-white/95 backdrop-blur-md p-2.5 rounded-2xl border-2 border-white/80 shadow-lg hover:scale-105 transition-all">
-          <div className="flex items-center gap-1 mb-1">
-            <span
-              className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase ${
-                isActive
-                  ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                  : isCompleted
-                  ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
-                  : 'bg-slate-100 text-slate-500 border border-slate-200'
-              }`}
-            >
-              Level {levelNumber}
-            </span>
-          </div>
-
+        <div className="max-w-[130px] sm:max-w-[160px] pointer-events-auto">
+          {/* Topic Title */}
           <h3
-            className={`text-xs font-black leading-tight line-clamp-2 ${
-              isLocked ? 'text-slate-500' : 'text-slate-900'
+            className={`text-xs sm:text-sm font-black leading-tight line-clamp-2 select-none ${
+              isLocked
+                ? 'text-white/55'
+                : 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]'
             }`}
           >
             {title}
           </h3>
 
+          {/* Subtitle */}
           {subtitle && (
-            <p className="text-[10px] text-slate-400 font-medium truncate mt-0.5">
+            <p
+              className={`text-[10px] sm:text-[11px] font-bold truncate mt-0.5 select-none ${
+                isLocked ? 'text-white/40' : 'text-purple-100/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]'
+              }`}
+            >
               {subtitle}
             </p>
           )}
