@@ -11,7 +11,7 @@ import { XpBoltIcon, GemIcon } from '@/components/icons/AppIcons';
 
 export interface LessonNode {
   id: string;
-  code: string; // "101", "102", "201", etc.
+  code: string;
   title: string;
   subtitle: string;
   iconType: string;
@@ -36,7 +36,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       gemsReward: 10,
       testId: '1',
       unit: 1,
-      unitTitle: 'Unit 1 • Electrostatics',
+      unitTitle: 'Unit 1 • Electrostatics & Fields',
       themeColor: '#10b981', // Emerald Teal
     },
     {
@@ -49,8 +49,8 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       gemsReward: 10,
       testId: '1',
       unit: 1,
-      unitTitle: 'Unit 1 • Electrostatics',
-      themeColor: '#10b981', // Emerald Teal
+      unitTitle: 'Unit 1 • Electrostatics & Fields',
+      themeColor: '#10b981',
     },
     {
       id: 'phy-3',
@@ -62,7 +62,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       gemsReward: 15,
       testId: '2',
       unit: 2,
-      unitTitle: 'Unit 2 • Potential & Flux',
+      unitTitle: 'Unit 2 • Potential & Capacitance',
       themeColor: '#3b82f6', // Royal Blue
     },
     {
@@ -75,8 +75,8 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       gemsReward: 15,
       testId: '2',
       unit: 2,
-      unitTitle: 'Unit 2 • Potential & Flux',
-      themeColor: '#3b82f6', // Royal Blue
+      unitTitle: 'Unit 2 • Potential & Capacitance',
+      themeColor: '#3b82f6',
     },
     {
       id: 'phy-5',
@@ -88,8 +88,8 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       gemsReward: 15,
       testId: '1',
       unit: 2,
-      unitTitle: 'Unit 2 • Potential & Flux',
-      themeColor: '#3b82f6', // Royal Blue
+      unitTitle: 'Unit 2 • Potential & Capacitance',
+      themeColor: '#3b82f6',
     },
     {
       id: 'phy-6',
@@ -101,7 +101,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       gemsReward: 20,
       testId: '2',
       unit: 3,
-      unitTitle: 'Unit 3 • Advanced Circuits',
+      unitTitle: 'Unit 3 • Advanced Circuit Mastery',
       themeColor: '#8b5cf6', // Violet Purple
     },
     {
@@ -115,7 +115,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       testId: '1',
       isBoss: true,
       unit: 3,
-      unitTitle: 'Unit 3 • Advanced Circuits',
+      unitTitle: 'Unit 3 • Advanced Circuit Mastery',
       themeColor: '#f59e0b', // Amber Gold
     },
   ],
@@ -150,67 +150,95 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       id: 'chem-3',
       code: '03',
       title: 'Electrochemistry & Nernst Equation',
-      subtitle: 'Galvanic Cells & EMF',
-      iconType: 'flask',
+      subtitle: 'EMF & Gibbs Energy',
+      iconType: 'atom',
       xpReward: 35,
       gemsReward: 20,
       testId: '3',
       unit: 2,
-      unitTitle: 'Unit 2 • Electrochemistry',
+      unitTitle: 'Unit 2 • Electrochemistry & Kinetics',
       themeColor: '#3b82f6',
+    },
+    {
+      id: 'chem-boss-1',
+      code: '04',
+      title: 'Chemical Kinetics & Arrhenius Equation',
+      subtitle: 'Rate Laws & Half Life',
+      iconType: 'trophy',
+      xpReward: 75,
+      gemsReward: 35,
+      testId: '3',
+      isBoss: true,
+      unit: 2,
+      unitTitle: 'Unit 2 • Electrochemistry & Kinetics',
+      themeColor: '#f59e0b',
     },
   ],
   mathematics: [
     {
       id: 'math-1',
       code: '01',
-      title: 'Matrices & Determinants Basics',
-      subtitle: 'Operations & Adjoints',
-      iconType: 'brain',
+      title: 'Relations & Functions Types',
+      subtitle: 'Bijective & Invertible',
+      iconType: 'math',
       xpReward: 25,
       gemsReward: 10,
-      testId: '4',
+      testId: '2',
       unit: 1,
-      unitTitle: 'Unit 1 • Algebra & Matrices',
+      unitTitle: 'Unit 1 • Functions & Calculus',
       themeColor: '#10b981',
     },
     {
       id: 'math-2',
       code: '02',
-      title: 'Continuity & Differentiability',
-      subtitle: 'Chain Rule & Logarithmic Diff',
-      iconType: 'math',
+      title: 'Inverse Trigonometric Functions',
+      subtitle: 'Principal Values & Graphs',
+      iconType: 'brain',
       xpReward: 30,
       gemsReward: 15,
-      testId: '4',
+      testId: '2',
       unit: 1,
-      unitTitle: 'Unit 1 • Algebra & Matrices',
+      unitTitle: 'Unit 1 • Functions & Calculus',
       themeColor: '#10b981',
     },
     {
       id: 'math-3',
       code: '03',
-      title: 'Integral Calculus & By Parts',
-      subtitle: 'Standard Substitutions',
+      title: 'Matrices & Determinants',
+      subtitle: 'Adjoint & Inverse Operations',
       iconType: 'math',
       xpReward: 35,
       gemsReward: 20,
-      testId: '4',
+      testId: '2',
       unit: 2,
-      unitTitle: 'Unit 2 • Calculus Dominance',
+      unitTitle: 'Unit 2 • Linear Algebra',
       themeColor: '#3b82f6',
+    },
+    {
+      id: 'math-boss-1',
+      code: '04',
+      title: 'Continuity, Differentiability & Derivatives',
+      subtitle: 'Chain Rule & Log Differentiation',
+      iconType: 'trophy',
+      xpReward: 80,
+      gemsReward: 40,
+      testId: '2',
+      isBoss: true,
+      unit: 2,
+      unitTitle: 'Unit 2 • Calculus Peak',
+      themeColor: '#f59e0b',
     },
   ],
   biology: [
     {
       id: 'bio-1',
       code: '01',
-      title: 'Reproduction in Flowering Plants',
-      subtitle: 'Pollination & Fertilization',
-      iconType: 'brain',
+      title: 'Sexual Reproduction in Flowering Plants',
+      subtitle: 'Microsporogenesis & Pollination',
+      iconType: 'dna',
       xpReward: 25,
       gemsReward: 10,
-      testId: '1',
+      testId: '4',
       unit: 1,
       unitTitle: 'Unit 1 • Plant Reproduction',
       themeColor: '#10b981',
@@ -218,28 +246,29 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     {
       id: 'bio-2',
       code: '02',
-      title: 'Human Reproduction & Hormones',
-      subtitle: 'Gametogenesis Cycle',
+      title: 'Human Reproduction & Embryogenesis',
+      subtitle: 'Gametes & Fertilization',
       iconType: 'dna',
       xpReward: 30,
       gemsReward: 15,
-      testId: '1',
+      testId: '4',
       unit: 1,
-      unitTitle: 'Unit 1 • Plant Reproduction',
+      unitTitle: 'Unit 1 • Human Reproduction',
       themeColor: '#10b981',
     },
     {
-      id: 'bio-3',
+      id: 'bio-boss-1',
       code: '03',
-      title: 'Principles of Inheritance & Genetics',
-      subtitle: 'Mendelian Genetics',
-      iconType: 'dna',
-      xpReward: 35,
-      gemsReward: 20,
-      testId: '1',
+      title: 'Principles of Inheritance & Variation',
+      subtitle: 'Mendelian Genetics & Linkage',
+      iconType: 'trophy',
+      xpReward: 75,
+      gemsReward: 35,
+      testId: '4',
+      isBoss: true,
       unit: 2,
-      unitTitle: 'Unit 2 • Genetics',
-      themeColor: '#3b82f6',
+      unitTitle: 'Unit 2 • Genetics & Evolution',
+      themeColor: '#f59e0b',
     },
   ],
 };
@@ -265,6 +294,10 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   // Find index of first incomplete node (active level)
   const firstIncompleteIdx = nodes.findIndex((n) => !user.completedNodes[n.id]);
   const currentActiveIdx = firstIncompleteIdx === -1 ? nodes.length - 1 : firstIncompleteIdx;
+  const currentActiveNode = nodes[currentActiveIdx] || nodes[0];
+
+  const completedCount = nodes.filter((n) => user.completedNodes[n.id]).length;
+  const progressPercent = Math.round((completedCount / nodes.length) * 100);
 
   const getNodeStatus = (node: LessonNode, index: number): NodeStatus => {
     if (user.completedNodes[node.id]) {
@@ -288,19 +321,11 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
     router.push(`/test/${node.testId}?nodeId=${node.id}&subject=${activeSubject}&title=${encodeURIComponent(node.title)}`);
   };
 
-  // ─── Mathematical Coordinate Calculation Matching the Exact Screenshot ───
+  // Winding Coordinates
   const CONTAINER_WIDTH = 340;
   const ROW_HEIGHT = 160;
   const Y_OFFSET = 70;
 
-  // Exact Winding Pattern:
-  // Node 0: Center (170) -> Text on Right
-  // Node 1: Left (75)    -> Text on Right
-  // Node 2: Right (265)  -> Text on Left
-  // Node 3: Left (75)    -> Text on Right
-  // Node 4: Right (265)  -> Text on Left
-  // Node 5: Left (75)    -> Text on Right
-  // Node 6: Right (265)  -> Text on Left
   const getNodePoint = (index: number): Point => {
     const y = Y_OFFSET + index * ROW_HEIGHT;
     if (index === 0) return { x: 170, y };
@@ -312,7 +337,6 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   const nodePoints: Point[] = nodes.map((_, i) => getNodePoint(i));
   const totalTrackHeight = Y_OFFSET + (nodes.length - 1) * ROW_HEIGHT + 110;
 
-  // ─── Screenshot Rounded Elbow Generator (90-degree curved pipeline) ───
   const getElbowPath = (p1: Point, p2: Point, r: number = 36) => {
     if (p1.x === p2.x) {
       return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`;
@@ -343,54 +367,92 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   }, [activeSubject, user.completedNodes]);
 
   return (
-    <div className="w-full min-h-screen bg-white text-slate-900 pb-36 font-sans select-none">
+    <div className="w-full min-h-screen bg-gradient-to-b from-[#ede9fe]/70 via-[#f4f5fa] to-[#f8fafc] text-slate-900 pb-36 font-sans select-none relative overflow-hidden">
       
-      {/* ─── Top Header (Screenshot Minimalist "Course progress") ─── */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3">
-        <div className="max-w-md mx-auto flex items-center justify-between">
-          <Link
-            href="/"
-            onClick={() => playButtonClick()}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-blue-600 hover:bg-slate-100 transition-colors"
-          >
-            <span className="material-symbols-outlined text-[24px]">chevron_left</span>
-          </Link>
+      {/* ─── Ambient Architectural Dot Grid Backdrop ─── */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-45"
+        style={{
+          backgroundImage: 'radial-gradient(#c4b5fd 1.2px, transparent 1.2px)',
+          backgroundSize: '24px 24px',
+        }}
+      />
 
-          <h1 className="text-base sm:text-lg font-bold text-slate-800 tracking-tight">
-            Course progress
-          </h1>
+      {/* Floating Subtle Ambient Glow Orbs */}
+      <div className="absolute top-12 left-1/2 -translate-x-1/2 w-96 h-96 bg-violet-400/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-[480px] left-8 w-72 h-72 bg-cyan-400/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-[900px] right-4 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="w-8" />
+      {/* ─── Top Subject & Unit Progress Hero Card ─── */}
+      <div className="relative z-10 max-w-md mx-auto px-4 pt-3 pb-1">
+        
+        {/* Subject Navigation Tabs */}
+        <div className="bg-white/80 backdrop-blur-md p-1 rounded-2xl border-2 border-[#e2e8f0] shadow-2xs flex items-center justify-between gap-1 overflow-x-auto no-scrollbar mb-3">
+          {SUBJECTS.map((s) => {
+            const isSel = activeSubject === s.id;
+            return (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => {
+                  playButtonClick();
+                  setActiveSubject(s.id);
+                }}
+                className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap text-center ${
+                  isSel
+                    ? 'bg-[#7c3aed] text-white shadow-xs scale-[1.02]'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
+                }`}
+              >
+                {s.name}
+              </button>
+            );
+          })}
         </div>
-      </header>
 
-      {/* ─── Subject Switcher (Clean Minimalist Pills) ─── */}
-      <div className="max-w-md mx-auto px-4 mt-3 mb-2 flex items-center justify-center gap-1.5 overflow-x-auto no-scrollbar py-1">
-        {SUBJECTS.map((s) => {
-          const isSel = activeSubject === s.id;
-          return (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => {
-                playButtonClick();
-                setActiveSubject(s.id);
-              }}
-              className={`py-1 px-3 rounded-full text-xs font-bold whitespace-nowrap transition-all border cursor-pointer ${
-                isSel
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                  : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-              }`}
-            >
-              {s.name}
-            </button>
-          );
-        })}
+        {/* Current Active Unit Banner */}
+        <div className="bg-white/90 backdrop-blur-md rounded-3xl p-4 border-2 border-b-4 border-[#e2e8f0] shadow-xs relative overflow-hidden flex items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+              <span className="text-[10px] font-black uppercase tracking-wider bg-violet-100 text-[#6d28d9] px-2.5 py-0.5 rounded-full border border-violet-200">
+                {user.classLevel || 'Class 12'}
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                {progressPercent}% Complete
+              </span>
+            </div>
+
+            <h2 className="font-heading text-sm sm:text-base font-black text-slate-900 truncate">
+              {currentActiveNode.unitTitle}
+            </h2>
+            <p className="text-[11px] text-slate-500 truncate mt-0.5">
+              Next up: <span className="font-bold text-slate-700">{currentActiveNode.title}</span>
+            </p>
+
+            {/* Progress Bar */}
+            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5 border border-slate-200">
+              <div
+                className="h-full bg-gradient-to-r from-[#7c3aed] to-emerald-500 rounded-full transition-all duration-500 shadow-2xs"
+                style={{ width: `${Math.max(progressPercent, 8)}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Trophy Mascot Graphic */}
+          <div className="w-14 sm:w-16 shrink-0 flex items-center justify-center">
+            <img
+              src="/images/trophy_cat.png"
+              alt="Mascot"
+              className="w-full h-auto object-contain drop-shadow-sm hover:scale-105 transition-transform"
+            />
+          </div>
+        </div>
+
       </div>
 
       {/* ─── The Winding Learning Road Canvas ─── */}
       <div
-        className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-2"
+        className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-3 z-10"
         style={{ height: `${totalTrackHeight}px` }}
       >
         {/* SVG Continuous Elbow Path Tracks */}
@@ -398,6 +460,27 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
           className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible"
           viewBox={`0 0 ${CONTAINER_WIDTH} ${totalTrackHeight}`}
         >
+          {/* Depth Shadow Layer for Pipeline Track */}
+          {nodes.slice(0, -1).map((node, index) => {
+            const p1 = nodePoints[index];
+            const p2 = nodePoints[index + 1];
+            const d = getElbowPath(p1, p2, 34);
+
+            return (
+              <path
+                key={`shadow-${node.id}`}
+                d={d}
+                fill="none"
+                stroke="#cbd5e1"
+                strokeWidth="18"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                opacity="0.35"
+              />
+            );
+          })}
+
+          {/* Foreground Colored Track Layer */}
           {nodes.slice(0, -1).map((node, index) => {
             const p1 = nodePoints[index];
             const p2 = nodePoints[index + 1];
@@ -406,8 +489,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
             const isSegmentCompleted = index < currentActiveIdx;
             const isSegmentActive = index === currentActiveIdx - 1;
             
-            // Color based on unit theme color or soft inactive ice-blue
-            let strokeColor = '#dbeafe'; // Default soft pastel ice-blue
+            let strokeColor = '#e2e8f0'; // Clean neutral inactive track
             if (isSegmentCompleted) {
               strokeColor = node.themeColor;
             } else if (isSegmentActive) {
@@ -435,12 +517,6 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
           const isCurrentActive = status === 'active' && index === currentActiveIdx;
           const pt = nodePoints[index];
 
-          // Text side logic:
-          // Node 0: Right
-          // Node 1 (x=75): Right
-          // Node 2 (x=265): Left
-          // Node 3 (x=75): Right
-          // Node 4 (x=265): Left
           const textSide: 'left' | 'right' = index === 0 ? 'right' : (index % 2 === 1 ? 'right' : 'left');
 
           return (
@@ -448,13 +524,11 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
               key={node.id}
               id={isCurrentActive ? 'active-level-node' : undefined}
               ref={isCurrentActive ? activeNodeRef : undefined}
+              className="absolute -translate-x-1/2 -translate-y-1/2 z-10"
               style={{
-                position: 'absolute',
-                top: `${pt.y}px`,
                 left: `${pt.x}px`,
-                transform: 'translate(-50%, -50%)',
+                top: `${pt.y}px`,
               }}
-              className="z-10 flex items-center justify-center"
             >
               <PathNode
                 id={node.id}
@@ -467,72 +541,71 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
                 iconType={node.iconType}
                 userAvatarUrl={user.avatarUrl}
                 userName={user.name}
-                textSide={textSide}
                 onClick={() => handleNodeClick(node)}
+                textSide={textSide}
               />
             </div>
           );
         })}
-
       </div>
 
-      {/* ─── Clean Lesson Launch Sheet / Modal ─── */}
+      {/* ─── Interactive Node Lesson Detail Popup Sheet ─── */}
       {selectedNode && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 animate-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 max-w-sm w-full shadow-2xl border border-slate-200 animate-in slide-in-from-bottom-5 duration-200 text-slate-900">
             
-            <div className="flex items-start justify-between">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between gap-3 mb-3">
               <div>
                 <span
-                  style={{ color: selectedNode.themeColor }}
-                  className="text-xs font-black uppercase tracking-wider"
+                  style={{ backgroundColor: `${selectedNode.themeColor}18`, color: selectedNode.themeColor }}
+                  className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full inline-block mb-1"
                 >
-                  Lesson {selectedNode.code}
+                  {selectedNode.unitTitle}
                 </span>
-                <h3 className="font-heading font-black text-lg text-slate-900 mt-1 leading-snug">
+                <h3 className="font-heading font-black text-lg text-slate-900 leading-tight">
                   {selectedNode.title}
                 </h3>
-                <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  {selectedNode.subtitle}
-                </p>
               </div>
-
               <button
                 type="button"
                 onClick={() => setSelectedNode(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer transition-colors"
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 text-xs font-bold transition-colors cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[18px]">close</span>
+                ✕
               </button>
             </div>
 
-            {/* Reward Badges */}
-            <div className="grid grid-cols-2 gap-2 my-5">
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 flex items-center gap-2">
+            <p className="text-xs text-slate-500 leading-relaxed mb-4">
+              {selectedNode.subtitle}. Complete this checkpoint test to earn gems and advance your streak.
+            </p>
+
+            {/* Rewards Strip */}
+            <div className="grid grid-cols-2 gap-2 mb-5 p-3 rounded-2xl bg-slate-50 border border-slate-200">
+              <div className="flex items-center gap-2">
                 <XpBoltIcon size={20} />
                 <div>
-                  <span className="text-[10px] font-bold text-amber-800 uppercase block">XP Reward</span>
-                  <span className="text-sm font-black text-amber-950">+{selectedNode.xpReward} XP</span>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Reward</span>
+                  <span className="text-xs font-black text-slate-800">+{selectedNode.xpReward} XP</span>
                 </div>
               </div>
 
-              <div className="bg-cyan-50 border border-cyan-200 rounded-2xl p-3 flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <GemIcon size={20} />
                 <div>
-                  <span className="text-[10px] font-bold text-cyan-800 uppercase block">Gems</span>
-                  <span className="text-sm font-black text-cyan-950">+{selectedNode.gemsReward} 💎</span>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Gems</span>
+                  <span className="text-xs font-black text-slate-800">+{selectedNode.gemsReward} Gems</span>
                 </div>
               </div>
             </div>
 
-            {/* Action CTA Button */}
+            {/* Action CTA */}
             <button
               type="button"
               onClick={() => startLesson(selectedNode)}
-              style={{ backgroundColor: selectedNode.themeColor }}
-              className="w-full py-3.5 rounded-2xl text-white font-black text-sm shadow-md hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-black text-sm transition-all active:scale-95 shadow-md flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>{user.completedNodes[selectedNode.id] ? 'Practice Again' : 'Start Lesson'}</span>
+              <span>{user.completedNodes[selectedNode.id] ? 'Practice Again' : 'Start Lesson Test'}</span>
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>
 
