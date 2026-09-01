@@ -4,7 +4,6 @@ import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
-import { BrandLogo } from '@/components/BrandLogo';
 import { playButtonClick, playGemDing } from '@/lib/soundEffects';
 
 function SignupForm() {
@@ -51,6 +50,7 @@ function SignupForm() {
     if (!username.trim() || username.length < 3) return setError('Username must be 3-20 characters.');
     if (!contact.includes('@')) return setError('Please enter a valid email address.');
     if (password.length < 6) return setError('Password must be at least 6 characters.');
+    if (!agreedTerms) return setError('Please agree to Terms of Service.');
     
     setLoading(true);
     const cleanUser = username.toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -63,8 +63,7 @@ function SignupForm() {
 
       // If signed up via referral, grant bonus gems!
       if (refCode) {
-        addGems(50); // New user gets 50 Gems
-        // Award referral count to local state if on same device or notify
+        addGems(50);
         try {
           const currentCount = parseInt(localStorage.getItem('edustride_referral_count') || '0', 10);
           localStorage.setItem('edustride_referral_count', (currentCount + 1).toString());
@@ -81,276 +80,201 @@ function SignupForm() {
   };
 
   return (
-    <div className="min-h-[100dvh] w-full bg-white text-slate-900 flex flex-col justify-between items-center p-4 sm:p-6 font-sans relative overflow-x-hidden select-none">
+    <div 
+      className="min-h-[100dvh] w-full flex items-center justify-center p-4 font-sans relative overflow-hidden select-none bg-[#09111e] bg-cover bg-top sm:bg-center"
+      style={{
+        backgroundImage: `url('/images/night_brick_sconce_bg.jpg')`,
+      }}
+    >
       
-      {/* ─── Top Brand Header ─── */}
-      <header className="w-full shrink-0 flex justify-between items-center max-w-xl mx-auto py-2 z-20">
-        <Link href="/" className="cursor-pointer active:scale-95 transition-transform">
-          <BrandLogo size="lg" />
-        </Link>
+      {/* ─── Top Back Navigation ─── */}
+      <header className="absolute top-4 left-4 z-30">
         <Link
           href="/"
           onClick={playButtonClick}
-          className="text-xs font-black text-slate-600 hover:text-[#7c3aed] flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-50 border-2 border-slate-200 hover:border-violet-400 shadow-2xs transition-all active:scale-95 cursor-pointer"
+          className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md flex items-center justify-center text-white/90 hover:text-white transition-all active:scale-95 cursor-pointer shadow-lg"
         >
-          <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-          <span>Back</span>
+          <span className="material-symbols-outlined text-[20px]">arrow_back</span>
         </Link>
       </header>
 
-      {/* ─── Main Interactive Graphic Registration Window ─── */}
-      <main className="w-full max-w-md my-auto py-6 relative flex flex-col items-center justify-center z-10">
-        
-        {/* Soft Organic Cloud / Blob Background (Brand Violet Theme) */}
-        <div className="absolute -inset-4 sm:-inset-8 bg-[#ede9fe]/80 rounded-[60px] transform rotate-1 pointer-events-none -z-10 blur-xs" />
-
-        {/* ─── Top-Left Illuminated Idea Bulb ─── */}
-        <div className="absolute -top-3 -left-2 sm:-top-5 sm:-left-6 z-20 flex flex-col items-center pointer-events-none animate-pulse">
-          {/* Radiating Light Rays */}
-          <div className="flex items-center gap-1 mb-1">
-            <span className="w-1 h-3 bg-slate-900 rounded-full transform -rotate-45" />
-            <span className="w-1 h-3.5 bg-slate-900 rounded-full -mt-1" />
-            <span className="w-1 h-3 bg-slate-900 rounded-full transform rotate-45" />
-          </div>
-
-          {/* Light Bulb Icon */}
-          <div className="w-12 h-12 rounded-full bg-white border-2 border-slate-900 shadow-md flex items-center justify-center relative">
-            <span className="material-symbols-outlined text-[28px] text-[#7c3aed] font-bold">school</span>
-            {/* Thread Base */}
-            <div className="absolute -bottom-2 w-5 h-2 bg-[#7c3aed] border border-slate-900 rounded-b-sm" />
-          </div>
-        </div>
-
-        {/* ─── The Main Browser Registration Window ─── */}
-        <div className="w-full bg-white border-[3px] border-slate-900 rounded-3xl shadow-[8px_8px_0px_#0f172a] overflow-hidden relative transition-all">
+      {/* ─── Main Frosted Glassmorphic Register Card (Positioned in Light Beam) ─── */}
+      <main className="w-full max-w-[360px] sm:max-w-[400px] relative z-20 mt-28 sm:mt-32 my-6">
+        <div 
+          className="w-full rounded-[30px] p-6 sm:p-7 backdrop-blur-md border border-white/30 shadow-[0_20px_50px_rgba(0,0,0,0.6),0_0_25px_rgba(254,240,138,0.12)] flex flex-col items-center"
+          style={{
+            background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(13, 27, 49, 0.6) 100%)',
+          }}
+        >
           
-          {/* 1. Browser Title Bar (Brand Purple Theme Header) */}
-          <div className="w-full bg-[#7c3aed] border-b-[3px] border-slate-900 px-4 py-3 flex items-center justify-between">
-            {/* 3 Circular Window Dots */}
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-white/90 border border-slate-900 shadow-2xs" />
-              <span className="w-3 h-3 rounded-full bg-white/90 border border-slate-900 shadow-2xs" />
-              <span className="w-3 h-3 rounded-full bg-white/90 border border-slate-900 shadow-2xs" />
+          {/* Card Title */}
+          <h1 className="font-heading font-black text-3xl text-white tracking-wide text-center mb-1 drop-shadow-md">
+            Register
+          </h1>
+          <p className="text-[11px] font-medium text-amber-200/90 mb-5 text-center">
+            {refCode ? `🎁 Referred by @${refCode}! +50 Gems bonus` : '✨ Start your learning adventure today'}
+          </p>
+
+          {/* Error Banner */}
+          {error && (
+            <div className="w-full mb-3 p-2.5 rounded-xl bg-rose-500/25 border border-rose-400/40 text-rose-100 text-xs font-semibold text-center backdrop-blur-md">
+              {error}
             </div>
+          )}
 
-            <span className="text-[11px] font-black uppercase text-violet-100 tracking-wider">
-              nainixOne • Scholar Registration
-            </span>
-
-            <div className="w-12" />
-          </div>
-
-          {/* 2. Window Content Body */}
-          <div className="p-5 sm:p-7 flex flex-col items-center">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="w-full space-y-3">
             
-            {/* User Icon Circle (Brand Purple Theme) */}
-            <div className="w-18 h-18 rounded-full bg-[#7c3aed] border-[3px] border-slate-900 flex items-center justify-center text-white shadow-sm mb-3 relative overflow-hidden">
-              <span className="material-symbols-outlined text-[44px] text-white">person_add</span>
-              <div className="absolute top-1 left-2 w-14 h-7 bg-white/20 rounded-t-full pointer-events-none" />
+            {/* Field 1: Full Name */}
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={fullName}
+                onChange={(e) => handleNameChange(e.target.value)}
+                className="w-full pl-5 pr-11 py-3 rounded-full bg-white/10 border border-white/30 text-white placeholder:text-white/70 text-xs sm:text-sm font-medium outline-none focus:border-white focus:bg-white/20 focus:ring-2 focus:ring-white/25 transition-all backdrop-blur-sm shadow-inner"
+                required
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/85 material-symbols-outlined text-[20px] pointer-events-none">
+                person
+              </span>
             </div>
 
-            {/* 🎁 Referral Invitation Banner */}
-            {refCode && (
-              <div className="w-full mb-3 p-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-2 border-slate-900 shadow-xs flex items-center gap-2.5 animate-bounce">
-                <span className="text-2xl shrink-0">🎁</span>
-                <div className="min-w-0">
-                  <p className="text-xs font-black leading-tight truncate">
-                    Invited by @{refCode}!
-                  </p>
-                  <p className="text-[10px] text-cyan-100 font-bold">
-                    You + @{refCode} will both get <b>+50 Free Gems 💎</b>!
-                  </p>
-                </div>
-              </div>
-            )}
+            {/* Field 2: Username */}
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="Username (e.g. rahul_99)"
+                value={username}
+                onChange={(e) => {
+                  setUsernameTouched(true);
+                  setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''));
+                }}
+                className="w-full pl-5 pr-11 py-3 rounded-full bg-white/10 border border-white/30 text-white placeholder:text-white/70 text-xs sm:text-sm font-medium outline-none focus:border-white focus:bg-white/20 focus:ring-2 focus:ring-white/25 transition-all backdrop-blur-sm shadow-inner"
+                required
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/85 material-symbols-outlined text-[20px] pointer-events-none">
+                alternate_email
+              </span>
+            </div>
 
-            {/* Error Message */}
-            {error && (
-              <div className="w-full mb-3 bg-rose-50 border-2 border-rose-400 text-rose-700 text-xs font-bold px-3.5 py-2.5 rounded-2xl flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-rose-600 shrink-0">error</span>
-                <span>{error}</span>
-              </div>
-            )}
+            {/* Field 3: Email */}
+            <div className="relative w-full">
+              <input
+                type="email"
+                placeholder="Email Address"
+                value={contact}
+                onChange={(e) => setContact(e.target.value)}
+                className="w-full pl-5 pr-11 py-3 rounded-full bg-white/10 border border-white/30 text-white placeholder:text-white/70 text-xs sm:text-sm font-medium outline-none focus:border-white focus:bg-white/20 focus:ring-2 focus:ring-white/25 transition-all backdrop-blur-sm shadow-inner"
+                required
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/85 material-symbols-outlined text-[20px] pointer-events-none">
+                mail
+              </span>
+            </div>
 
-            {/* Registration Form */}
-            <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3">
-              
-              {/* Capsule Input 1: Full Name */}
-              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
-                <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
-                  <span className="material-symbols-outlined text-[16px]">person</span>
-                  <span className="text-xs font-black tracking-wide">NAME</span>
-                </div>
-                <input
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => handleNameChange(e.target.value)}
-                  placeholder="e.g. Abhishek Kumar"
-                  className="w-full h-full px-3.5 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 focus:outline-hidden bg-transparent"
-                />
-              </div>
-
-              {/* Capsule Input 2: Instagram-style Unique @username */}
-              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
-                <div className="w-22 sm:w-26 h-full bg-[#6d28d9] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
-                  <span className="material-symbols-outlined text-[16px]">alternate_email</span>
-                  <span className="text-xs font-black tracking-wide">HANDLE</span>
-                </div>
-                <div className="flex items-center w-full px-3.5">
-                  <span className="text-xs font-black text-[#7c3aed] mr-1">@</span>
-                  <input
-                    type="text"
-                    required
-                    value={username}
-                    onChange={(e) => {
-                      setUsernameTouched(true);
-                      setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 20));
-                    }}
-                    placeholder="unique_username"
-                    className="w-full h-full text-xs sm:text-sm font-bold text-[#6d28d9] placeholder:text-slate-400 focus:outline-hidden bg-transparent"
-                  />
-                </div>
-              </div>
-
-              {/* Capsule Input 3: Email */}
-              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
-                <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
-                  <span className="material-symbols-outlined text-[16px]">mail</span>
-                  <span className="text-xs font-black tracking-wide">EMAIL</span>
-                </div>
-                <input
-                  type="email"
-                  required
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                  placeholder="student@gmail.com"
-                  className="w-full h-full px-3.5 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 focus:outline-hidden bg-transparent"
-                />
-              </div>
-
-              {/* Capsule Input 4: Class / Grade Selector */}
-              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
-                <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
-                  <span className="material-symbols-outlined text-[16px]">school</span>
-                  <span className="text-xs font-black tracking-wide">CLASS</span>
-                </div>
+            {/* Field 4: Class & Board Selector */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="relative">
                 <select
                   value={classLevel}
                   onChange={(e) => setClassLevelState(e.target.value)}
-                  className="w-full h-full px-3 text-xs sm:text-sm font-bold text-slate-800 focus:outline-hidden bg-transparent cursor-pointer"
+                  className="w-full pl-4 pr-8 py-3 rounded-full bg-[#0d1e38]/80 border border-white/30 text-white text-xs font-semibold outline-none focus:border-white transition-all appearance-none cursor-pointer backdrop-blur-sm"
                 >
-                  <option value="Class 12">Class 12</option>
-                  <option value="Class 11">Class 11</option>
-                  <option value="Class 10">Class 10</option>
-                  <option value="Class 9">Class 9</option>
-                  <option value="JEE Main / Adv">JEE Main / Adv</option>
-                  <option value="NEET UG">NEET UG</option>
+                  <option value="Class 12" className="bg-[#0d1e38] text-white">Class 12</option>
+                  <option value="Class 11" className="bg-[#0d1e38] text-white">Class 11</option>
+                  <option value="Class 10" className="bg-[#0d1e38] text-white">Class 10</option>
+                  <option value="Class 9" className="bg-[#0d1e38] text-white">Class 9</option>
                 </select>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 material-symbols-outlined text-[18px] pointer-events-none">
+                  expand_more
+                </span>
               </div>
 
-              {/* Capsule Input 5: Target Board Selector */}
-              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
-                <div className="w-22 sm:w-26 h-full bg-[#6d28d9] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
-                  <span className="material-symbols-outlined text-[16px]">menu_book</span>
-                  <span className="text-xs font-black tracking-wide">BOARD</span>
-                </div>
+              <div className="relative">
                 <select
                   value={board}
                   onChange={(e) => setBoard(e.target.value)}
-                  className="w-full h-full px-3 text-xs sm:text-sm font-bold text-slate-800 focus:outline-hidden bg-transparent cursor-pointer"
+                  className="w-full pl-4 pr-8 py-3 rounded-full bg-[#0d1e38]/80 border border-white/30 text-white text-xs font-semibold outline-none focus:border-white transition-all appearance-none cursor-pointer backdrop-blur-sm"
                 >
-                  <option value="cbse">CBSE Board</option>
-                  <option value="bseb">Bihar Board (BSEB)</option>
-                  <option value="up">UP Board</option>
-                  <option value="icse">ICSE / ISC Board</option>
-                  <option value="state">Other State Board</option>
+                  <option value="cbse" className="bg-[#0d1e38] text-white">CBSE Board</option>
+                  <option value="icse" className="bg-[#0d1e38] text-white">ICSE Board</option>
+                  <option value="state" className="bg-[#0d1e38] text-white">State Board</option>
+                  <option value="jee" className="bg-[#0d1e38] text-white">JEE Main/Adv</option>
+                  <option value="neet" className="bg-[#0d1e38] text-white">NEET UG</option>
                 </select>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 material-symbols-outlined text-[18px] pointer-events-none">
+                  expand_more
+                </span>
               </div>
+            </div>
 
-              {/* Capsule Input 5: Password */}
-              <div className="w-full h-12 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all relative">
-                <div className="w-22 sm:w-26 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
-                  <span className="material-symbols-outlined text-[16px]">lock</span>
-                  <span className="text-xs font-black tracking-wide">PASS</span>
-                </div>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min 6 characters"
-                  className="w-full h-full px-3.5 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 focus:outline-hidden bg-transparent pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-[18px]">
-                    {showPassword ? 'visibility_off' : 'visibility'}
-                  </span>
-                </button>
-              </div>
+            {/* Field 5: Password */}
+            <div className="relative w-full">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Password (min. 6 chars)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-5 pr-11 py-3 rounded-full bg-white/10 border border-white/30 text-white placeholder:text-white/70 text-xs sm:text-sm font-medium outline-none focus:border-white focus:bg-white/20 focus:ring-2 focus:ring-white/25 transition-all backdrop-blur-sm shadow-inner"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/85 hover:text-white cursor-pointer flex items-center"
+              >
+                <span className="material-symbols-outlined text-[19px]">
+                  {showPassword ? 'visibility_off' : 'lock'}
+                </span>
+              </button>
+            </div>
 
-              {/* Terms Checkbox */}
-              <label className="flex items-center gap-2 px-1 cursor-pointer select-none mt-1">
+            {/* Terms agreement checkbox */}
+            <div className="w-full flex items-center text-xs text-white/90 pt-0.5 px-1">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={agreedTerms}
                   onChange={(e) => setAgreedTerms(e.target.checked)}
-                  className="w-4 h-4 rounded-sm border-2 border-slate-900 text-[#7c3aed] focus:ring-[#7c3aed] accent-[#7c3aed]"
+                  className="w-3.5 h-3.5 rounded border border-white/50 bg-white/10 accent-white cursor-pointer"
                 />
-                <span className="text-[11px] font-semibold text-slate-600">
-                  I agree to Practice Rules & Academic Integrity
+                <span className="text-[11px] font-medium text-white/85">
+                  I agree to the Terms of Service & Privacy
                 </span>
               </label>
-
-              {/* ─── Big 3D Duolingo Action Button (Brand Purple Theme) ─── */}
-              <button
-                type="submit"
-                disabled={loading || !agreedTerms}
-                className="w-full mt-2 py-3.5 bg-[#7c3aed] hover:bg-[#6d28d9] active:bg-[#5b21b6] text-white font-black text-sm tracking-wider uppercase rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_#0f172a] active:translate-y-1 active:shadow-[1px_1px_0px_#0f172a] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {loading ? (
-                  <>
-                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Creating Profile...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Start Practicing</span>
-                    <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
-                  </>
-                )}
-              </button>
-
-            </form>
-
-            {/* Already have an account link */}
-            <div className="mt-4 pt-3 border-t-2 border-slate-100 w-full text-center">
-              <p className="text-xs font-bold text-slate-500">
-                Already registered?{' '}
-                <Link
-                  href="/login"
-                  onClick={playButtonClick}
-                  className="font-black text-[#7c3aed] hover:underline"
-                >
-                  Log In here
-                </Link>
-              </p>
             </div>
 
+            {/* ─── High Contrast Pure White Pill Register Button ─── */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-2 py-3.5 rounded-full bg-white hover:bg-slate-100 text-[#09111e] font-heading font-black text-sm sm:text-base shadow-[0_8px_25px_rgba(0,0,0,0.4)] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
+            >
+              {loading ? (
+                <span className="w-5 h-5 border-2 border-[#09111e] border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <span>Register</span>
+              )}
+            </button>
+          </form>
+
+          {/* Footer Login Link */}
+          <div className="mt-5 text-center">
+            <p className="text-xs text-white/85">
+              Already have an account?{' '}
+              <Link
+                href="/login"
+                onClick={playButtonClick}
+                className="font-black text-white hover:underline cursor-pointer"
+              >
+                Login
+              </Link>
+            </p>
           </div>
 
         </div>
-
       </main>
-
-      {/* ─── Footer ─── */}
-      <footer className="w-full text-center py-2 text-[11px] font-bold text-slate-400 shrink-0">
-        All Classes (9th - 12th & Beyond) • CBSE • BSEB • UP • ICSE • State Boards
-      </footer>
 
     </div>
   );
@@ -358,7 +282,11 @@ function SignupForm() {
 
 export default function SignupPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center"><span className="text-xs font-bold text-slate-500">Loading...</span></div>}>
+    <Suspense fallback={
+      <div className="min-h-[100dvh] w-full flex items-center justify-center bg-[#09111e]">
+        <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
       <SignupForm />
     </Suspense>
   );
