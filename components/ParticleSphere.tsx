@@ -9,8 +9,8 @@ interface ParticleSphereProps {
 }
 
 export function ParticleSphere({
-  particleCount = 1400,
-  radius = 170,
+  particleCount = 3600,
+  radius = 135,
   className = '',
 }: ParticleSphereProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -22,15 +22,23 @@ export function ParticleSphere({
     if (!ctx) return;
 
     let animationFrameId: number;
-    let width = (canvas.width = canvas.parentElement?.clientWidth || 360);
-    let height = (canvas.height = canvas.parentElement?.clientHeight || 360);
+    const dpr = window.devicePixelRatio || 1;
 
-    const handleResize = () => {
-      if (!canvas.parentElement) return;
-      width = canvas.width = canvas.parentElement.clientWidth;
-      height = canvas.height = canvas.parentElement.clientHeight;
+    let size = 320;
+    const updateDimensions = () => {
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      const minDim = Math.min(parent.clientWidth || 320, parent.clientHeight || 320, 360);
+      size = minDim;
+      canvas.width = size * dpr;
+      canvas.height = size * dpr;
+      canvas.style.width = `${size}px`;
+      canvas.style.height = `${size}px`;
+      ctx.scale(dpr, dpr);
     };
-    window.addEventListener('resize', handleResize);
+
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
 
     interface Point3D {
       x: number;
@@ -40,23 +48,28 @@ export function ParticleSphere({
       baseY: number;
       baseZ: number;
       size: number;
-      alpha: number;
+      baseAlpha: number;
     }
 
-    // Generate 2200 points for dense, ultra-crisp 3D spherical globe
-    const count = 2200;
+    const points: Point3D[] = [];
+    const count = 4200;
+    const r = radius;
+
+    // Mathematically isotropic uniform sphere surface distribution (Muller-Marsaglia method)
     for (let i = 0; i < count; i++) {
-      const theta = (2 * Math.PI * i) / goldenRatio;
-      const phi = Math.acos(1 - (2 * (i + 0.5)) / count);
-      const r = radius;
+      // Uniform spherical surface distribution
+      const u = Math.random();
+      const v = Math.random();
+      const theta = u * 2.0 * Math.PI;
+      const phi = Math.acos(2.0 * v - 1.0); // uniformly distributed from 0 to PI
 
-      // Perfect spherical coordinates: x, y, z
-      const x = r * Math.sin(phi) * Math.cos(theta);
-      const y = r * Math.cos(phi); // Y is vertical axis for authentic polar caps
-      const z = r * Math.sin(phi) * Math.sin(theta);
+      const sinPhi = Math.sin(phi);
+      const x = r * sinPhi * Math.cos(theta);
+      const y = r * Math.cos(phi);
+      const z = r * sinPhi * Math.sin(theta);
 
-      // Polar brightness bonus
-      const isPolar = Math.abs(y) > radius * 0.75;
+      // Polar brightness bonus matching the user's reference GIF
+      const isPolar = Math.abs(y) > r * 0.75;
 
       points.push({
         x,
@@ -65,15 +78,15 @@ export function ParticleSphere({
         baseX: x,
         baseY: y,
         baseZ: z,
-        size: isPolar ? Math.random() * 1.6 + 0.8 : Math.random() * 1.3 + 0.6,
-        alpha: isPolar ? Math.random() * 0.5 + 0.5 : Math.random() * 0.6 + 0.35,
+        size: isPolar ? Math.random() * 1.0 + 0.6 : Math.random() * 0.8 + 0.35,
+        baseAlpha: isPolar ? Math.random() * 0.4 + 0.6 : Math.random() * 0.5 + 0.3,
       });
     }
 
-    let rotX = 0.2; // slight tilted angle for 3D depth
+    let rotX = 0.35; // Authentic 3D orbital tilt
     let rotY = 0;
-    const angleX = 0.0015;
-    const angleY = 0.008;
+    const angleX = 0.001;
+    const angleY = 0.006;
 
     let isInteracting = false;
     let lastX = 0;
@@ -93,8 +106,8 @@ export function ParticleSphere({
       const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
       const deltaX = clientX - lastX;
       const deltaY = clientY - lastY;
-      rotY += deltaX * 0.006;
-      rotX -= deltaY * 0.006;
+      rotY += deltaX * 0.007;
+      rotX -= deltaY * 0.007;
       lastX = clientX;
       lastY = clientY;
     };
@@ -111,55 +124,61 @@ export function ParticleSphere({
     window.addEventListener('touchmove', onPointerMove, { passive: true });
     window.addEventListener('touchend', onPointerUp);
 
-    const fov = 420;
-
     const render = () => {
-      ctx.clearRect(0, 0, width, height);
+      ctx.clearRect(0, 0, size, size);
 
-      rotX += angleX;
-      rotY += angleY;
+      if (!isInteracting) {
+        rotX += angleX;
+        rotY += angleY;
+      }
 
       const cosX = Math.cos(rotX);
       const sinX = Math.sin(rotX);
       const cosY = Math.cos(rotY);
       const sinY = Math.sin(rotY);
 
-      const centerX = width / 2;
-      const centerY = height / 2;
+      const center = size / 2;
 
       for (let i = 0; i < points.length; i++) {
         const p = points[i];
-        let x1 = p.baseX * cosY - p.baseZ * sinY;
-        let z1 = p.baseZ * cosY + p.baseX * sinY;
+        // Rotate around Y-axis
+        const x1 = p.baseX * cosY - p.baseZ * sinY;
+        const z1 = p.baseZ * cosY + p.baseX * sinY;
 
-        let y2 = p.baseY * cosX - z1 * sinX;
-        let z2 = z1 * cosX + p.baseY * sinX;
+        // Rotate around X-axis
+        const y2 = p.baseY * cosX - z1 * sinX;
+        const z2 = z1 * cosX + p.baseY * sinX;
 
         p.x = x1;
         p.y = y2;
         p.z = z2;
       }
 
+      // Depth sorting
       points.sort((a, b) => a.z - b.z);
 
       for (let i = 0; i < points.length; i++) {
         const p = points[i];
-        const scale = fov / (fov + p.z);
-        const projX = centerX + p.x * scale;
-        const projY = centerY + p.y * scale;
 
-        const depthAlpha = ((p.z + radius) / (2 * radius)) * 0.85 + 0.15;
-        const finalAlpha = Math.min(1, Math.max(0.1, p.alpha * depthAlpha));
+        // Symmetrical projection ensuring 100% circular silhouette
+        const projX = center + p.x;
+        const projY = center + p.y;
 
-        ctx.fillStyle = `rgba(255, 255, 255, ${finalAlpha})`;
+        // Depth shading: foreground is bright and sharp, background is subtle
+        const normalizedZ = (p.z + r) / (2 * r); // 0 (back) to 1 (front)
+        const alpha = Math.min(1, Math.max(0.12, p.baseAlpha * (0.3 + normalizedZ * 0.7)));
+        const pointSize = p.size * (0.75 + normalizedZ * 0.45);
+
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
         ctx.beginPath();
-        ctx.arc(projX, projY, p.size * scale, 0, Math.PI * 2);
+        ctx.arc(projX, projY, pointSize, 0, Math.PI * 2);
         ctx.fill();
 
-        if (p.z > radius * 0.4 && p.size > 1.6) {
-          ctx.fillStyle = `rgba(186, 230, 253, ${finalAlpha * 0.35})`;
+        // Luminous highlight for top poles and front stars
+        if (normalizedZ > 0.8 && p.size > 0.9) {
+          ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.5})`;
           ctx.beginPath();
-          ctx.arc(projX, projY, p.size * scale * 2.2, 0, Math.PI * 2);
+          ctx.arc(projX, projY, pointSize * 1.8, 0, Math.PI * 2);
           ctx.fill();
         }
       }
@@ -171,7 +190,7 @@ export function ParticleSphere({
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', updateDimensions);
       canvas.removeEventListener('mousedown', onPointerDown);
       window.removeEventListener('mousemove', onPointerMove);
       window.removeEventListener('mouseup', onPointerUp);

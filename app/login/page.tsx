@@ -459,8 +459,8 @@ export default function LoginPage() {
 
         {/* Centerpiece: Interactive 3D Rotating Particle Sphere */}
         <div className="relative z-20 flex flex-col items-center justify-center my-auto w-full max-w-sm">
-          <div className="w-72 h-72 sm:w-88 sm:h-88 relative flex items-center justify-center">
-            <ParticleSphere particleCount={1600} radius={150} className="w-full h-full" />
+          <div className="w-72 h-72 sm:w-80 sm:h-80 relative flex items-center justify-center">
+            <ParticleSphere particleCount={4200} radius={120} className="w-full h-full" />
           </div>
 
           <div className="text-center space-y-2 mt-2 max-w-xs">
