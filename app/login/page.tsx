@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
-import { BrandLogo } from '@/components/BrandLogo';
 import { playButtonClick, playGemDing } from '@/lib/soundEffects';
 
 export default function LoginPage() {
@@ -18,6 +17,10 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!identifier.trim() || !password.trim()) {
+      setError('Please enter your email/username and password.');
+      return;
+    }
     setError('');
     setLoading(true);
     playButtonClick();
@@ -29,233 +32,229 @@ export default function LoginPage() {
       playGemDing();
       router.push('/');
     } else {
-      setError(result.error || 'Invalid email or password. Please try again.');
+      setError(result.error || 'Invalid credentials. Please try again.');
     }
   };
 
   return (
-    <div className="min-h-[100dvh] w-full bg-white text-slate-900 flex flex-col justify-between items-center p-4 sm:p-6 font-sans relative overflow-x-hidden select-none">
-      
-      {/* ─── Top Brand Header ─── */}
-      <header className="w-full shrink-0 flex justify-between items-center max-w-xl mx-auto py-2 z-20">
-        <Link href="/" className="cursor-pointer active:scale-95 transition-transform">
-          <BrandLogo size="lg" />
-        </Link>
+    <div className="min-h-[100dvh] w-full flex flex-col justify-between items-center p-4 sm:p-6 font-sans relative overflow-x-hidden select-none"
+      style={{
+        backgroundColor: '#fff0f5',
+        backgroundImage: `
+          repeating-linear-gradient(0deg, rgba(251, 207, 232, 0.45) 0px, rgba(251, 207, 232, 0.45) 32px, transparent 32px, transparent 64px),
+          repeating-linear-gradient(90deg, rgba(251, 207, 232, 0.45) 0px, rgba(251, 207, 232, 0.45) 32px, transparent 32px, transparent 64px)
+        `,
+      }}
+    >
+      {/* ─── Top Bar ─── */}
+      <header className="w-full shrink-0 flex justify-between items-center max-w-sm mx-auto pt-2 z-20">
         <Link
           href="/"
           onClick={playButtonClick}
-          className="text-xs font-black text-slate-600 hover:text-[#7c3aed] flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-50 border-2 border-slate-200 hover:border-violet-400 shadow-2xs transition-all active:scale-95 cursor-pointer"
+          className="w-9 h-9 rounded-full bg-white/80 border-2 border-[#475569] shadow-[0_2px_0_#475569] flex items-center justify-center text-slate-700 hover:scale-105 active:translate-y-0.5 transition-all cursor-pointer"
         >
-          <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-          <span>Back</span>
+          <span className="material-symbols-outlined text-[20px]">arrow_back</span>
         </Link>
+        <span className="text-xs font-black uppercase tracking-widest text-[#be185d]">
+          nainixOne
+        </span>
+        <div className="w-9" />
       </header>
 
-      {/* ─── Main Interactive Graphic Login Window ─── */}
-      <main className="w-full max-w-md my-auto py-6 relative flex flex-col items-center justify-center z-10">
+      {/* ─── Main Center Login Card Container ─── */}
+      <main className="w-full max-w-[360px] sm:max-w-[380px] my-auto py-4 flex flex-col items-center z-10">
         
-        {/* Soft Organic Cloud / Blob Background (Brand Violet Theme) */}
-        <div className="absolute -inset-4 sm:-inset-8 bg-[#ede9fe]/80 rounded-[60px] transform -rotate-1 pointer-events-none -z-10 blur-xs" />
-
-        {/* ─── Top-Left Illuminated Idea Bulb ─── */}
-        <div className="absolute -top-3 -left-2 sm:-top-5 sm:-left-6 z-20 flex flex-col items-center pointer-events-none animate-pulse">
-          {/* Radiating Light Rays */}
-          <div className="flex items-center gap-1 mb-1">
-            <span className="w-1 h-3 bg-slate-900 rounded-full transform -rotate-45" />
-            <span className="w-1 h-3.5 bg-slate-900 rounded-full -mt-1" />
-            <span className="w-1 h-3 bg-slate-900 rounded-full transform rotate-45" />
+        {/* ─── 1. "LOGIN" 3D Title with Peeking Cat & Sparkles ─── */}
+        <div className="relative flex items-center justify-center mb-8 mt-2">
+          
+          {/* Peeking Cute Cat on Top-Left of LOGIN */}
+          <div className="absolute -top-10 -left-6 z-20 w-16 h-16 pointer-events-none select-none drop-shadow-md transform -rotate-12 animate-pulse">
+            <img
+              src="/images/trophy_cat.png"
+              alt="Cat"
+              className="w-full h-full object-contain"
+            />
           </div>
 
-          {/* Light Bulb Icon */}
-          <div className="w-12 h-12 rounded-full bg-white border-2 border-slate-900 shadow-md flex items-center justify-center relative">
-            <span className="material-symbols-outlined text-[28px] text-[#7c3aed] font-bold">lightbulb</span>
-            {/* Thread Base */}
-            <div className="absolute -bottom-2 w-5 h-2 bg-[#7c3aed] border border-slate-900 rounded-b-sm" />
+          {/* Yellow Sparkle Diamonds on Top-Right */}
+          <div className="absolute -top-4 -right-7 flex flex-col items-start gap-1 pointer-events-none select-none">
+            <div className="w-3.5 h-3.5 bg-yellow-300 border border-amber-400 rotate-45 shadow-2xs animate-bounce" />
+            <div className="w-2.5 h-2.5 bg-yellow-300 border border-amber-400 rotate-45 shadow-2xs ml-3" />
+            <div className="w-3 h-3 bg-yellow-300 border border-amber-400 rotate-45 shadow-2xs ml-5 -mt-1" />
           </div>
+
+          {/* 3D Bubble "LOGIN" Heading */}
+          <h1
+            className="font-heading font-black text-5xl sm:text-6xl tracking-wider select-none text-[#ff8fb3]"
+            style={{
+              WebkitTextStroke: '4px #ffffff',
+              filter: 'drop-shadow(0 6px 0 rgba(190, 24, 93, 0.4)) drop-shadow(0 12px 16px rgba(0,0,0,0.12))',
+            }}
+          >
+            LOGIN
+          </h1>
         </div>
 
-        {/* ─── The Main Browser Login Window ─── */}
-        <div className="w-full bg-white border-[3px] border-slate-900 rounded-3xl shadow-[8px_8px_0px_#0f172a] overflow-hidden relative transition-all">
+        {/* ─── 2. Form Container ─── */}
+        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
           
-          {/* 1. Browser Title Bar (Brand Purple Theme Header) */}
-          <div className="w-full bg-[#7c3aed] border-b-[3px] border-slate-900 px-4 py-3 flex items-center justify-between">
-            {/* 3 Circular Window Dots */}
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-white/90 border border-slate-900 shadow-2xs" />
-              <span className="w-3 h-3 rounded-full bg-white/90 border border-slate-900 shadow-2xs" />
-              <span className="w-3 h-3 rounded-full bg-white/90 border border-slate-900 shadow-2xs" />
+          {/* Error Message */}
+          {error && (
+            <div className="bg-rose-50 border-2 border-rose-300 text-rose-700 px-4 py-2 rounded-2xl text-xs font-bold text-center shadow-xs">
+              {error}
+            </div>
+          )}
+
+          {/* ─── Field 1: Email or Username ─── */}
+          <div className="relative w-full rounded-full bg-[#f1f5f9] border-2 border-[#475569] shadow-[0_5px_0_#475569] p-1.5 flex items-center gap-2.5 transition-all focus-within:ring-2 focus-within:ring-pink-300">
+            {/* Left Pink Icon Badge */}
+            <div className="w-10 h-10 rounded-full bg-[#f472b6] border border-white text-white flex items-center justify-center shrink-0 shadow-xs">
+              <span className="material-symbols-outlined text-[20px]">person</span>
             </div>
 
-            <span className="text-[11px] font-black uppercase text-violet-100 tracking-wider">
-              nainixOne • Portal Access
-            </span>
-
-            <div className="w-12" />
+            {/* Input Element */}
+            <input
+              type="text"
+              placeholder="Email or Username"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              className="w-full bg-transparent outline-none text-xs sm:text-sm font-semibold text-slate-800 placeholder:text-slate-400 pr-4"
+              required
+            />
           </div>
 
-          {/* 2. Window Content Body */}
-          <div className="p-6 sm:p-8 flex flex-col items-center">
+          {/* ─── Field 2: Password with Peek-a-boo Cat ─── */}
+          <div className="relative w-full mt-2">
             
-            {/* Large User Avatar Silhouette Circle (Brand Purple Theme) */}
-            <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-full bg-[#7c3aed] border-[3px] border-slate-900 flex items-center justify-center text-white shadow-sm mb-6 relative overflow-hidden group">
-              <span className="material-symbols-outlined text-[48px] sm:text-[54px] text-white">person</span>
-              <div className="absolute top-1 left-2 w-16 h-8 bg-white/20 rounded-t-full pointer-events-none" />
+            {/* Little Cat Peeking over the Password Box */}
+            <div className="absolute -top-5 right-6 z-20 pointer-events-none select-none">
+              <div className="w-9 h-7 rounded-t-full bg-white border-2 border-[#475569] border-b-0 flex items-center justify-center pt-1 shadow-2xs">
+                {/* Cat face whiskers & eyes */}
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-[#475569]" />
+                  <span className="w-1 h-1 rounded-full bg-[#475569]" />
+                </div>
+              </div>
             </div>
 
-            {/* Error Message */}
-            {error && (
-              <div className="w-full mb-4 bg-rose-50 border-2 border-rose-400 text-rose-700 text-xs font-bold px-3.5 py-2.5 rounded-2xl flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-rose-600 shrink-0">error</span>
-                <span>{error}</span>
-              </div>
-            )}
-
-            {/* Login Form */}
-            <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
-              
-              {/* Capsule Input 1: Username / Email */}
-              <div className="w-full h-13 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
-                {/* Left Solid Violet Segment */}
-                <div className="w-24 sm:w-28 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
-                  <span className="material-symbols-outlined text-[18px]">badge</span>
-                  <span className="text-[11px] font-black tracking-tight">USER</span>
-                </div>
-                {/* Right Input Area */}
-                <input
-                  id="identifier"
-                  type="text"
-                  required
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="Email or @username"
-                  className="w-full h-full bg-transparent px-4 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 outline-none"
-                />
+            {/* Password Input Pill */}
+            <div className="w-full rounded-full bg-[#f1f5f9] border-2 border-[#475569] shadow-[0_5px_0_#475569] p-1.5 flex items-center gap-2.5 transition-all focus-within:ring-2 focus-within:ring-pink-300">
+              {/* Left Pink Lock Icon Badge */}
+              <div className="w-10 h-10 rounded-full bg-[#f472b6] border border-white text-white flex items-center justify-center shrink-0 shadow-xs">
+                <span className="material-symbols-outlined text-[19px]">lock</span>
               </div>
 
-              {/* Capsule Input 2: Password */}
-              <div className="w-full h-13 rounded-full border-2 border-slate-900 bg-white flex items-center overflow-hidden shadow-xs focus-within:ring-4 focus-within:ring-violet-500/20 transition-all">
-                {/* Left Solid Violet Segment */}
-                <div className="w-24 sm:w-28 h-full bg-[#7c3aed] border-r-2 border-slate-900 flex items-center justify-center gap-1 text-white shrink-0">
-                  <span className="material-symbols-outlined text-[18px]">key</span>
-                  <span className="text-[11px] font-black tracking-tight">PASS</span>
-                </div>
-                {/* Right Input Area */}
-                <input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full h-full bg-transparent px-4 text-xs sm:text-sm font-bold text-slate-800 placeholder:text-slate-400 outline-none tracking-widest"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="pr-4 flex items-center text-slate-400 hover:text-slate-700 cursor-pointer"
-                  title={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  <span className="material-symbols-outlined text-[20px]">
-                    {showPassword ? 'visibility' : 'visibility_off'}
-                  </span>
-                </button>
-              </div>
+              {/* Password Input */}
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-transparent outline-none text-xs sm:text-sm font-semibold text-slate-800 placeholder:text-slate-400 pr-2"
+                required
+              />
 
-              {/* Submit Action Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full mt-2 h-12 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] disabled:opacity-60 text-white font-black text-sm border-2 border-slate-900 shadow-[0_4px_0_#0f172a] active:shadow-none active:translate-y-1 transition-all duration-100 cursor-pointer flex items-center justify-center gap-2"
-              >
-                {loading ? (
-                  <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <>
-                    <span>Log In to Study</span>
-                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                  </>
-                )}
-              </button>
-
-              {/* Google Sign In Button */}
+              {/* Eye Visibility Toggle */}
               <button
                 type="button"
-                onClick={() => {
-                  playButtonClick();
-                  router.push('/');
-                }}
-                className="w-full h-11 rounded-xl bg-white border-2 border-slate-900 hover:bg-slate-50 text-slate-800 font-extrabold text-xs flex items-center justify-center gap-2 shadow-[0_2px_0_#0f172a] active:shadow-none active:translate-y-0.5 transition-all cursor-pointer mt-1"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-slate-400 hover:text-slate-600 pr-3 flex items-center cursor-pointer"
               >
-                <svg className="w-4 h-4 shrink-0" viewBox="0 0 48 48">
-                  <path d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" fill="#EA4335" />
-                  <path d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" fill="#4285F4" />
-                  <path d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" fill="#FBBC05" />
-                  <path d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" fill="#34A853" />
-                </svg>
-                <span>Continue with Google</span>
+                <span className="material-symbols-outlined text-[20px]">
+                  {showPassword ? 'visibility_off' : 'visibility'}
+                </span>
               </button>
-
-            </form>
-
-            {/* Signup Navigation */}
-            <div className="mt-5 text-center pt-3 border-t border-slate-100 w-full">
-              <p className="text-xs font-bold text-slate-500">
-                Don't have an account?{' '}
-                <Link
-                  href="/signup"
-                  onClick={playButtonClick}
-                  className="font-black text-[#7c3aed] hover:underline ml-1"
-                >
-                  Create Account
-                </Link>
-              </p>
             </div>
-
           </div>
+
+          {/* ─── Forgot Password Link ─── */}
+          <div className="w-full flex justify-end -mt-1">
+            <button
+              type="button"
+              onClick={() => alert('Password reset link sent to your registered email.')}
+              className="text-[11px] font-bold text-[#be185d] hover:underline cursor-pointer"
+            >
+              Forgot Password?
+            </button>
+          </div>
+
+          {/* ─── 3. Big 3D Pill Login Button ─── */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full mt-2 py-3.5 rounded-full bg-[#d87093] hover:bg-[#c95f82] text-white font-heading font-black text-base sm:text-lg border-2 border-[#475569] shadow-[0_5px_0_#475569] active:translate-y-1 active:shadow-[0_1px_0_#475569] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
+          >
+            {loading ? (
+              <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <span>Login</span>
+            )}
+          </button>
+        </form>
+
+        {/* ─── 4. "or continue with" Divider ─── */}
+        <div className="w-full flex items-center gap-3 my-6">
+          <div className="flex-1 h-[1.5px] bg-[#947080]/30" />
+          <span className="text-[11px] font-bold text-[#886070] select-none">
+            or continue with
+          </span>
+          <div className="flex-1 h-[1.5px] bg-[#947080]/30" />
         </div>
 
-        {/* ─── Bottom Interlocking Mechanical Gears (Brand Purple Theme) ─── */}
-        <div className="relative w-full max-w-[280px] h-12 -mt-3 flex items-center justify-center z-20 pointer-events-none">
-          {/* Main Big Gear Left */}
-          <div className="w-14 h-14 rounded-full bg-[#7c3aed] border-2 border-slate-900 flex items-center justify-center shadow-md animate-spin-slow">
-            <div className="w-5 h-5 rounded-full bg-white border-2 border-slate-900" />
-          </div>
+        {/* ─── 5. Circular Social Login Buttons ─── */}
+        <div className="flex items-center justify-center gap-5">
+          {/* Google Button */}
+          <button
+            type="button"
+            onClick={() => alert('Google login integration active.')}
+            className="w-12 h-12 rounded-full bg-white border border-slate-200 shadow-[0_4px_0_#cbd5e1] hover:scale-105 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center cursor-pointer"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z" />
+              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z" />
+              <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z" />
+              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z" />
+            </svg>
+          </button>
 
-          {/* Small Interlocking Gear Right */}
-          <div className="w-10 h-10 -ml-2 -mt-4 rounded-full bg-[#8b5cf6] border-2 border-slate-900 flex items-center justify-center shadow-md animate-spin-reverse-slow">
-            <div className="w-3.5 h-3.5 rounded-full bg-white border border-slate-900" />
-          </div>
+          {/* Apple Button */}
+          <button
+            type="button"
+            onClick={() => alert('Apple login integration active.')}
+            className="w-12 h-12 rounded-full bg-white border border-slate-200 shadow-[0_4px_0_#cbd5e1] hover:scale-105 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center cursor-pointer"
+          >
+            <svg className="w-5 h-5 fill-black" viewBox="0 0 24 24">
+              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.75 1.04-1.8 0.92-2.87-.93.04-2.02.63-2.67 1.38-.56.65-1.06 1.71-.93 2.74 1.04.08 2.07-.5 2.68-1.25z" />
+            </svg>
+          </button>
 
-          {/* Mini Supporting Gear Bottom */}
-          <div className="w-8 h-8 -ml-1 mt-2 rounded-full bg-[#6d28d9] border-2 border-slate-900 flex items-center justify-center shadow-xs">
-            <div className="w-2.5 h-2.5 rounded-full bg-white border border-slate-900" />
-          </div>
+          {/* Facebook Button */}
+          <button
+            type="button"
+            onClick={() => alert('Facebook login integration active.')}
+            className="w-12 h-12 rounded-full bg-white border border-slate-200 shadow-[0_4px_0_#cbd5e1] hover:scale-105 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center cursor-pointer"
+          >
+            <svg className="w-5 h-5 fill-[#1877F2]" viewBox="0 0 24 24">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+            </svg>
+          </button>
         </div>
 
       </main>
 
-      {/* ─── Footer ─── */}
-      <footer className="w-full shrink-0 text-center text-[11px] font-black text-slate-400 py-3 z-10">
-        © 2026 nainixOne • Interactive Board & Exam Prep Platform
+      {/* ─── Footer: Don't have an account? Sign Up ─── */}
+      <footer className="w-full shrink-0 text-center py-2 z-20">
+        <p className="text-xs font-bold text-slate-700">
+          Don&apos;t have an account?{' '}
+          <Link
+            href="/signup"
+            onClick={playButtonClick}
+            className="font-black text-[#be185d] hover:underline cursor-pointer"
+          >
+            Sign Up
+          </Link>
+        </p>
       </footer>
-
-      {/* Animation helper styles */}
-      <style jsx global>{`
-        @keyframes spinSlow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes spinReverseSlow {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0deg); }
-        }
-        .animate-spin-slow {
-          animation: spinSlow 20s linear infinite;
-        }
-        .animate-spin-reverse-slow {
-          animation: spinReverseSlow 15s linear infinite;
-        }
-      `}</style>
 
     </div>
   );
