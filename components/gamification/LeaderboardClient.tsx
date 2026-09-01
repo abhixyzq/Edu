@@ -324,20 +324,17 @@ export function LeaderboardClient() {
   }, [rank12Player, currentUserData]);
 
   return (
-    <main className="w-full min-h-screen bg-[#09090b] text-white pb-28 font-sans select-none overflow-x-hidden relative">
+    <main className="w-full min-h-screen bg-[#f4f5fa] pb-32 font-sans select-none overflow-x-hidden">
       
-      {/* Background Ambient Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-64 bg-gradient-to-b from-violet-600/15 via-indigo-600/5 to-transparent pointer-events-none blur-3xl -z-10" />
-
-      {/* ─── 1. Tighter Top Header & Compact Controls ─── */}
-      <div className="w-full pt-3 pb-2 px-3.5 sm:px-6">
+      {/* ─── 1. Header Hero (Clean Light Purple Theme) ─── */}
+      <div className="w-full bg-gradient-to-b from-[#ddd6fe] via-[#ede9fe] to-[#f4f5fa] pt-3 pb-3 px-3.5 sm:px-6">
         <div className="max-w-md mx-auto space-y-2">
           
           {/* Header Row: Title + League Badge (Clickable) */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h1 className="font-heading text-lg sm:text-xl font-black text-white leading-none tracking-tight">
-                Rankings
+              <h1 className="font-heading text-lg sm:text-xl font-black text-[#1e293b] leading-none tracking-tight">
+                Leaderboard
               </h1>
               
               {/* Clickable League Badge with Emoji */}
@@ -347,23 +344,23 @@ export function LeaderboardClient() {
                   playButtonClick();
                   setIsLeagueModalOpen(true);
                 }}
-                className="px-2.5 py-0.5 rounded-full bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 border border-violet-500/40 text-[10px] font-black uppercase tracking-wider flex items-center gap-1 transition-all cursor-pointer active:scale-95"
+                className="px-2.5 py-0.5 rounded-full bg-white hover:bg-violet-50 text-[#6d28d9] border-2 border-[#c4b5fd] text-[10px] font-black uppercase tracking-wider flex items-center gap-1 transition-all cursor-pointer active:scale-95 shadow-2xs"
                 title="View All 8 Leagues"
               >
                 <span>{currentLeague.emoji}</span>
                 <span>{currentLeague.name}</span>
-                <span className="text-[9px] text-violet-400">ℹ️</span>
+                <span className="text-[9px] text-[#7c3aed]">ℹ️</span>
               </button>
             </div>
 
-            <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-500/40">
+            <div className="flex items-center gap-1 text-[10px] font-black text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded-full border border-amber-300 shadow-2xs">
               <span>⏱️</span>
               <span>2d 14h left</span>
             </div>
           </div>
 
-          {/* Timeframe Tabs (Full-width Segmented Control) */}
-          <div className="bg-[#141418] p-0.5 rounded-xl border border-white/10 flex items-center">
+          {/* Timeframe Tabs (Segmented Control) */}
+          <div className="bg-white/90 p-0.5 rounded-2xl border-2 border-[#e2e8f0] shadow-2xs flex items-center">
             {(['weekly', 'monthly', 'alltime'] as Timeframe[]).map((tf) => (
               <button
                 key={tf}
@@ -371,10 +368,10 @@ export function LeaderboardClient() {
                   playButtonClick();
                   setTimeframe(tf);
                 }}
-                className={`flex-1 py-1.5 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
+                className={`flex-1 py-1 rounded-xl text-xs font-black capitalize transition-all cursor-pointer ${
                   timeframe === tf
-                    ? 'bg-violet-600 text-white shadow-xs font-black'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'bg-[#7c3aed] text-white shadow-xs'
+                    : 'text-[#64748b] hover:text-[#1e293b]'
                 }`}
               >
                 {tf === 'alltime' ? 'All Time' : tf}
@@ -397,10 +394,10 @@ export function LeaderboardClient() {
                   playButtonClick();
                   setSelectedBoard(b.id as BoardCategory);
                 }}
-                className={`px-3 py-1 rounded-lg text-[10px] font-bold shrink-0 transition-all cursor-pointer border ${
+                className={`px-3 py-1 rounded-xl text-[10px] font-black shrink-0 transition-all cursor-pointer border-b-2 active:border-b-0 active:translate-y-0.5 ${
                   selectedBoard === b.id
-                    ? 'bg-white/20 text-white border-white/40 font-black'
-                    : 'bg-[#141418] text-zinc-400 border-white/5 hover:text-zinc-200'
+                    ? 'bg-[#1e1b4b] text-white border-black shadow-xs'
+                    : 'bg-white text-[#64748b] border-[#e2e8f0] hover:bg-slate-50'
                 }`}
               >
                 {b.label}
@@ -411,12 +408,17 @@ export function LeaderboardClient() {
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-3.5 sm:px-6 space-y-2 mt-1">
+      <div className="max-w-md mx-auto px-3.5 sm:px-6 space-y-2.5 mt-1">
 
-        {/* ─── 2. Compact Horizontal Micro-Podium Strip (Zero Wasted Space) ─── */}
+        {/* ─── 2. Compact 3D Olympic Micro-Podium Strip (Light Duolingo-Style) ─── */}
         {top1 && (
-          <div className="bg-[#121216] rounded-2xl p-2.5 sm:p-3 border border-white/10 shadow-xl relative overflow-hidden">
-            
+          <div className="bg-white rounded-3xl p-3 border-2 border-b-4 border-[#e2e8f0] shadow-sm">
+            <div className="text-center mb-1">
+              <span className="text-[9px] font-black uppercase tracking-wider text-slate-400">
+                Top 3 Podium
+              </span>
+            </div>
+
             <div className="grid grid-cols-3 gap-1.5 items-end pt-1 pb-0.5">
               
               {/* Rank 2 (Silver) */}
@@ -429,32 +431,32 @@ export function LeaderboardClient() {
                   className="flex flex-col items-center cursor-pointer active:scale-95 transition-all text-center"
                 >
                   <div className="relative mb-1">
-                    <div className="w-11 h-11 rounded-xl bg-[#1e2029] border border-slate-400/60 p-0.5 flex items-center justify-center overflow-hidden">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-300 border-2 border-slate-300 p-0.5 flex items-center justify-center overflow-hidden shadow-xs">
                       {top2.avatarUrl || (top2.isCurrentUser && user.avatarUrl) ? (
-                        <img src={top2.avatarUrl || user.avatarUrl} alt={top2.name} className="w-full h-full object-cover rounded-lg" />
+                        <img src={top2.avatarUrl || user.avatarUrl} alt={top2.name} className="w-full h-full object-cover rounded-xl" />
                       ) : (
-                        <span className="text-xs font-black text-slate-300">{top2.avatar}</span>
+                        <span className="text-xs font-black text-slate-700">{top2.avatar}</span>
                       )}
                     </div>
-                    <span className="absolute -bottom-1 -right-1 w-4.5 h-4.5 rounded-full bg-slate-700 border border-slate-400 text-white font-black text-[9px] flex items-center justify-center">
+                    <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-slate-300 border-2 border-white text-slate-800 font-black text-[10px] flex items-center justify-center shadow-2xs">
                       2
                     </span>
                   </div>
 
-                  <p className="text-[11px] font-bold text-white truncate max-w-[85px] leading-tight">
+                  <p className="text-[11px] font-black text-slate-900 truncate max-w-[85px] leading-tight">
                     {top2.name.split(' ')[0]}
                   </p>
-                  <p className="text-[9px] font-bold text-violet-400 truncate max-w-[85px]">
+                  <p className="text-[9px] font-bold text-[#7c3aed] truncate max-w-[85px]">
                     @{top2.username}
                   </p>
 
-                  <div className="w-full mt-1 py-1 px-1 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
-                    <span className="text-[10px] font-bold text-slate-200">{top2.xp} <span className="text-[8px] text-zinc-500 font-normal">XP</span></span>
+                  <div className="w-full mt-1 py-0.5 px-1 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center">
+                    <span className="text-[10px] font-black text-slate-700">{top2.xp} <span className="text-[8px] text-slate-400 font-normal">XP</span></span>
                   </div>
                 </div>
               )}
 
-              {/* Rank 1 (Gold Champion) - Clean Avatar without crown emoji */}
+              {/* Rank 1 (Gold Champion) */}
               <div
                 onClick={() => {
                   playButtonClick();
@@ -463,27 +465,27 @@ export function LeaderboardClient() {
                 className="flex flex-col items-center cursor-pointer active:scale-95 transition-all text-center"
               >
                 <div className="relative mb-1">
-                  <div className="w-13 h-13 rounded-2xl bg-gradient-to-b from-[#2a2212] via-[#1c1810] to-[#12100a] border-2 border-amber-400/80 p-0.5 shadow-[0_0_15px_rgba(245,158,11,0.25)] flex items-center justify-center overflow-hidden">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 border-2 border-amber-300 p-0.5 shadow-md shadow-amber-200 flex items-center justify-center overflow-hidden">
                     {top1.avatarUrl || (top1.isCurrentUser && user.avatarUrl) ? (
                       <img src={top1.avatarUrl || user.avatarUrl} alt={top1.name} className="w-full h-full object-cover rounded-xl" />
                     ) : (
-                      <span className="text-sm font-black text-amber-300">{top1.avatar}</span>
+                      <span className="text-sm font-black text-amber-950">{top1.avatar}</span>
                     )}
                   </div>
-                  <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-amber-500 border border-amber-300 text-amber-950 font-black text-[10px] flex items-center justify-center shadow-xs">
+                  <span className="absolute -bottom-1 -right-1 w-5.5 h-5.5 rounded-full bg-amber-400 border-2 border-white text-amber-950 font-black text-[11px] flex items-center justify-center shadow-xs">
                     1
                   </span>
                 </div>
 
-                <p className="text-[11px] font-black text-amber-200 truncate max-w-[90px] leading-tight">
+                <p className="text-[11px] font-black text-amber-950 truncate max-w-[90px] leading-tight">
                   {top1.name.split(' ')[0]}
                 </p>
-                <p className="text-[9px] font-bold text-amber-400 truncate max-w-[90px]">
+                <p className="text-[9px] font-bold text-amber-700 truncate max-w-[90px]">
                   @{top1.username}
                 </p>
 
-                <div className="w-full mt-1 py-1 px-1 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
-                  <span className="text-[10px] font-black text-amber-300">{top1.xp} <span className="text-[8px] text-amber-400/70 font-normal">XP</span></span>
+                <div className="w-full mt-1 py-0.5 px-1 rounded-xl bg-gradient-to-b from-amber-100 to-amber-200 border border-amber-300 flex items-center justify-center shadow-2xs">
+                  <span className="text-[10px] font-black text-amber-950">{top1.xp} <span className="text-[8px] text-amber-800 font-normal">XP</span></span>
                 </div>
               </div>
 
@@ -497,27 +499,27 @@ export function LeaderboardClient() {
                   className="flex flex-col items-center cursor-pointer active:scale-95 transition-all text-center"
                 >
                   <div className="relative mb-1">
-                    <div className="w-11 h-11 rounded-xl bg-[#1c1510] border border-amber-800/60 p-0.5 flex items-center justify-center overflow-hidden">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-700/60 to-amber-900/60 border-2 border-amber-600/40 p-0.5 flex items-center justify-center overflow-hidden shadow-xs">
                       {top3.avatarUrl || (top3.isCurrentUser && user.avatarUrl) ? (
-                        <img src={top3.avatarUrl || user.avatarUrl} alt={top3.name} className="w-full h-full object-cover rounded-lg" />
+                        <img src={top3.avatarUrl || user.avatarUrl} alt={top3.name} className="w-full h-full object-cover rounded-xl" />
                       ) : (
-                        <span className="text-xs font-black text-amber-400">{top3.avatar}</span>
+                        <span className="text-xs font-black text-amber-100">{top3.avatar}</span>
                       )}
                     </div>
-                    <span className="absolute -bottom-1 -right-1 w-4.5 h-4.5 rounded-full bg-amber-900 border border-amber-600 text-amber-200 font-black text-[9px] flex items-center justify-center">
+                    <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-amber-600 border-2 border-white text-white font-black text-[10px] flex items-center justify-center shadow-2xs">
                       3
                     </span>
                   </div>
 
-                  <p className="text-[11px] font-bold text-white truncate max-w-[85px] leading-tight">
+                  <p className="text-[11px] font-black text-slate-900 truncate max-w-[85px] leading-tight">
                     {top3.name.split(' ')[0]}
                   </p>
-                  <p className="text-[9px] font-bold text-amber-500 truncate max-w-[85px]">
+                  <p className="text-[9px] font-bold text-amber-800 truncate max-w-[85px]">
                     @{top3.username}
                   </p>
 
-                  <div className="w-full mt-1 py-1 px-1 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
-                    <span className="text-[10px] font-bold text-amber-300">{top3.xp} <span className="text-[8px] text-zinc-500 font-normal">XP</span></span>
+                  <div className="w-full mt-1 py-0.5 px-1 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center">
+                    <span className="text-[10px] font-black text-amber-900">{top3.xp} <span className="text-[8px] text-amber-700 font-normal">XP</span></span>
                   </div>
                 </div>
               )}
@@ -526,13 +528,13 @@ export function LeaderboardClient() {
           </div>
         )}
 
-        {/* ─── 3. High-Density Roster Feed with Duolingo-style Promotion & Demotion Zones ─── */}
+        {/* ─── 3. High-Density Roster Feed with Duolingo-style Promotion & Demotion Zones (Light Theme) ─── */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+            <span className="text-[11px] font-black text-slate-500 uppercase tracking-wider">
               15 Scholars • {currentLeague.emoji} {currentLeague.name}
             </span>
-            <span className="text-[10px] text-emerald-400 font-bold">
+            <span className="text-[10px] text-emerald-600 font-black">
               Top 7 Advance 🟢
             </span>
           </div>
@@ -551,14 +553,14 @@ export function LeaderboardClient() {
                     playButtonClick();
                     setSelectedUser(player);
                   }}
-                  className={`w-full rounded-xl px-2.5 py-2 flex items-center justify-between gap-2.5 border transition-all cursor-pointer active:scale-98 ${
+                  className={`w-full rounded-2xl px-3 py-2 flex items-center justify-between gap-2.5 border-2 border-b-4 transition-all cursor-pointer active:scale-98 ${
                     isUser
-                      ? 'bg-violet-950/40 border-violet-500/60 shadow-[0_0_15px_rgba(124,58,237,0.2)] ring-1 ring-violet-500/40'
+                      ? 'bg-violet-50 border-[#7c3aed] shadow-sm ring-2 ring-violet-400/30'
                       : isPromotion
-                      ? 'bg-[#121216] border-emerald-500/20 hover:border-emerald-500/40'
+                      ? 'bg-white border-emerald-200 hover:border-emerald-300'
                       : isDemotion
-                      ? 'bg-[#141010] border-rose-500/20 hover:border-rose-500/40'
-                      : 'bg-[#121216] border-white/[0.06] hover:border-white/15'
+                      ? 'bg-white border-rose-200 hover:border-rose-300'
+                      : 'bg-white border-[#e2e8f0] hover:border-slate-300'
                   }`}
                 >
                   {/* Left: Rank & Avatar & Info */}
@@ -567,20 +569,20 @@ export function LeaderboardClient() {
                     <div className="w-5 text-center flex flex-col items-center">
                       <span className={`font-heading font-black text-xs ${
                         isUser 
-                          ? 'text-violet-400' 
+                          ? 'text-[#7c3aed]' 
                           : isPromotion 
-                          ? 'text-emerald-400' 
+                          ? 'text-emerald-600' 
                           : isDemotion 
-                          ? 'text-rose-400' 
-                          : 'text-zinc-400'
+                          ? 'text-rose-500' 
+                          : 'text-slate-400'
                       }`}>
                         #{player.rank}
                       </span>
                     </div>
 
                     {/* Avatar Thumbnail */}
-                    <div className={`w-8 h-8 rounded-lg bg-zinc-800 border flex items-center justify-center font-bold text-[11px] text-zinc-300 overflow-hidden shrink-0 ${
-                      isPromotion ? 'border-emerald-500/30' : isDemotion ? 'border-rose-500/30' : 'border-white/10'
+                    <div className={`w-8 h-8 rounded-xl bg-slate-100 border flex items-center justify-center font-bold text-[11px] text-slate-700 overflow-hidden shrink-0 ${
+                      isPromotion ? 'border-emerald-300' : isDemotion ? 'border-rose-300' : 'border-slate-200'
                     }`}>
                       {player.avatarUrl || (isUser && user.avatarUrl) ? (
                         <img src={player.avatarUrl || user.avatarUrl} alt={player.name} className="w-full h-full object-cover" />
@@ -592,21 +594,21 @@ export function LeaderboardClient() {
                     {/* Name, Handle & Board */}
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <h4 className={`text-xs font-bold truncate leading-none ${isUser ? 'text-white font-black' : 'text-zinc-200'}`}>
+                        <h4 className={`text-xs font-black truncate leading-none ${isUser ? 'text-[#6d28d9]' : 'text-slate-900'}`}>
                           {player.name}
                         </h4>
                         {isUser && (
-                          <span className="px-1 py-0.2 rounded-sm bg-violet-600 text-white text-[8px] font-black uppercase tracking-tight">
+                          <span className="px-1.5 py-0.2 rounded-md bg-[#7c3aed] text-white text-[8px] font-black uppercase tracking-tight">
                             YOU
                           </span>
                         )}
                       </div>
                       <div className="flex items-center gap-1 mt-0.5">
-                        <span className="text-[10px] font-bold text-violet-400 truncate leading-tight">
+                        <span className="text-[10px] font-bold text-[#7c3aed] truncate leading-tight">
                           @{player.username}
                         </span>
-                        <span className="text-[8px] text-zinc-600">•</span>
-                        <span className="text-[10px] text-zinc-400 truncate leading-tight">
+                        <span className="text-[8px] text-slate-300">•</span>
+                        <span className="text-[10px] font-medium text-slate-400 truncate leading-tight">
                           {player.board.replace(' Class 12', '').replace(' (BSEB)', '')}
                         </span>
                       </div>
@@ -616,21 +618,21 @@ export function LeaderboardClient() {
                   {/* Right: Score & Trend */}
                   <div className="text-right shrink-0 flex items-center gap-2">
                     <div className="flex flex-col items-end">
-                      <span className="font-heading text-xs font-black text-white leading-tight">
-                        {player.xp.toLocaleString()} <span className="text-[9px] font-normal text-zinc-500">XP</span>
+                      <span className="font-heading text-xs font-black text-slate-900 leading-tight">
+                        {player.xp.toLocaleString()} <span className="text-[9px] font-normal text-slate-400">XP</span>
                       </span>
                       
                       <div className="flex items-center gap-1 mt-0.5">
                         {player.trend === 'up' && (
-                          <span className="text-[9px] font-bold text-emerald-400">▲{player.trendValue}</span>
+                          <span className="text-[9px] font-bold text-emerald-600">▲{player.trendValue}</span>
                         )}
                         {player.trend === 'down' && (
-                          <span className="text-[9px] font-bold text-rose-400">▼{player.trendValue}</span>
+                          <span className="text-[9px] font-bold text-rose-500">▼{player.trendValue}</span>
                         )}
                         {player.trend === 'neutral' && (
-                          <span className="text-[9px] text-zinc-500">—</span>
+                          <span className="text-[9px] text-slate-400">—</span>
                         )}
-                        <span className="text-[8px] font-medium text-zinc-400 bg-white/[0.05] px-1 rounded-xs">
+                        <span className="text-[8px] font-bold text-slate-500 bg-slate-100 px-1 rounded-xs">
                           {player.accuracy}%
                         </span>
                       </div>
@@ -641,12 +643,12 @@ export function LeaderboardClient() {
 
                 {/* 🟢 Duolingo Green Promotion Zone Divider Line after Rank #7 */}
                 {player.rank === 7 && (
-                  <div className="my-2 py-1 px-3 rounded-lg bg-emerald-950/60 border border-emerald-500/40 flex items-center justify-between shadow-[0_0_10px_rgba(16,185,129,0.15)]">
-                    <div className="flex items-center gap-1.5 text-[10px] font-black text-emerald-300 uppercase tracking-wider">
+                  <div className="my-2 py-1.5 px-3 rounded-2xl bg-emerald-100/80 border-2 border-emerald-300 flex items-center justify-between shadow-2xs">
+                    <div className="flex items-center gap-1.5 text-[10px] font-black text-emerald-900 uppercase tracking-wider">
                       <span className="text-xs">🟢</span>
                       <span>Promotion Zone (Top 7 Advance)</span>
                     </div>
-                    <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/20 px-1.5 py-0.5 rounded-sm">
+                    <span className="text-[9px] font-black text-emerald-800 bg-white/80 px-2 py-0.5 rounded-full border border-emerald-300 shadow-2xs">
                       {nextLeague ? `${nextLeague.emoji} ${nextLeague.name} ⬆` : 'Max League 🌟'}
                     </span>
                   </div>
@@ -654,12 +656,12 @@ export function LeaderboardClient() {
 
                 {/* 🔴 Demotion Zone Divider Line before Rank #13 */}
                 {player.rank === 12 && (
-                  <div className="my-2 py-1 px-3 rounded-lg bg-rose-950/60 border border-rose-500/40 flex items-center justify-between shadow-[0_0_10px_rgba(244,63,94,0.15)]">
-                    <div className="flex items-center gap-1.5 text-[10px] font-black text-rose-300 uppercase tracking-wider">
+                  <div className="my-2 py-1.5 px-3 rounded-2xl bg-rose-100/80 border-2 border-rose-300 flex items-center justify-between shadow-2xs">
+                    <div className="flex items-center gap-1.5 text-[10px] font-black text-rose-900 uppercase tracking-wider">
                       <span className="text-xs">🔴</span>
                       <span>Demotion Zone (Bottom 3 Drop)</span>
                     </div>
-                    <span className="text-[9px] font-bold text-rose-400 bg-rose-500/20 px-1.5 py-0.5 rounded-sm">
+                    <span className="text-[9px] font-black text-rose-800 bg-white/80 px-2 py-0.5 rounded-full border border-rose-300 shadow-2xs">
                       Relegation ⬇
                     </span>
                   </div>
@@ -672,18 +674,18 @@ export function LeaderboardClient() {
 
       </div>
 
-      {/* ─── 4. Compact Sticky Bottom "Your Standing" Dock ─── */}
+      {/* ─── 4. Compact Sticky Bottom "Your Standing" Dock (Light Frosted Theme) ─── */}
       <div className="fixed bottom-16 left-0 w-full px-3.5 pb-1 z-30 pointer-events-none">
-        <div className="max-w-md mx-auto pointer-events-auto bg-[#141418]/95 text-white rounded-2xl px-3 py-2.5 shadow-2xl border border-white/15 backdrop-blur-xl flex items-center justify-between gap-2.5">
+        <div className="max-w-md mx-auto pointer-events-auto bg-white/95 text-slate-900 rounded-3xl px-3.5 py-2.5 shadow-2xl border-2 border-[#c4b5fd] backdrop-blur-xl flex items-center justify-between gap-2.5">
           
           {/* User Info */}
           <div className="flex items-center gap-2 min-w-0">
             <div className={`w-8 h-8 rounded-xl border flex items-center justify-center font-black text-[11px] overflow-hidden shrink-0 ${
               currentUserData.rank <= 7
-                ? 'bg-emerald-600/30 border-emerald-400/60 text-emerald-300'
+                ? 'bg-emerald-100 border-emerald-300 text-emerald-800'
                 : currentUserData.rank >= 13
-                ? 'bg-rose-600/30 border-rose-400/60 text-rose-300'
-                : 'bg-zinc-800 border-white/20 text-white'
+                ? 'bg-rose-100 border-rose-300 text-rose-800'
+                : 'bg-violet-100 border-violet-300 text-violet-800'
             }`}>
               {user.avatarUrl ? (
                 <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
@@ -693,16 +695,16 @@ export function LeaderboardClient() {
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 leading-none">
-                <span className="text-xs font-bold text-white truncate">{currentUserData.name}</span>
-                <span className="text-[10px] font-bold text-violet-400">@{currentUserData.username}</span>
+                <span className="text-xs font-black text-slate-900 truncate">{currentUserData.name}</span>
+                <span className="text-[10px] font-bold text-[#7c3aed]">@{currentUserData.username}</span>
               </div>
               <p className="text-[10px] truncate mt-0.5">
                 {currentUserData.rank <= 7 ? (
-                  <span className="text-emerald-400 font-bold">🟢 Promoting to {nextLeague ? nextLeague.name : 'Nainix'} (# {currentUserData.rank})</span>
+                  <span className="text-emerald-700 font-bold">🟢 Promoting to {nextLeague ? nextLeague.name : 'Nainix'} (# {currentUserData.rank})</span>
                 ) : currentUserData.rank >= 13 ? (
-                  <span className="text-rose-400 font-bold">🔴 Danger • +{pointsToAvoidDemote} XP to safe</span>
+                  <span className="text-rose-600 font-bold">🔴 Danger • +{pointsToAvoidDemote} XP to safe</span>
                 ) : (
-                  <span className="text-zinc-300">🔥 +{pointsToPromote} XP to reach Top 7</span>
+                  <span className="text-slate-500 font-semibold">🔥 +{pointsToPromote} XP to reach Top 7</span>
                 )}
               </p>
             </div>
@@ -712,12 +714,10 @@ export function LeaderboardClient() {
           <Link
             href="/tests"
             onClick={playButtonClick}
-            className={`px-3 py-1.5 rounded-xl text-white font-bold text-xs transition-all active:scale-95 shadow-md shrink-0 flex items-center gap-1 ${
-              currentUserData.rank <= 7 ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-violet-600 hover:bg-violet-500'
-            }`}
+            className="px-3.5 py-1.5 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-black text-xs transition-all active:scale-95 shadow-md shrink-0 flex items-center gap-1"
           >
             <span>Practice</span>
-            <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
+            <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
           </Link>
 
         </div>
@@ -725,16 +725,16 @@ export function LeaderboardClient() {
 
       {/* ─── 5. All 8 Leagues Modal (Progression Roadmap) ─── */}
       {isLeagueModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-150">
-          <div className="bg-[#141418] rounded-t-3xl sm:rounded-3xl p-5 max-w-sm w-full shadow-2xl border border-white/15 animate-in slide-in-from-bottom-5 duration-200 text-white max-h-[85vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl p-5 max-w-sm w-full shadow-2xl border border-slate-200 animate-in slide-in-from-bottom-5 duration-200 text-slate-900 max-h-[85vh] overflow-y-auto">
             
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="font-heading font-black text-base text-white flex items-center gap-1.5">
+                <h3 className="font-heading font-black text-base text-slate-900 flex items-center gap-1.5">
                   <span>🏆</span>
                   <span>All 8 Leagues Roadmap</span>
                 </h3>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-slate-500 font-medium">
                   Top 7 users advance to next league each week
                 </p>
               </div>
@@ -744,7 +744,7 @@ export function LeaderboardClient() {
                   playButtonClick();
                   setIsLeagueModalOpen(false);
                 }}
-                className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-xs font-bold text-zinc-400 hover:text-white transition-colors"
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-500 transition-colors"
               >
                 ✕
               </button>
@@ -759,40 +759,40 @@ export function LeaderboardClient() {
                 return (
                   <div
                     key={league.id}
-                    className={`p-2.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
+                    className={`p-2.5 rounded-2xl border-2 transition-all flex items-center justify-between gap-3 ${
                       isCurrent
-                        ? 'bg-violet-950/60 border-violet-500 shadow-[0_0_15px_rgba(124,58,237,0.3)] ring-1 ring-violet-400'
+                        ? 'bg-[#ede9fe] border-[#7c3aed] shadow-xs'
                         : isUnlocked
-                        ? 'bg-[#18181c] border-white/10 opacity-90'
-                        : 'bg-[#101014] border-white/[0.04] opacity-50'
+                        ? 'bg-slate-50 border-[#e2e8f0]'
+                        : 'bg-slate-50/50 border-[#e2e8f0] opacity-50'
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-xl shrink-0">
+                      <div className="w-10 h-10 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-xl shrink-0 shadow-2xs">
                         {league.emoji}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <h4 className="text-xs font-black text-white truncate">
+                          <h4 className="text-xs font-black text-slate-900 truncate">
                             {league.name}
                           </h4>
                           {isCurrent && (
-                            <span className="px-1.5 py-0.2 rounded-full bg-violet-600 text-white text-[8px] font-black uppercase">
+                            <span className="px-1.5 py-0.2 rounded-full bg-[#7c3aed] text-white text-[8px] font-black uppercase">
                               CURRENT
                             </span>
                           )}
                         </div>
-                        <p className="text-[10px] text-zinc-400 truncate">
+                        <p className="text-[10px] text-slate-500 truncate">
                           {league.description}
                         </p>
                       </div>
                     </div>
 
                     <div className="text-right shrink-0">
-                      <span className="text-[11px] font-bold text-amber-300 block">
+                      <span className="text-[11px] font-black text-amber-700 block">
                         {league.minXp} XP
                       </span>
-                      <span className="text-[8px] text-zinc-500 uppercase font-black">
+                      <span className="text-[8px] text-slate-400 uppercase font-black">
                         Tier {idx + 1}
                       </span>
                     </div>
@@ -807,7 +807,7 @@ export function LeaderboardClient() {
                 playButtonClick();
                 setIsLeagueModalOpen(false);
               }}
-              className="w-full py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-md"
+              className="w-full py-2.5 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-xs font-black transition-all cursor-pointer active:scale-95 shadow-md"
             >
               Got it!
             </button>
@@ -815,15 +815,15 @@ export function LeaderboardClient() {
         </div>
       )}
 
-      {/* ─── 6. Candidate Detail Inspection Modal (Dark Sheet) ─── */}
+      {/* ─── 6. Candidate Detail Inspection Modal ─── */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-150">
-          <div className="bg-[#141418] rounded-t-3xl sm:rounded-3xl p-5 max-w-sm w-full shadow-2xl border border-white/15 animate-in slide-in-from-bottom-5 duration-200 text-white">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl p-5 max-w-sm w-full shadow-2xl border border-slate-200 animate-in slide-in-from-bottom-5 duration-200 text-slate-900">
             
             {/* Header */}
-            <div className="flex items-start justify-between pb-2.5 border-b border-white/10">
+            <div className="flex items-start justify-between pb-2.5 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-zinc-800 text-white font-black text-sm flex items-center justify-center overflow-hidden shrink-0 border border-white/10">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white font-black text-base flex items-center justify-center overflow-hidden shrink-0 border-2 border-white shadow-xs">
                   {selectedUser.avatarUrl || (selectedUser.isCurrentUser && user.avatarUrl) ? (
                     <img
                       src={selectedUser.avatarUrl || user.avatarUrl}
@@ -835,36 +835,36 @@ export function LeaderboardClient() {
                   )}
                 </div>
                 <div>
-                  <h3 className="font-heading font-bold text-sm text-white">
+                  <h3 className="font-heading font-black text-sm text-slate-900">
                     {selectedUser.name}
                   </h3>
-                  <p className="text-[11px] font-bold text-violet-400">
+                  <p className="text-[11px] font-bold text-[#7c3aed]">
                     @{selectedUser.username}
                   </p>
-                  <p className="text-[10px] text-zinc-400">
+                  <p className="text-[10px] text-slate-500 font-semibold">
                     {selectedUser.board}
                   </p>
                 </div>
               </div>
               
-              <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${
+              <span className={`text-xs font-black px-2 py-0.5 rounded-full border ${
                 selectedUser.rank <= 7
-                  ? 'text-emerald-300 bg-emerald-950/60 border-emerald-500/40'
+                  ? 'text-emerald-800 bg-emerald-100 border-emerald-300'
                   : selectedUser.rank >= 13
-                  ? 'text-rose-300 bg-rose-950/60 border-rose-500/40'
-                  : 'text-zinc-300 bg-white/10 border-white/15'
+                  ? 'text-rose-800 bg-rose-100 border-rose-300'
+                  : 'text-slate-700 bg-slate-100 border-slate-200'
               }`}>
                 Rank #{selectedUser.rank}
               </span>
             </div>
 
             {/* Status Zone Banner in Modal */}
-            <div className={`my-2 p-2 rounded-xl border text-center ${
+            <div className={`my-2 p-2 rounded-2xl border text-center ${
               selectedUser.rank <= 7
-                ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-300'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
                 : selectedUser.rank >= 13
-                ? 'bg-rose-950/40 border-rose-500/30 text-rose-300'
-                : 'bg-white/[0.03] border-white/[0.06] text-zinc-400'
+                ? 'bg-rose-50 border-rose-200 text-rose-900'
+                : 'bg-slate-50 border-slate-200 text-slate-700'
             }`}>
               <span className="text-[10px] font-black uppercase tracking-wider">
                 {selectedUser.rank <= 7 
@@ -876,28 +876,28 @@ export function LeaderboardClient() {
             </div>
 
             {/* Specialization */}
-            <div className="my-2 p-2 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-              <span className="text-[9px] uppercase font-bold text-zinc-400 block">
+            <div className="my-2 p-2 rounded-xl bg-slate-50 border border-slate-200/80">
+              <span className="text-[9px] uppercase font-black text-slate-400 block">
                 Focus Area
               </span>
-              <span className="text-xs font-semibold text-zinc-200 mt-0.5 block">
+              <span className="text-xs font-black text-slate-800 mt-0.5 block">
                 {selectedUser.specialization}
               </span>
             </div>
 
             {/* Metrics Grid */}
             <div className="grid grid-cols-3 gap-1.5 text-center my-2.5">
-              <div className="p-2 rounded-xl bg-[#18181c] border border-white/[0.06]">
-                <span className="text-[9px] text-zinc-400 uppercase font-bold block">XP</span>
-                <span className="text-xs font-black text-white mt-0.5 block">{selectedUser.xp.toLocaleString()}</span>
+              <div className="p-2 rounded-xl bg-violet-50/70 border border-violet-200">
+                <span className="text-[9px] text-[#7c3aed] uppercase font-black block">XP</span>
+                <span className="text-xs font-black text-violet-950 mt-0.5 block">{selectedUser.xp.toLocaleString()}</span>
               </div>
-              <div className="p-2 rounded-xl bg-[#18181c] border border-white/[0.06]">
-                <span className="text-[9px] text-emerald-400 uppercase font-bold block">Accuracy</span>
-                <span className="text-xs font-black text-emerald-400 mt-0.5 block">{selectedUser.accuracy}%</span>
+              <div className="p-2 rounded-xl bg-emerald-50/70 border border-emerald-200">
+                <span className="text-[9px] text-emerald-600 uppercase font-black block">Accuracy</span>
+                <span className="text-xs font-black text-emerald-950 mt-0.5 block">{selectedUser.accuracy}%</span>
               </div>
-              <div className="p-2 rounded-xl bg-[#18181c] border border-white/[0.06]">
-                <span className="text-[9px] text-amber-400 uppercase font-bold block">Streak</span>
-                <span className="text-xs font-black text-amber-300 mt-0.5 block">{selectedUser.streak} Days</span>
+              <div className="p-2 rounded-xl bg-amber-50/70 border border-amber-200">
+                <span className="text-[9px] text-amber-600 uppercase font-black block">Streak</span>
+                <span className="text-xs font-black text-amber-950 mt-0.5 block">{selectedUser.streak} Days</span>
               </div>
             </div>
 
@@ -908,7 +908,7 @@ export function LeaderboardClient() {
                 playButtonClick();
                 setSelectedUser(null);
               }}
-              className="w-full py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold transition-all cursor-pointer active:scale-95 border border-white/10 mt-1"
+              className="w-full py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-black transition-all cursor-pointer active:scale-95 shadow-md mt-1"
             >
               Close
             </button>
