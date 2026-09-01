@@ -4,7 +4,6 @@ import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
-import { BrandLogo } from '@/components/BrandLogo';
 import { playButtonClick, playGemDing } from '@/lib/soundEffects';
 
 export default function LoginPage() {
@@ -79,7 +78,7 @@ export default function LoginPage() {
             onClick={scrollToAbout}
             className="text-[11px] font-bold text-amber-200/90 bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full flex items-center gap-1 shadow-md transition-all active:scale-95 cursor-pointer"
           >
-            <span>Explore nainixOne</span>
+            <span>Explore Showcase</span>
             <span className="material-symbols-outlined text-[14px]">arrow_downward</span>
           </button>
         </header>
@@ -198,7 +197,7 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={scrollToAbout}
-            aria-label="View Showcase Deck"
+            aria-label="View Showcase"
             className="p-2 flex items-center justify-center cursor-pointer group"
           >
             <div className="w-14 h-1.5 rounded-full bg-white/40 group-hover:bg-white/80 group-active:scale-95 transition-all shadow-xs" />
@@ -207,234 +206,264 @@ export default function LoginPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          SCREEN 2: High-End Futuristic SaaS / Showcase Deck (Ref Match)
+          SCREEN 2: 100% Exact Futuristic Showcase Landing Page (Ref Match)
       ═══════════════════════════════════════════════════════════════ */}
       <section 
         ref={showcaseRef}
-        className="min-h-[100dvh] w-full shrink-0 snap-start bg-[#f0f4f8] text-slate-900 overflow-y-auto relative"
+        className="min-h-[100dvh] w-full shrink-0 snap-start bg-[#122238] text-slate-900 overflow-y-auto py-6 px-2 sm:px-6 relative"
       >
-        {/* ─── TOP SECTION: Soft Sky Gradient with Giant Watermark Title & 3D Hero ─── */}
-        <div className="w-full bg-gradient-to-b from-[#b8d5f3] via-[#d6e7f8] to-[#f0f4f8] pt-6 pb-12 px-4 sm:px-8 relative overflow-hidden">
+        {/* Main Framed White/Sky Card Container (Matching 100% Image Canvas) */}
+        <div className="max-w-[560px] mx-auto bg-white rounded-[36px] shadow-2xl overflow-hidden border border-slate-200/60 relative">
           
-          {/* Top Floating Nav */}
-          <div className="max-w-5xl mx-auto flex items-center justify-between z-20 relative mb-4">
-            <div className="flex items-center gap-2">
-              <BrandLogo size="lg" />
-            </div>
+          {/* ─── 1. Top Angled 3D Smartphone App Mockup Cards ─── */}
+          <div className="w-full bg-gradient-to-b from-[#b4d4f7] via-[#cce2fa] to-[#e8f1fc] pt-5 px-4 pb-2 relative overflow-hidden flex items-center justify-center">
+            <div className="flex items-center justify-center -space-x-4 sm:-space-x-6 py-2 transform scale-[0.88] sm:scale-100">
+              
+              {/* Left Phone Card */}
+              <div className="w-28 h-44 rounded-2xl bg-white shadow-xl border border-white/60 p-2 transform -rotate-12 -translate-y-2 flex flex-col justify-between opacity-85">
+                <div className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                  <span className="text-[8px] font-black text-blue-950">PAYROT</span>
+                </div>
+                <div className="text-[7px] text-slate-400 font-bold">Fast Global Transfers</div>
+              </div>
 
-            <div className="flex items-center gap-3">
+              {/* Center Main Phone App Screen */}
+              <div className="w-36 h-52 rounded-2xl bg-[#0d1e3a] text-white shadow-2xl border-2 border-white/40 p-2.5 z-10 flex flex-col justify-between">
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center text-[8px] text-blue-200">
+                    <span>Withdrawal To: BRAC BANK LTD</span>
+                    <span className="text-emerald-400 font-bold">+$780 USD</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[8px] text-blue-200">
+                    <span>Payment From: M. SHAHID ULLAH</span>
+                    <span className="text-blue-300 font-bold">Completed</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center shadow-lg border border-blue-400">
+                    <span className="material-symbols-outlined text-[16px] text-white">account_balance_wallet</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Card: Apply for Free Card */}
+              <div className="w-32 h-44 rounded-2xl bg-white shadow-xl border border-white/60 p-3 transform rotate-12 -translate-y-2 flex flex-col justify-between opacity-95">
+                <div className="space-y-1">
+                  <h4 className="text-[10px] font-black text-slate-800 leading-tight">
+                    Apply for your free <br />
+                    <span className="text-blue-600 font-black">Payrot card</span>
+                  </h4>
+                </div>
+                <span className="text-[7px] text-blue-600 font-bold">VISA Platinum &rarr;</span>
+              </div>
+
+            </div>
+          </div>
+
+          {/* ─── 2. Main Hero Area with Giant "PAYROT" Watermark & 3D Blue Parrot ─── */}
+          <div className="w-full bg-gradient-to-b from-[#e8f1fc] via-[#f0f6fd] to-white pt-3 px-4 pb-4 relative overflow-hidden">
+            
+            {/* Navbar */}
+            <div className="w-full flex items-center justify-between z-20 relative pb-2">
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full bg-blue-600" />
+                <span className="text-xs font-black text-slate-900 tracking-wider">PAYROT</span>
+              </div>
+
+              <div className="hidden sm:flex items-center gap-4 text-[10px] font-bold text-slate-500">
+                <span className="hover:text-blue-600 cursor-pointer">Features</span>
+                <span className="hover:text-blue-600 cursor-pointer">Saves</span>
+                <span className="hover:text-blue-600 cursor-pointer">Vehicles</span>
+                <span className="hover:text-blue-600 cursor-pointer">FAQ</span>
+              </div>
+
               <Link
                 href="/signup"
                 onClick={playButtonClick}
-                className="px-4 py-2 rounded-full bg-[#1e40af] hover:bg-[#1d4ed8] text-white text-xs font-black shadow-md transition-all active:scale-95 cursor-pointer"
+                className="px-3.5 py-1 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-[10px] font-black shadow-xs transition-all cursor-pointer"
               >
-                Get Started &rarr;
+                Sign In &rarr;
               </Link>
+            </div>
+
+            {/* Giant "PAYROT" Watermark Title */}
+            <div className="w-full text-center relative flex items-center justify-center my-1 pointer-events-none select-none">
+              <h1 className="font-heading font-black text-6xl sm:text-7xl text-white tracking-widest uppercase drop-shadow-sm">
+                PAYROT
+              </h1>
+            </div>
+
+            {/* Center Hero: 3D Blue Macaw Parrot with Floating Cards */}
+            <div className="w-full relative flex items-center justify-between -mt-6 sm:-mt-8 z-10">
               
-              <button
-                type="button"
-                onClick={scrollToLogin}
-                className="w-9 h-9 rounded-full bg-white/80 hover:bg-white border border-slate-300 shadow-sm flex items-center justify-center text-slate-700 active:scale-95 transition-all cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[18px]">arrow_upward</span>
-              </button>
-            </div>
-          </div>
-
-          {/* ─── Giant Translucent Background Watermark Typography ─── */}
-          <div className="w-full text-center relative flex items-center justify-center my-2 pointer-events-none select-none">
-            <h1 className="font-heading font-black text-6xl sm:text-9xl text-white/50 tracking-widest uppercase">
-              NAINIXONE
-            </h1>
-          </div>
-
-          {/* ─── Hero Centerpiece: 3D Mascot & Floating Cards ─── */}
-          <div className="max-w-4xl mx-auto -mt-10 sm:-mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 items-center relative z-10">
-            
-            {/* Left Floating Card: All India Boards */}
-            <div className="bg-white/80 backdrop-blur-md rounded-3xl p-5 border border-white/60 shadow-[0_15px_30px_rgba(30,64,175,0.08)] flex flex-col items-center text-center space-y-2 order-2 md:order-1">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 shadow-md flex items-center justify-center text-white">
-                <span className="material-symbols-outlined text-[32px]">public</span>
+              {/* Left Floating Card: Earth Globe */}
+              <div className="w-28 sm:w-32 bg-white/95 rounded-2xl p-2.5 shadow-xl border border-blue-100 flex flex-col items-center text-center space-y-1.5 z-20">
+                <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-blue-600 to-teal-400 shadow-md flex items-center justify-center p-0.5 relative overflow-hidden animate-pulse">
+                  <span className="material-symbols-outlined text-[26px] text-white">public</span>
+                </div>
+                <p className="text-[8px] text-slate-700 font-bold leading-tight">
+                  Send And Receive Money Worldwide Fast, Secure, And Hassle-Free
+                </p>
               </div>
-              <h3 className="font-black text-sm text-slate-800">Board & Exam Mastery</h3>
-              <p className="text-[11px] text-slate-500 leading-relaxed font-medium">
-                CBSE, Bihar Board, UP Board, ICSE/ISC, JEE Main and NEET UG curriculums.
-              </p>
+
+              {/* Center 3D Blue Parrot Mascot */}
+              <div className="w-36 h-36 sm:w-44 sm:h-44 relative flex items-center justify-center -mx-3">
+                <img
+                  src="/images/hero_mascot_parrot.png"
+                  alt="Payrot Blue Parrot"
+                  className="w-full h-full object-contain drop-shadow-2xl z-10 transform scale-110"
+                />
+                <div className="absolute -top-1 right-2 bg-white/95 border border-slate-200 px-2 py-0.5 rounded-full shadow-md text-[8px] font-black text-slate-700 z-20 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                  <span>10M+ Users</span>
+                </div>
+              </div>
+
+              {/* Right Floating Card: Blue VISA Card */}
+              <div className="w-28 sm:w-32 bg-gradient-to-br from-[#1d4ed8] to-[#1e3a8a] text-white rounded-2xl p-2.5 shadow-xl border border-blue-300/40 space-y-1 z-20">
+                <div className="flex justify-between items-center text-[7px] text-blue-200">
+                  <span>PAYROT</span>
+                  <span className="font-bold text-amber-300">VISA</span>
+                </div>
+                <div className="w-4 h-3 rounded-sm bg-amber-300/80 my-1" />
+                <p className="text-[7px] font-mono tracking-wider text-blue-100">0457 5667 0088 5441</p>
+                <div className="flex justify-between text-[6px] text-blue-200 pt-0.5">
+                  <span>EXP: 08/29</span>
+                  <span>PLATINUM</span>
+                </div>
+              </div>
+
             </div>
 
-            {/* Center Hero: Cat Mascot with Active Aura */}
-            <div className="flex flex-col items-center justify-center relative order-1 md:order-2">
-              <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-gradient-to-b from-blue-400/30 to-indigo-500/20 blur-2xl absolute -z-10" />
-              <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-3xl bg-gradient-to-b from-white/90 to-blue-50/80 border-2 border-white shadow-2xl flex items-center justify-center p-3 relative transform hover:scale-105 transition-transform">
-                <img
-                  src="/images/trophy_cat.png"
-                  alt="Hero Mascot"
-                  className="w-full h-full object-contain drop-shadow-md animate-pulse"
-                />
-                <span className="absolute -bottom-2.5 bg-blue-600 text-white text-[10px] font-black px-3 py-0.5 rounded-full shadow-md uppercase tracking-wider">
-                  Top Rank AI
+          </div>
+
+          {/* ─── 3. Curved Dynamic Polygon Ribbon (Matching Exact 3-Pillar Layout) ─── */}
+          <div className="w-full px-3 py-2 -mt-2 relative z-20">
+            <div className="bg-white rounded-3xl p-4 shadow-lg border border-slate-100 grid grid-cols-3 gap-2 items-center text-left">
+              
+              {/* Left Pillar */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-600" />
+                  <span className="w-2 h-2 rounded-full bg-indigo-900" />
+                </div>
+                <p className="text-[8px] text-slate-600 font-medium leading-tight">
+                  Payrot empowers users to send and receive payments globally.
+                </p>
+                <span className="text-[7px] font-black text-blue-600 uppercase tracking-wider block hover:underline cursor-pointer">
+                  OUR SERVICES &rarr;
                 </span>
               </div>
-            </div>
 
-            {/* Right Floating Card: Holographic Pass Card */}
-            <div className="bg-gradient-to-br from-[#1e3a8a] to-[#0f172a] text-white rounded-3xl p-5 shadow-[0_15px_30px_rgba(15,23,42,0.25)] border border-blue-400/30 space-y-3 order-3">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black uppercase tracking-wider text-blue-200">Scholar Pass</span>
-                <span className="material-symbols-outlined text-[18px] text-amber-300">verified</span>
+              {/* Center Pillar with Raised Cutout Pill */}
+              <div className="bg-gradient-to-b from-[#e0efff] to-[#f4f9ff] rounded-2xl p-2.5 text-center border border-blue-200/70 shadow-xs space-y-1">
+                <div className="inline-flex items-center gap-0.5 bg-white px-2 py-0.5 rounded-full text-[7px] font-black text-blue-600 border border-blue-200 shadow-2xs">
+                  <span>Open Account</span>
+                  <span className="material-symbols-outlined text-[9px]">arrow_forward</span>
+                </div>
+                <h3 className="font-heading font-black text-[10px] sm:text-[11px] text-slate-900 leading-tight uppercase">
+                  FAST SEND, <br />
+                  FAST RECEIVE
+                </h3>
               </div>
-              <div>
-                <p className="text-xs font-bold text-slate-300">Active XP Balance</p>
-                <h4 className="text-lg font-black text-white">4,850 XP • 💎 250</h4>
-              </div>
-              <div className="pt-1 flex items-center justify-between text-[10px] text-blue-200/80 font-mono">
-                <span>ID: #NX-99201</span>
-                <span>STATE LEAGUE</span>
-              </div>
-            </div>
 
-          </div>
-
-        </div>
-
-        {/* ─── MIDDLE CUTOUT RIBBON: FAST PRACTICE, INSTANT RESULTS ─── */}
-        <div className="max-w-4xl mx-auto px-4 -mt-6 sm:-mt-8 relative z-20">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-slate-100 shadow-[0_20px_40px_rgba(0,0,0,0.06)] flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            
-            <div className="space-y-1 max-w-sm">
-              <span className="text-[10px] font-black uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100">
-                Live Engine
-              </span>
-              <h2 className="font-heading font-black text-xl sm:text-2xl text-slate-900 tracking-tight">
-                FAST PRACTICE, <br />
-                INSTANT RESULTS.
-              </h2>
-              <p className="text-xs text-slate-500 font-medium">
-                Timed mock tests with instant AI accuracy reports and formula solutions.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-6 divide-x divide-slate-100">
-              <div className="pl-0 sm:pl-4">
-                <h3 className="font-heading font-black text-3xl sm:text-4xl text-blue-600">
+              {/* Right Pillar with 90M+ */}
+              <div className="space-y-0.5 text-right pr-1">
+                <span className="text-[7px] text-slate-400 font-bold uppercase tracking-wider block">
+                  TOTAL TRANSFERS
+                </span>
+                <h3 className="font-heading font-black text-xl sm:text-2xl text-blue-600 leading-none">
                   90M+
                 </h3>
-                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
-                  Questions Solved
-                </p>
+                <p className="text-[7px] text-slate-400 font-medium">Payment Processed With Payrot</p>
+                <span className="text-[7px] font-black text-blue-600 uppercase tracking-wider block hover:underline cursor-pointer">
+                  VIEW STATS &rarr;
+                </span>
               </div>
-              <div className="pl-6">
-                <h3 className="font-heading font-black text-3xl sm:text-4xl text-emerald-600">
-                  98.4%
-                </h3>
-                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
-                  Score Boost
-                </p>
-              </div>
+
+            </div>
+          </div>
+
+          {/* ─── 4. "HIRE AND PAY GLOBALLY WITH PAYROT" Section ─── */}
+          <div className="w-full px-5 py-6 grid grid-cols-2 gap-4 items-center bg-white">
+            <div className="space-y-2">
+              <h3 className="font-heading font-black text-xs sm:text-sm text-slate-900 tracking-tight uppercase leading-snug">
+                HIRE AND PAY GLOBALLY WITH PAYROT
+              </h3>
+              <p className="text-[8px] sm:text-[9px] text-slate-500 leading-relaxed">
+                Payrot Workforce helps you onboard and pay freelancers or contractors across 150+ countries quickly, securely, and without borders.
+              </p>
+              <span className="text-[7px] font-black text-blue-600 uppercase tracking-wider block hover:underline cursor-pointer">
+                EXPLORE WORKFORCE TOOLS &rarr;
+              </span>
             </div>
 
+            {/* Right Graphic: Professional with Floating Payment Chips */}
+            <div className="rounded-2xl bg-gradient-to-tr from-[#93c5fd] via-[#bfdbfe] to-[#dbeafe] p-3 relative flex items-center justify-center shadow-inner">
+              <div className="w-24 h-24 rounded-2xl bg-white/90 border border-white shadow-md p-2 flex flex-col items-center justify-center text-center relative">
+                <span className="material-symbols-outlined text-[32px] text-blue-600">laptop_mac</span>
+                <span className="text-[8px] font-bold text-slate-800">Global Team</span>
+                
+                {/* Floating Payment Request Chips */}
+                <div className="absolute -top-2 -right-3 bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-md text-[6px] font-bold text-slate-700 flex items-center gap-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                  <span>PAYMENT REQUEST</span>
+                </div>
+                <div className="absolute -bottom-2 -left-3 bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-md text-[6px] font-black text-emerald-600">
+                  +$500 USD Paid
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* ─── SECTION 2: STUDY GLOBALLY & GROW BEYOND BORDERS ─── */}
-        <div className="max-w-4xl mx-auto px-4 py-12 space-y-10">
-          
-          {/* Side-by-Side Feature Split */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div className="space-y-4">
-              <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
-                Gamified Ecosystem
-              </span>
-              <h2 className="font-heading font-black text-2xl sm:text-3xl text-slate-900 tracking-tight">
-                Study with Friends & Compete Across India.
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
-                Challenge school friends, climb weekly state rank leaderboards, and unlock exclusive rewards in the shop with your earned diamonds.
-              </p>
-              <div className="pt-2">
+          {/* ─── 5. Dark Symmetrical Arch Pod ("GROW BEYOND BORDERS WITH PAYROT") ─── */}
+          <div className="w-full px-4 pb-6 bg-white">
+            <div className="rounded-[32px] bg-[#0c1c2e] text-white pt-8 pb-7 px-5 text-center relative overflow-hidden flex flex-col items-center space-y-3">
+              
+              {/* Symmetrical Arch Cutout with 3D Globe Resting Inside */}
+              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-500 via-sky-400 to-teal-300 p-0.5 shadow-[0_0_25px_rgba(56,189,248,0.7)] flex items-center justify-center -mt-14 mb-1 animate-pulse">
+                <span className="material-symbols-outlined text-[36px] text-white">public</span>
+              </div>
+
+              <div className="space-y-1 max-w-xs">
+                <h3 className="font-heading font-black text-xs sm:text-sm text-white tracking-tight uppercase">
+                  GROW BEYOND BORDERS WITH PAYROT
+                </h3>
+                <p className="text-[8px] text-slate-300 leading-relaxed font-medium">
+                  Whether you&apos;re paying a freelancer or a full-scale overseas team, Payrot makes it simple, fast, secure, and with zero card fees to worry about.
+                </p>
+              </div>
+
+              <div className="pt-1 flex items-center gap-2">
                 <Link
                   href="/signup"
                   onClick={playButtonClick}
-                  className="inline-flex items-center gap-2 text-xs font-black text-blue-600 hover:text-blue-800 underline"
+                  className="px-5 py-2 rounded-full border border-white/60 hover:bg-white hover:text-[#0c1c2e] text-white font-black text-[9px] uppercase tracking-wider transition-all active:scale-95 cursor-pointer"
                 >
-                  <span>Explore Curriculum Paths</span>
-                  <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  Explore More &rarr;
                 </Link>
-              </div>
-            </div>
 
-            {/* Graphic Card with Student Image / Mock UI */}
-            <div className="rounded-3xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-700 p-6 text-white shadow-xl space-y-4 relative overflow-hidden">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-black bg-white/20 px-3 py-1 rounded-full backdrop-blur-md">
-                  Physics Drill #04
-                </span>
-                <span className="text-amber-300 font-bold">100% Accuracy 🔥</span>
+                <button
+                  type="button"
+                  onClick={scrollToLogin}
+                  className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-[9px] uppercase tracking-wider transition-all active:scale-95 cursor-pointer"
+                >
+                  Login ↑
+                </button>
               </div>
-              <h4 className="font-black text-lg text-white">
-                &ldquo;nainixOne made Board revision feel like playing a game!&rdquo;
-              </h4>
-              <div className="flex items-center gap-3 pt-2">
-                <div className="w-10 h-10 rounded-full bg-white/20 border border-white/40 flex items-center justify-center font-black">
-                  🎓
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-white">Ananya Sharma</p>
-                  <p className="text-[10px] text-blue-200">CBSE Class 12 • State Rank 14</p>
-                </div>
-              </div>
+
             </div>
           </div>
 
-          {/* ─── SECTION 3: DARK CURVED SHOWCASE POD (Ref Match) ─── */}
-          <div className="rounded-[36px] bg-[#0c182c] text-white p-8 sm:p-12 shadow-2xl relative overflow-hidden flex flex-col items-center text-center space-y-6">
-            
-            {/* Top Center Earth/Globe Graphic Badge */}
-            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-500 to-teal-400 p-1 shadow-[0_0_30px_rgba(59,130,246,0.6)] flex items-center justify-center">
-              <span className="material-symbols-outlined text-[36px] text-white">globe</span>
-            </div>
-
-            <div className="space-y-2 max-w-lg">
-              <h2 className="font-heading font-black text-2xl sm:text-4xl text-white tracking-tight">
-                GROW BEYOND BORDERS WITH NAINIXONE
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
-                Whether you&apos;re preparing for Board exams or aiming for JEE & NEET top percentiles, nainixOne gives you the superpower to win.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
-              <Link
-                href="/signup"
-                onClick={playButtonClick}
-                className="px-8 py-3.5 rounded-full bg-white hover:bg-slate-100 text-[#0c182c] font-black text-sm shadow-xl active:scale-95 transition-all cursor-pointer"
-              >
-                Get Started for Free &rarr;
-              </Link>
-              
-              <button
-                type="button"
-                onClick={scrollToLogin}
-                className="px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-sm shadow-md active:scale-95 transition-all cursor-pointer"
-              >
-                Sign In to Account ↑
-              </button>
-            </div>
-
+          {/* ─── 6. Footer: "WHO WE SERVE" ─── */}
+          <div className="w-full py-4 text-center bg-white border-t border-slate-100">
+            <h4 className="font-heading font-black text-[11px] text-slate-800 uppercase tracking-widest">
+              WHO WE SERVE
+            </h4>
           </div>
 
         </div>
-
-        {/* ─── FOOTER ─── */}
-        <footer className="w-full bg-[#08101e] text-slate-400 py-8 px-4 text-center text-xs border-t border-slate-800 space-y-2">
-          <p className="font-bold text-slate-300">
-            WHO WE SERVE • CBSE, ICSE, STATE BOARDS, JEE & NEET ASPIRANTS
-          </p>
-          <p className="text-[11px] text-slate-500">
-            © {new Date().getFullYear()} nainixOne Technologies. All rights reserved.
-          </p>
-        </footer>
-
       </section>
 
     </div>
