@@ -94,27 +94,27 @@ export const PathNode: React.FC<PathNodeProps> = ({
             {isLocked ? (
               <div className="flex flex-col items-center">
                 <span className="material-symbols-outlined text-[20px] text-slate-400">lock</span>
-                <span className="font-heading font-black text-xs text-slate-400 mt-0.5">
+                <span className="font-game-num font-bold text-sm text-slate-400 mt-0.5 tracking-tight">
                   {levelNumber}
                 </span>
               </div>
             ) : isBoss ? (
               <div className="flex flex-col items-center">
                 <span className="text-sm">👑</span>
-                <span className="font-heading font-black text-base leading-none text-white drop-shadow-xs">
+                <span className="font-game-num font-bold text-xl sm:text-2xl leading-none text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] tracking-tight">
                   {levelNumber}
                 </span>
               </div>
             ) : (
               <div className="flex flex-col items-center">
-                <span className="font-heading font-black text-lg sm:text-xl leading-none text-white drop-shadow-sm tracking-tight">
+                <span className="font-game-num font-bold text-2xl sm:text-[28px] leading-none text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.35)] tracking-tight">
                   {levelNumber}
                 </span>
                 {isCompleted && (
                   <div className="flex items-center gap-0.5 mt-0.5">
-                    <span className="text-[10px] text-amber-300 font-black">★</span>
-                    <span className="text-[10px] text-amber-300 font-black">★</span>
-                    <span className="text-[10px] text-amber-300 font-black">★</span>
+                    <span className="text-[11px] text-amber-300 font-black drop-shadow-2xs">★</span>
+                    <span className="text-[11px] text-amber-300 font-black drop-shadow-2xs">★</span>
+                    <span className="text-[11px] text-amber-300 font-black drop-shadow-2xs">★</span>
                   </div>
                 )}
               </div>
