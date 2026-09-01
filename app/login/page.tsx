@@ -128,13 +128,13 @@ export default function LoginPage() {
                 <span className="text-[11px] font-medium text-white/90">Remember me</span>
               </label>
 
-              <button
-                type="button"
-                onClick={() => alert('Password reset link sent to your registered email.')}
+              <Link
+                href="/forgot-password"
+                onClick={playButtonClick}
                 className="text-[11px] font-medium text-white/90 hover:text-white hover:underline cursor-pointer"
               >
                 Forgot password?
-              </button>
+              </Link>
             </div>
 
             {/* ─── High Contrast Pure White Pill Login Button ─── */}
