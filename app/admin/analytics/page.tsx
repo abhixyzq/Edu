@@ -137,7 +137,7 @@ export default function AdminAnalyticsPage() {
   const maxBoardCount = Math.max(...boardBreakdown.map((b) => b.count), 1);
 
   return (
-    <div className="p-6 md:p-8 flex flex-col gap-8 max-w-5xl w-full">
+    <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-6 sm:gap-8 max-w-5xl w-full mx-auto">
       <div>
         <h1 className="font-heading text-2xl font-extrabold text-[#161d1f]">Analytics</h1>
         <p className="text-sm text-[#564338] mt-0.5">Platform-wide performance insights</p>

@@ -86,7 +86,7 @@ export default function AdminUsersPage() {
   ];
 
   return (
-    <div className="p-6 md:p-8 flex flex-col gap-6 max-w-5xl w-full">
+    <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-6 max-w-5xl w-full mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="font-heading text-2xl font-extrabold text-[#161d1f]">Users</h1>

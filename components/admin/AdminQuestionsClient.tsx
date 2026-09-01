@@ -99,7 +99,7 @@ export function AdminQuestionsClient() {
   const optionKey = (i: number) => (['option_a', 'option_b', 'option_c', 'option_d'] as const)[i];
 
   return (
-    <div className="p-6 md:p-8 flex flex-col gap-6 max-w-4xl w-full">
+    <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-6 max-w-4xl w-full mx-auto">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-[#564338] flex-wrap">
         <Link href="/admin/tests" className="hover:text-[#9b4500] font-medium">Tests</Link>

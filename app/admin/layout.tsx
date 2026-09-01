@@ -10,10 +10,10 @@ export const metadata: Metadata = {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <AdminGuard>
-      <div className="min-h-screen bg-[#f4fafd] flex">
+      <div className="min-h-screen bg-[#f4fafd] flex flex-col md:flex-row w-full">
         <AdminSidebar />
         {/* Main content offset by sidebar width on desktop */}
-        <main className="flex-1 md:ml-64 min-h-screen flex flex-col">
+        <main className="flex-1 md:ml-64 min-h-screen flex flex-col w-full overflow-x-hidden">
           {children}
         </main>
       </div>

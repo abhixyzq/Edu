@@ -63,7 +63,7 @@ export default function AdminOverviewPage() {
     new Date(iso).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
   return (
-    <div className="p-6 md:p-8 flex flex-col gap-8 max-w-5xl w-full">
+    <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-6 sm:gap-8 max-w-5xl w-full mx-auto">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>

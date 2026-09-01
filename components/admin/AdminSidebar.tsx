@@ -88,7 +88,7 @@ export function AdminSidebar() {
       </aside>
 
       {/* ── Mobile Top Bar ────────────────────────────────── */}
-      <header className="md:hidden sticky top-0 z-40 bg-[#1a1f21] border-b border-white/10 flex items-center justify-between px-4 py-3">
+      <header className="md:hidden w-full sticky top-0 z-40 bg-[#1a1f21] border-b border-white/10 flex items-center justify-between px-4 py-3 shrink-0 shadow-sm">
         <Link href="/admin" className="flex items-center gap-2">
           <BrandLogo size="sm" variant="dark" />
           <span className="text-[10px] bg-white/10 text-[#a855f7] font-black px-2 py-0.5 rounded-full">
@@ -97,8 +97,8 @@ export function AdminSidebar() {
         </Link>
         <button
           onClick={() => setMobileOpen(true)}
-          className="p-2 rounded-xl bg-white/10 text-white/70 hover:bg-white/20 transition-colors"
-          aria-label="Open admin nav"
+          className="p-2 rounded-xl bg-white/10 text-white/80 hover:bg-white/20 transition-colors flex items-center justify-center cursor-pointer"
+          aria-label="Open admin navigation menu"
         >
           <span className="material-symbols-outlined text-[22px]">menu</span>
         </button>

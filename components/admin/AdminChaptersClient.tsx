@@ -94,7 +94,7 @@ export function AdminChaptersClient() {
   ];
 
   return (
-    <div className="p-6 md:p-8 flex flex-col gap-6 max-w-4xl w-full">
+    <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-6 max-w-4xl w-full mx-auto">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-[#564338]">
         <Link href="/admin/subjects" className="hover:text-[#9b4500] font-medium">Subjects</Link>
