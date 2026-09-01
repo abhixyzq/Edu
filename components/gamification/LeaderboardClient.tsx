@@ -26,14 +26,6 @@ interface LeaderboardUser {
   isCurrentUser?: boolean;
 }
 
-const TIERS = [
-  { id: 'all', name: 'All Tiers', minXp: 0 },
-  { id: 'diamond', name: 'Diamond Tier', minXp: 1500, accent: '#38bdf8' },
-  { id: 'platinum', name: 'Platinum Tier', minXp: 1000, accent: '#a78bfa' },
-  { id: 'gold', name: 'Gold Tier', minXp: 600, accent: '#fbbf24' },
-  { id: 'silver', name: 'Silver Tier', minXp: 300, accent: '#94a3b8' },
-];
-
 export function LeaderboardClient() {
   const { user } = useUser();
   const [timeframe, setTimeframe] = useState<Timeframe>('weekly');
@@ -245,453 +237,396 @@ export function LeaderboardClient() {
       list = list.filter(
         (u) =>
           u.name.toLowerCase().includes(q) ||
+          u.username.toLowerCase().includes(q) ||
           u.board.toLowerCase().includes(q) ||
           u.specialization.toLowerCase().includes(q)
       );
     }
 
-    return list.map((u, i) => ({
-      ...u,
-      rank: i + 1,
-    }));
+    return list;
   }, [rawRoster, selectedBoard, searchQuery]);
 
-  const top1 = filteredList[0];
-  const top2 = filteredList[1];
-  const top3 = filteredList[2];
-  const remainingPlayers = filteredList.slice(3);
+  const top1 = filteredList.find((u) => u.rank === 1);
+  const top2 = filteredList.find((u) => u.rank === 2);
+  const top3 = filteredList.find((u) => u.rank === 3);
+  const remainingPlayers = filteredList.filter((u) => u.rank > 3);
 
   const currentUserData = useMemo(() => {
-    return filteredList.find((u) => u.isCurrentUser) || rawRoster[3];
-  }, [filteredList, rawRoster]);
+    return rawRoster.find((u) => u.isCurrentUser) || rawRoster[3];
+  }, [rawRoster]);
 
   const pointsToPodium = useMemo(() => {
-    if (!currentUserData || currentUserData.rank <= 3) return 0;
-    const thirdPlayer = filteredList[2];
-    if (!thirdPlayer) return 0;
-    return Math.max(thirdPlayer.xp - currentUserData.xp + 10, 10);
-  }, [currentUserData, filteredList]);
+    if (!top3) return 0;
+    return Math.max(0, top3.xp - currentUserData.xp + 10);
+  }, [top3, currentUserData]);
 
   return (
-    <main className="w-full min-h-screen bg-[#09090b] text-[#f4f4f5] pb-32 font-sans selection:bg-violet-900 selection:text-white">
+    <main className="w-full min-h-screen bg-[#f4f5fa] pb-32 font-sans select-none overflow-x-hidden">
       
-      {/* ─── 1. Minimal Header & Meta Bar ─── */}
-      <section className="border-b border-white/[0.08] bg-[#0c0c0f]/80 backdrop-blur-xl sticky top-0 z-30">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+      {/* ─── 1. Header Hero (Mobile First Gamified Purple Palette) ─── */}
+      <div className="w-full bg-gradient-to-b from-[#ddd6fe] via-[#ede9fe] to-[#f4f5fa] pt-4 pb-4 px-4 sm:px-6">
+        <div className="max-w-md mx-auto">
           
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Header Title & League Info */}
+          <div className="flex items-center justify-between gap-2 mb-3">
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20" />
-                <span className="text-[11px] font-semibold tracking-wider uppercase text-zinc-400">
-                  Competitive Season 14 • Live Sync
+              <div className="flex items-center gap-1.5">
+                <span className="px-2.5 py-0.5 rounded-full bg-[#7c3aed] text-white text-[10px] font-black uppercase tracking-wider shadow-2xs">
+                  {user.leagueTier || 'Silver'} League
+                </span>
+                <span className="text-[10px] font-black text-amber-700 bg-amber-200/80 px-2 py-0.5 rounded-full border border-amber-300">
+                  ⏱️ 2d 14h left
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-                <span>Class 12 Global Rankings</span>
-                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-white/[0.06] text-zinc-300 border border-white/[0.08]">
-                  Verified
-                </span>
+              <h1 className="font-heading text-xl sm:text-2xl font-black text-[#1e293b] mt-1 leading-tight">
+                Rankings & Leaders
               </h1>
             </div>
 
-            {/* Timeframe Selector Segment */}
-            <div className="flex items-center bg-[#18181b] border border-white/[0.08] p-1 rounded-xl">
-              {[
-                { id: 'weekly', label: 'Weekly' },
-                { id: 'monthly', label: 'Monthly' },
-                { id: 'alltime', label: 'All-Time' },
-              ].map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => {
-                    playButtonClick();
-                    setTimeframe(t.id as Timeframe);
-                  }}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                    timeframe === t.id
-                      ? 'bg-zinc-800 text-white shadow-xs border border-white/10'
-                      : 'text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  {t.label}
-                </button>
-              ))}
+            {/* Mascot / Trophy Mini Graphic */}
+            <div className="w-12 h-12 rounded-2xl bg-white border-2 border-slate-900 shadow-[3px_3px_0px_#0f172a] flex items-center justify-center text-2xl shrink-0">
+              🏆
             </div>
           </div>
 
-          {/* ─── Filters & Search ─── */}
-          <div className="flex flex-col sm:flex-row items-center gap-2.5 mt-4 pt-3 border-t border-white/[0.06]">
-            
-            {/* Board Filters */}
-            <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto no-scrollbar py-0.5">
-              {[
-                { id: 'all', label: 'All Boards' },
-                { id: 'cbse', label: 'CBSE' },
-                { id: 'bseb', label: 'Bihar (BSEB)' },
-                { id: 'up', label: 'UP Board' },
-                { id: 'icse', label: 'ISC / ICSE' },
-              ].map((b) => (
-                <button
-                  key={b.id}
-                  onClick={() => {
-                    playButtonClick();
-                    setSelectedBoard(b.id as BoardCategory);
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium shrink-0 transition-all cursor-pointer ${
-                    selectedBoard === b.id
-                      ? 'bg-violet-600/20 text-violet-300 border border-violet-500/40'
-                      : 'bg-white/[0.03] text-zinc-400 border border-white/[0.06] hover:bg-white/[0.06] hover:text-zinc-200'
-                  }`}
-                >
-                  {b.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Search Input */}
-            <div className="relative w-full sm:w-64 sm:ml-auto">
-              <svg
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
+          {/* Timeframe Filter Tabs (Segmented Capsule Control) */}
+          <div className="bg-white/80 backdrop-blur-xs p-1 rounded-2xl border-2 border-[#e2e8f0] shadow-2xs flex items-center mb-3">
+            {(['weekly', 'monthly', 'alltime'] as Timeframe[]).map((tf) => (
+              <button
+                key={tf}
+                onClick={() => {
+                  playButtonClick();
+                  setTimeframe(tf);
+                }}
+                className={`flex-1 py-1.5 rounded-xl text-xs font-black capitalize transition-all cursor-pointer ${
+                  timeframe === tf
+                    ? 'bg-[#7c3aed] text-white shadow-xs'
+                    : 'text-[#64748b] hover:text-[#1e293b]'
+                }`}
               >
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
-              </svg>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search candidate, board..."
-                className="w-full pl-9 pr-3 py-1.5 bg-[#121215] border border-white/[0.08] rounded-lg text-xs text-white placeholder-zinc-500 focus:outline-hidden focus:border-violet-500 transition-colors"
-              />
-            </div>
+                {tf === 'alltime' ? 'All Time' : tf}
+              </button>
+            ))}
+          </div>
 
+          {/* Board Quick Scroll Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+            {[
+              { id: 'all', label: 'All Boards' },
+              { id: 'cbse', label: 'CBSE' },
+              { id: 'bseb', label: 'Bihar (BSEB)' },
+              { id: 'up', label: 'UP Board' },
+              { id: 'icse', label: 'ISC / ICSE' },
+            ].map((b) => (
+              <button
+                key={b.id}
+                onClick={() => {
+                  playButtonClick();
+                  setSelectedBoard(b.id as BoardCategory);
+                }}
+                className={`px-3 py-1.5 rounded-xl text-[11px] font-black shrink-0 transition-all cursor-pointer border-b-2 active:border-b-0 active:translate-y-0.5 ${
+                  selectedBoard === b.id
+                    ? 'bg-[#1e1b4b] text-white border-black shadow-xs'
+                    : 'bg-white text-[#64748b] border-[#e2e8f0] hover:bg-slate-50'
+                }`}
+              >
+                {b.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative mt-2.5">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
+              search
+            </span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search candidate name, @handle or board..."
+              className="w-full pl-9 pr-3 py-2 bg-white rounded-2xl border-2 border-[#e2e8f0] text-xs font-bold text-slate-800 placeholder:text-slate-400 focus:border-[#7c3aed] outline-none shadow-2xs transition-colors"
+            />
           </div>
 
         </div>
-      </section>
+      </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 mt-6 space-y-6">
+      <div className="max-w-md mx-auto px-4 sm:px-6 space-y-4">
 
-        {/* ─── 2. Top 3 Podium Cards (Executive Minimalist) ─── */}
+        {/* ─── 2. 3D Olympic Podium (Mobile Optimized) ─── */}
         {top1 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-            
-            {/* Rank 2 - Silver Card */}
-            {top2 && (
-              <div
-                onClick={() => {
-                  playButtonClick();
-                  setSelectedUser(top2);
-                }}
-                className="relative bg-[#121216] border border-slate-700/40 rounded-2xl p-5 hover:border-slate-500 transition-all cursor-pointer flex flex-col justify-between group md:order-1"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl bg-slate-800 border border-slate-600 text-slate-200 font-bold text-sm flex items-center justify-center overflow-hidden shrink-0">
-                      {top2.avatarUrl || (top2.isCurrentUser && user.avatarUrl) ? (
-                        <img
-                          src={top2.avatarUrl || user.avatarUrl}
-                          alt={top2.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        top2.avatar
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-white group-hover:text-slate-200 transition-colors">
-                        {top2.name}
-                      </h3>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-[10px] font-bold text-violet-400">@{top2.username}</span>
-                        <span className="text-[10px] text-zinc-500">•</span>
-                        <p className="text-[10px] text-zinc-400">{top2.board}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded-md border border-slate-700">
-                    #2
-                  </span>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
-                  <div>
-                    <span className="text-[10px] text-zinc-500 block uppercase font-medium">Accuracy</span>
-                    <span className="font-semibold text-zinc-300">{top2.accuracy}%</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-[10px] text-zinc-500 block uppercase font-medium">Score</span>
-                    <span className="font-bold text-white tracking-wide">{top2.xp.toLocaleString()} XP</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Rank 1 - Gold Card (Dominant) */}
-            <div
-              onClick={() => {
-                playButtonClick();
-                setSelectedUser(top1);
-              }}
-              className="relative bg-gradient-to-b from-[#1c1811] via-[#14120e] to-[#100f0c] border border-amber-500/40 rounded-2xl p-5 hover:border-amber-400 transition-all cursor-pointer flex flex-col justify-between group md:order-2 shadow-[0_0_30px_rgba(245,158,11,0.08)] ring-1 ring-amber-500/20"
-            >
-              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-amber-500 text-amber-950 text-[10px] font-bold tracking-wider uppercase shadow-xs">
-                Current Leader
-              </div>
-
-              <div className="flex items-start justify-between mt-1">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-600 to-yellow-400 text-amber-950 font-black text-base flex items-center justify-center shadow-sm overflow-hidden shrink-0">
-                    {top1.avatarUrl || (top1.isCurrentUser && user.avatarUrl) ? (
-                      <img
-                        src={top1.avatarUrl || user.avatarUrl}
-                        alt={top1.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      top1.avatar
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-white group-hover:text-amber-200 transition-colors">
-                      {top1.name}
-                    </h3>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[10px] font-bold text-amber-300">@{top1.username}</span>
-                      <span className="text-[10px] text-amber-400/50">•</span>
-                      <p className="text-[10px] text-amber-300/80">{top1.board}</p>
-                    </div>
-                  </div>
-                </div>
-                <span className="text-xs font-black text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded-md border border-amber-500/40">
-                  #1
-                </span>
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-amber-500/20 flex items-center justify-between text-xs">
-                <div>
-                  <span className="text-[10px] text-amber-400/60 block uppercase font-medium">Accuracy</span>
-                  <span className="font-semibold text-amber-200">{top1.accuracy}%</span>
-                </div>
-                <div className="text-right">
-                  <span className="text-[10px] text-amber-400/60 block uppercase font-medium">Score</span>
-                  <span className="font-black text-amber-300 tracking-wide">{top1.xp.toLocaleString()} XP</span>
-                </div>
-              </div>
+          <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-[#e2e8f0] shadow-sm">
+            <div className="text-center mb-3">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                Top 3 Scholars Podium
+              </span>
             </div>
 
-            {/* Rank 3 - Bronze Card */}
-            {top3 && (
+            <div className="flex items-end justify-center gap-2 sm:gap-3 pt-4 pb-2">
+              
+              {/* Rank 2 (Silver) - Left */}
+              {top2 && (
+                <div
+                  onClick={() => {
+                    playButtonClick();
+                    setSelectedUser(top2);
+                  }}
+                  className="flex-1 flex flex-col items-center cursor-pointer group active:scale-95 transition-all"
+                >
+                  <div className="relative mb-2">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-slate-200 to-slate-400 border-2 border-slate-300 p-0.5 shadow-md flex items-center justify-center overflow-hidden">
+                      {top2.avatarUrl || (top2.isCurrentUser && user.avatarUrl) ? (
+                        <img src={top2.avatarUrl || user.avatarUrl} alt={top2.name} className="w-full h-full object-cover rounded-xl" />
+                      ) : (
+                        <span className="text-sm font-black text-slate-700">{top2.avatar}</span>
+                      )}
+                    </div>
+                    <span className="absolute -bottom-2 -right-1 w-6 h-6 rounded-full bg-slate-300 border-2 border-white text-slate-800 font-black text-[11px] flex items-center justify-center shadow-xs">
+                      2
+                    </span>
+                  </div>
+
+                  <p className="text-xs font-black text-slate-900 truncate max-w-[90px] text-center">
+                    {top2.name}
+                  </p>
+                  <p className="text-[10px] font-bold text-violet-600 truncate max-w-[90px]">
+                    @{top2.username}
+                  </p>
+
+                  <div className="w-full mt-2 pt-3 pb-2 px-1 rounded-2xl bg-slate-100 border border-slate-200 flex flex-col items-center">
+                    <span className="text-[11px] font-black text-slate-700">{top2.xp} XP</span>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase">{top2.accuracy}%</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Rank 1 (Gold Champion) - Center (Higher Height & Crown) */}
               <div
                 onClick={() => {
                   playButtonClick();
-                  setSelectedUser(top3);
+                  setSelectedUser(top1);
                 }}
-                className="relative bg-[#121216] border border-amber-900/30 rounded-2xl p-5 hover:border-amber-700/50 transition-all cursor-pointer flex flex-col justify-between group md:order-3"
+                className="flex-1 flex flex-col items-center cursor-pointer group active:scale-95 transition-all -mt-4"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl bg-amber-950/40 border border-amber-800/40 text-amber-300 font-bold text-sm flex items-center justify-center overflow-hidden shrink-0">
-                      {top3.avatarUrl || (top3.isCurrentUser && user.avatarUrl) ? (
-                        <img
-                          src={top3.avatarUrl || user.avatarUrl}
-                          alt={top3.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        top3.avatar
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-white group-hover:text-zinc-200 transition-colors">
-                        {top3.name}
-                      </h3>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-[10px] font-bold text-amber-400">@{top3.username}</span>
-                        <span className="text-[10px] text-zinc-500">•</span>
-                        <p className="text-[10px] text-zinc-400">{top3.board}</p>
-                      </div>
-                    </div>
+                <div className="relative mb-2">
+                  {/* Glowing Crown */}
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-lg animate-bounce">
+                    👑
                   </div>
-                  <span className="text-xs font-bold text-amber-500 bg-amber-950/40 px-2 py-0.5 rounded-md border border-amber-900/50">
-                    #3
+                  <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 border-3 border-amber-300 p-0.5 shadow-lg shadow-amber-200 flex items-center justify-center overflow-hidden">
+                    {top1.avatarUrl || (top1.isCurrentUser && user.avatarUrl) ? (
+                      <img src={top1.avatarUrl || user.avatarUrl} alt={top1.name} className="w-full h-full object-cover rounded-2xl" />
+                    ) : (
+                      <span className="text-lg font-black text-amber-950">{top1.avatar}</span>
+                    )}
+                  </div>
+                  <span className="absolute -bottom-2 -right-1 w-7 h-7 rounded-full bg-amber-400 border-2 border-white text-amber-950 font-black text-xs flex items-center justify-center shadow-md">
+                    1
                   </span>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
-                  <div>
-                    <span className="text-[10px] text-zinc-500 block uppercase font-medium">Accuracy</span>
-                    <span className="font-semibold text-zinc-300">{top3.accuracy}%</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-[10px] text-zinc-500 block uppercase font-medium">Score</span>
-                    <span className="font-bold text-white tracking-wide">{top3.xp.toLocaleString()} XP</span>
-                  </div>
+                <p className="text-xs sm:text-sm font-black text-slate-900 truncate max-w-[100px] text-center">
+                  {top1.name}
+                </p>
+                <p className="text-[10px] font-bold text-amber-600 truncate max-w-[100px]">
+                  @{top1.username}
+                </p>
+
+                <div className="w-full mt-2 pt-4 pb-2.5 px-1 rounded-2xl bg-gradient-to-b from-amber-50 to-amber-100 border-2 border-amber-300/80 flex flex-col items-center shadow-xs">
+                  <span className="text-xs font-black text-amber-900">{top1.xp} XP</span>
+                  <span className="text-[10px] font-extrabold text-amber-700 uppercase">{top1.accuracy}% Acc</span>
                 </div>
               </div>
-            )}
 
+              {/* Rank 3 (Bronze) - Right */}
+              {top3 && (
+                <div
+                  onClick={() => {
+                    playButtonClick();
+                    setSelectedUser(top3);
+                  }}
+                  className="flex-1 flex flex-col items-center cursor-pointer group active:scale-95 transition-all"
+                >
+                  <div className="relative mb-2">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-amber-700/60 to-amber-900/60 border-2 border-amber-600/40 p-0.5 shadow-md flex items-center justify-center overflow-hidden">
+                      {top3.avatarUrl || (top3.isCurrentUser && user.avatarUrl) ? (
+                        <img src={top3.avatarUrl || user.avatarUrl} alt={top3.name} className="w-full h-full object-cover rounded-xl" />
+                      ) : (
+                        <span className="text-sm font-black text-amber-200">{top3.avatar}</span>
+                      )}
+                    </div>
+                    <span className="absolute -bottom-2 -right-1 w-6 h-6 rounded-full bg-amber-600 border-2 border-white text-white font-black text-[11px] flex items-center justify-center shadow-xs">
+                      3
+                    </span>
+                  </div>
+
+                  <p className="text-xs font-black text-slate-900 truncate max-w-[90px] text-center">
+                    {top3.name}
+                  </p>
+                  <p className="text-[10px] font-bold text-amber-800 truncate max-w-[90px]">
+                    @{top3.username}
+                  </p>
+
+                  <div className="w-full mt-2 pt-3 pb-2 px-1 rounded-2xl bg-amber-50/70 border border-amber-200 flex flex-col items-center">
+                    <span className="text-[11px] font-black text-amber-900">{top3.xp} XP</span>
+                    <span className="text-[9px] font-bold text-amber-700 uppercase">{top3.accuracy}%</span>
+                  </div>
+                </div>
+              )}
+
+            </div>
           </div>
         )}
 
-        {/* ─── 3. Detailed Data Table / Roster ─── */}
-        <div className="bg-[#121215] border border-white/[0.08] rounded-2xl overflow-hidden shadow-xl">
-          
-          {/* Table Header */}
-          <div className="grid grid-cols-12 gap-2 px-4 py-3 bg-[#16161a] border-b border-white/[0.06] text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-            <div className="col-span-1 text-center">Rank</div>
-            <div className="col-span-6 sm:col-span-5">Candidate</div>
-            <div className="hidden sm:block sm:col-span-3">Focus Area</div>
-            <div className="col-span-2 text-center">Accuracy</div>
-            <div className="col-span-3 sm:col-span-1 text-right">XP</div>
+        {/* ─── 3. Mobile Roster Feed Cards (#4 to #12) ─── */}
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs font-black text-slate-500 uppercase tracking-wider">
+              Candidates ({filteredList.length})
+            </span>
+            <span className="text-[11px] font-bold text-slate-400">
+              Tap to view details
+            </span>
           </div>
 
-          {/* Table Rows */}
-          <div className="divide-y divide-white/[0.04]">
-            {remainingPlayers.map((player) => {
-              const isUser = player.isCurrentUser;
+          {remainingPlayers.map((player) => {
+            const isUser = player.isCurrentUser;
 
-              return (
-                <div
-                  key={player.id}
-                  onClick={() => {
-                    playButtonClick();
-                    setSelectedUser(player);
-                  }}
-                  className={`grid grid-cols-12 gap-2 px-4 py-3.5 items-center transition-colors cursor-pointer text-xs ${
-                    isUser
-                      ? 'bg-violet-950/30 border-l-2 border-l-violet-500 hover:bg-violet-950/40'
-                      : 'hover:bg-white/[0.02]'
-                  }`}
-                >
-                  {/* Rank Column */}
-                  <div className="col-span-1 flex flex-col items-center justify-center">
-                    <span className={`font-semibold ${isUser ? 'text-violet-400 font-bold' : 'text-zinc-400'}`}>
-                      {player.rank}
-                    </span>
+            return (
+              <div
+                key={player.id}
+                onClick={() => {
+                  playButtonClick();
+                  setSelectedUser(player);
+                }}
+                className={`w-full rounded-2xl p-3.5 flex items-center justify-between gap-3 border-2 border-b-4 transition-all cursor-pointer active:scale-98 ${
+                  isUser
+                    ? 'bg-violet-50/80 border-[#7c3aed] shadow-sm ring-2 ring-violet-400/20'
+                    : 'bg-white border-[#e2e8f0] hover:border-slate-300'
+                }`}
+              >
+                {/* Left: Rank & Avatar & Info */}
+                <div className="flex items-center gap-3 min-w-0">
+                  {/* Rank Number */}
+                  <span className={`w-6 text-center font-heading font-black text-sm ${isUser ? 'text-[#7c3aed]' : 'text-slate-500'}`}>
+                    #{player.rank}
+                  </span>
+
+                  {/* Avatar */}
+                  <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-xs text-slate-700 overflow-hidden shrink-0">
+                    {player.avatarUrl || (isUser && user.avatarUrl) ? (
+                      <img src={player.avatarUrl || user.avatarUrl} alt={player.name} className="w-full h-full object-cover" />
+                    ) : (
+                      player.avatar
+                    )}
                   </div>
 
-                  {/* Candidate Column */}
-                  <div className="col-span-6 sm:col-span-5 flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-white/10 text-zinc-300 font-semibold text-xs flex items-center justify-center overflow-hidden shrink-0">
-                      {player.avatarUrl || (isUser && user.avatarUrl) ? (
-                        <img
-                          src={player.avatarUrl || user.avatarUrl}
-                          alt={player.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        player.avatar
+                  {/* Name, Handle & Board */}
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <h4 className={`text-xs font-black truncate ${isUser ? 'text-[#6d28d9]' : 'text-slate-900'}`}>
+                        {player.name}
+                      </h4>
+                      {isUser && (
+                        <span className="px-1.5 py-0.2 rounded-md bg-[#7c3aed] text-white text-[9px] font-black uppercase tracking-tight">
+                          YOU
+                        </span>
                       )}
                     </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className={`font-semibold truncate ${isUser ? 'text-white font-bold' : 'text-zinc-200'}`}>
-                          {player.name}
-                        </span>
-                        <span className="text-[10px] font-medium text-violet-400">
-                          @{player.username}
-                        </span>
-                        {isUser && (
-                          <span className="px-1.5 py-0.2 bg-violet-600 text-white font-bold text-[9px] rounded-sm tracking-wider uppercase shrink-0">
-                            YOU
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-[10px] text-zinc-500 block truncate">{player.board}</span>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[10px] font-bold text-[#7c3aed] truncate">
+                        @{player.username}
+                      </span>
+                      <span className="text-[10px] text-slate-300">•</span>
+                      <span className="text-[10px] font-semibold text-slate-400 truncate">
+                        {player.board.replace(' Class 12', '').replace(' (BSEB)', '')}
+                      </span>
                     </div>
                   </div>
+                </div>
 
-                  {/* Specialization Column */}
-                  <div className="hidden sm:block sm:col-span-3 min-w-0">
-                    <span className="text-zinc-400 truncate block">{player.specialization}</span>
-                  </div>
-
-                  {/* Accuracy Column */}
-                  <div className="col-span-2 text-center">
-                    <span className="text-zinc-300 font-medium">{player.accuracy}%</span>
-                  </div>
-
-                  {/* XP Column */}
-                  <div className="col-span-3 sm:col-span-1 text-right">
-                    <span className="font-semibold text-white tracking-wide">
-                      {player.xp.toLocaleString()}
+                {/* Right: Score & Trend */}
+                <div className="text-right shrink-0 flex flex-col items-end">
+                  <span className="font-heading text-xs sm:text-sm font-black text-slate-900">
+                    {player.xp.toLocaleString()} <span className="text-[10px] font-bold text-slate-400">XP</span>
+                  </span>
+                  
+                  <div className="flex items-center gap-1 mt-0.5">
+                    {player.trend === 'up' && (
+                      <span className="text-[10px] font-black text-emerald-600 flex items-center">
+                        ▲ {player.trendValue}
+                      </span>
+                    )}
+                    {player.trend === 'down' && (
+                      <span className="text-[10px] font-black text-rose-500 flex items-center">
+                        ▼ {player.trendValue}
+                      </span>
+                    )}
+                    {player.trend === 'neutral' && (
+                      <span className="text-[10px] font-bold text-slate-400">—</span>
+                    )}
+                    <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-1 rounded-sm">
+                      {player.accuracy}%
                     </span>
                   </div>
                 </div>
-              );
-            })}
-          </div>
 
+              </div>
+            );
+          })}
         </div>
 
       </div>
 
-      {/* ─── 4. Persistent User Status Bar ─── */}
-      <div className="fixed bottom-0 left-0 w-full px-4 pb-4 pt-2 z-30 pointer-events-none">
-        <div className="max-w-4xl mx-auto pointer-events-auto bg-[#141418]/95 border border-white/15 rounded-2xl p-3.5 shadow-2xl backdrop-blur-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+      {/* ─── 4. Mobile Sticky Bottom "Your Standing" Dock ─── */}
+      <div className="fixed bottom-16 left-0 w-full px-4 pb-2 z-30 pointer-events-none">
+        <div className="max-w-md mx-auto pointer-events-auto bg-[#1e1b4b]/95 text-white rounded-3xl p-3.5 shadow-2xl border-2 border-violet-400/40 backdrop-blur-lg flex items-center justify-between gap-3">
           
           {/* User Info */}
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <div className="w-9 h-9 rounded-xl bg-violet-600 text-white font-bold text-xs flex items-center justify-center overflow-hidden shrink-0 border border-violet-400/40">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#7c3aed] to-[#9333ea] border-2 border-white/20 flex items-center justify-center font-black text-xs overflow-hidden shrink-0">
               {user.avatarUrl ? (
                 <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
               ) : (
-                `#${currentUserData.rank}`
+                <span>#{currentUserData.rank}</span>
               )}
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-white">{currentUserData.name}</span>
-                <span className="text-[11px] font-semibold text-violet-400">@{currentUserData.username}</span>
-                <span className="text-[11px] text-zinc-400">({currentUserData.board})</span>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-black text-white truncate">{currentUserData.name}</span>
+                <span className="text-[10px] font-bold text-violet-300">@{currentUserData.username}</span>
               </div>
-              <p className="text-[11px] text-zinc-400">
+              <p className="text-[10px] text-slate-300 truncate">
                 {currentUserData.rank <= 3
-                  ? 'Podium Position Secured'
-                  : `${pointsToPodium} XP required to enter Top 3`}
+                  ? '🏅 Top 3 Podium Secured!'
+                  : `🔥 +${pointsToPodium} XP to reach Top 3`}
               </p>
             </div>
           </div>
 
-          {/* Quick Metrics & CTA */}
-          <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
-            <div className="flex items-center gap-4 text-xs font-semibold px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06]">
-              <div>
-                <span className="text-[10px] text-zinc-500 block uppercase font-medium">Your Score</span>
-                <span className="text-white font-bold">{currentUserData.xp.toLocaleString()} XP</span>
-              </div>
-              <div className="border-l border-white/10 pl-3">
-                <span className="text-[10px] text-zinc-500 block uppercase font-medium">Accuracy</span>
-                <span className="text-emerald-400 font-bold">{currentUserData.accuracy}%</span>
-              </div>
-            </div>
-
-            <Link
-              href="/tests"
-              onClick={() => playButtonClick()}
-              className="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold transition-colors shrink-0 shadow-sm cursor-pointer"
-            >
-              Practice Mock Test
-            </Link>
-          </div>
+          {/* Quick CTA */}
+          <Link
+            href="/tests"
+            onClick={playButtonClick}
+            className="px-3.5 py-2 rounded-2xl bg-amber-400 hover:bg-amber-300 text-amber-950 font-black text-xs transition-all active:scale-95 shadow-md shrink-0 flex items-center gap-1"
+          >
+            <span>Practice</span>
+            <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+          </Link>
 
         </div>
       </div>
 
-      {/* ─── 5. Professional Student Profile Modal ─── */}
+      {/* ─── 5. Candidate Detail Inspection Modal (Mobile Bottom Sheet / Card) ─── */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-[#141418] border border-white/15 rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in-95 duration-150 text-white">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 animate-in slide-in-from-bottom-5 duration-200">
             
-            <div className="flex items-start justify-between">
+            {/* Header */}
+            <div className="flex items-start justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-zinc-800 border border-white/10 text-white font-bold text-base flex items-center justify-center overflow-hidden shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white font-black text-base flex items-center justify-center overflow-hidden shrink-0 border-2 border-white shadow-xs">
                   {selectedUser.avatarUrl || (selectedUser.isCurrentUser && user.avatarUrl) ? (
                     <img
                       src={selectedUser.avatarUrl || user.avatarUrl}
@@ -703,46 +638,59 @@ export function LeaderboardClient() {
                   )}
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">{selectedUser.name}</h3>
-                  <p className="text-xs font-bold text-violet-400">@{selectedUser.username}</p>
-                  <p className="text-[11px] text-zinc-400">{selectedUser.board}</p>
+                  <h3 className="font-heading font-black text-sm text-slate-900">
+                    {selectedUser.name}
+                  </h3>
+                  <p className="text-xs font-bold text-violet-600">
+                    @{selectedUser.username}
+                  </p>
+                  <p className="text-[11px] text-slate-400 font-semibold">
+                    {selectedUser.board}
+                  </p>
                 </div>
               </div>
-              <span className="text-xs font-bold text-zinc-400 bg-white/[0.06] px-2.5 py-1 rounded-md border border-white/10">
+              
+              <span className="text-xs font-black text-violet-700 bg-violet-100 px-2.5 py-1 rounded-full border border-violet-200">
                 Rank #{selectedUser.rank}
               </span>
             </div>
 
-            <div className="my-4 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-              <span className="text-[10px] uppercase font-semibold text-zinc-500 block">Primary Specialization</span>
-              <span className="text-xs font-medium text-zinc-200 mt-0.5 block">{selectedUser.specialization}</span>
+            {/* Specialization */}
+            <div className="my-3.5 p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+              <span className="text-[10px] uppercase font-black text-slate-400 block">
+                Primary Strength / Focus Area
+              </span>
+              <span className="text-xs font-black text-slate-800 mt-0.5 block">
+                {selectedUser.specialization}
+              </span>
             </div>
 
-            {/* Performance Grid */}
-            <div className="grid grid-cols-3 gap-2 text-center my-4">
-              <div className="p-2.5 rounded-xl bg-[#18181c] border border-white/[0.06]">
-                <span className="text-[10px] text-zinc-500 block uppercase font-medium">XP Points</span>
-                <span className="text-xs font-bold text-white mt-0.5 block">{selectedUser.xp.toLocaleString()}</span>
+            {/* Metrics Grid */}
+            <div className="grid grid-cols-3 gap-2 text-center my-3.5">
+              <div className="p-3 rounded-2xl bg-violet-50/70 border border-violet-200">
+                <span className="text-[10px] text-violet-600 uppercase font-black block">Total XP</span>
+                <span className="text-xs font-black text-violet-950 mt-0.5 block">{selectedUser.xp.toLocaleString()}</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-[#18181c] border border-white/[0.06]">
-                <span className="text-[10px] text-zinc-500 block uppercase font-medium">Accuracy</span>
-                <span className="text-xs font-bold text-emerald-400 mt-0.5 block">{selectedUser.accuracy}%</span>
+              <div className="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200">
+                <span className="text-[10px] text-emerald-600 uppercase font-black block">Accuracy</span>
+                <span className="text-xs font-black text-emerald-950 mt-0.5 block">{selectedUser.accuracy}%</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-[#18181c] border border-white/[0.06]">
-                <span className="text-[10px] text-zinc-500 block uppercase font-medium">Tests</span>
-                <span className="text-xs font-bold text-zinc-200 mt-0.5 block">{selectedUser.testsCompleted}</span>
+              <div className="p-3 rounded-2xl bg-amber-50/70 border border-amber-200">
+                <span className="text-[10px] text-amber-600 uppercase font-black block">Streak</span>
+                <span className="text-xs font-black text-amber-950 mt-0.5 block">{selectedUser.streak} Days</span>
               </div>
             </div>
 
+            {/* Close Button */}
             <button
               type="button"
               onClick={() => {
                 playButtonClick();
                 setSelectedUser(null);
               }}
-              className="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold transition-colors mt-2 cursor-pointer border border-white/10"
+              className="w-full py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-black transition-all cursor-pointer active:scale-95 shadow-md mt-1"
             >
-              Close
+              Close Details
             </button>
           </div>
         </div>
