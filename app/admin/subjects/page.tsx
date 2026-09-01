@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { DataTable } from '@/components/admin/DataTable';
 import { Modal, FormField, inputCls, selectCls, PrimaryBtn, DangerBtn } from '@/components/admin/Modal';
+import { MasterCurriculumImporterModal } from '@/components/admin/MasterCurriculumImporterModal';
 import { playButtonClick, playGemDing } from '@/lib/soundEffects';
 
 interface Subject {
@@ -40,6 +41,7 @@ export default function AdminSubjectsPage() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [masterModalOpen, setMasterModalOpen] = useState(false);
   const [editing, setEditing] = useState<Subject>(EMPTY);
   const [isEdit, setIsEdit] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -204,6 +206,19 @@ export default function AdminSubjectsPage() {
           </select>
 
           <button
+            type="button"
+            onClick={() => {
+              playButtonClick();
+              setMasterModalOpen(true);
+            }}
+            className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white px-3.5 py-2 rounded-2xl text-xs font-black transition-all active:scale-95 shadow-md cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[18px]">table_chart</span>
+            <span>⚡ Master CSV Import</span>
+          </button>
+
+          <button
+            type="button"
             onClick={openAdd}
             className="flex items-center gap-1.5 bg-[#7c3aed] hover:bg-[#6d28d9] text-white px-4 py-2 rounded-2xl text-xs font-black transition-all active:scale-95 shadow-md cursor-pointer"
           >
@@ -308,6 +323,15 @@ export default function AdminSubjectsPage() {
           </div>
         </div>
       </Modal>
+
+      {/* Master All-in-One Importer Modal */}
+      <MasterCurriculumImporterModal
+        open={masterModalOpen}
+        onClose={() => setMasterModalOpen(false)}
+        onSuccess={() => {
+          load();
+        }}
+      />
 
     </div>
   );

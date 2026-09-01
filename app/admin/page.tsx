@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { StatCard } from '@/components/admin/StatCard';
+import { MasterCurriculumImporterModal } from '@/components/admin/MasterCurriculumImporterModal';
 import { playButtonClick } from '@/lib/soundEffects';
 
 interface OverviewStats {
@@ -32,35 +33,37 @@ export default function AdminOverviewPage() {
   });
   const [recent, setRecent] = useState<RecentAttempt[]>([]);
   const [loading, setLoading] = useState(true);
+  const [masterModalOpen, setMasterModalOpen] = useState(false);
+
+  async function load() {
+    try {
+      const [usersRes, testsRes, questionsRes, attemptsRes, recentRes] = await Promise.all([
+        supabase.from('profiles').select('id', { count: 'exact', head: true }),
+        supabase.from('tests').select('id', { count: 'exact', head: true }),
+        supabase.from('questions').select('id', { count: 'exact', head: true }),
+        supabase.from('user_test_results').select('id', { count: 'exact', head: true }),
+        supabase
+          .from('user_test_results')
+          .select('id, test_title, score, total_marks, accuracy_percent, attempted_at, profiles(name, email, avatar_url, username)')
+          .order('attempted_at', { ascending: false })
+          .limit(10),
+      ]);
+
+      setStats({
+        totalUsers: usersRes.count ?? 0,
+        totalTests: testsRes.count ?? 0,
+        totalQuestions: questionsRes.count ?? 0,
+        totalAttempts: attemptsRes.count ?? 0,
+      });
+      setRecent((recentRes.data as unknown as RecentAttempt[]) ?? []);
+    } catch (e) {
+      console.error('Admin overview load error', e);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function load() {
-      try {
-        const [usersRes, testsRes, questionsRes, attemptsRes, recentRes] = await Promise.all([
-          supabase.from('profiles').select('id', { count: 'exact', head: true }),
-          supabase.from('tests').select('id', { count: 'exact', head: true }),
-          supabase.from('questions').select('id', { count: 'exact', head: true }),
-          supabase.from('user_test_results').select('id', { count: 'exact', head: true }),
-          supabase
-            .from('user_test_results')
-            .select('id, test_title, score, total_marks, accuracy_percent, attempted_at, profiles(name, email, avatar_url, username)')
-            .order('attempted_at', { ascending: false })
-            .limit(10),
-        ]);
-
-        setStats({
-          totalUsers: usersRes.count ?? 0,
-          totalTests: testsRes.count ?? 0,
-          totalQuestions: questionsRes.count ?? 0,
-          totalAttempts: attemptsRes.count ?? 0,
-        });
-        setRecent((recentRes.data as unknown as RecentAttempt[]) ?? []);
-      } catch (e) {
-        console.error('Admin overview load error', e);
-      } finally {
-        setLoading(false);
-      }
-    }
     load();
   }, []);
 
@@ -97,6 +100,18 @@ export default function AdminOverviewPage() {
 
         {/* Quick Hub Buttons */}
         <div className="relative z-10 flex items-center gap-2.5 flex-wrap">
+          <button
+            type="button"
+            onClick={() => {
+              playButtonClick();
+              setMasterModalOpen(true);
+            }}
+            className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-4 py-2.5 rounded-2xl text-xs font-black transition-all active:scale-95 shadow-md cursor-pointer border border-emerald-400/40"
+          >
+            <span className="material-symbols-outlined text-[18px]">table_chart</span>
+            <span>⚡ Master All-in-One CSV</span>
+          </button>
+
           <Link
             href="/admin/subjects"
             onClick={playButtonClick}
@@ -114,6 +129,9 @@ export default function AdminOverviewPage() {
             <span className="material-symbols-outlined text-[18px]">quiz</span>
             <span>+ Add Test</span>
           </Link>
+        </div>
+
+      </div>
         </div>
 
       </div>
@@ -295,6 +313,15 @@ export default function AdminOverviewPage() {
           </div>
         )}
       </div>
+
+      {/* Master All-in-One Importer Modal */}
+      <MasterCurriculumImporterModal
+        open={masterModalOpen}
+        onClose={() => setMasterModalOpen(false)}
+        onSuccess={() => {
+          load();
+        }}
+      />
 
     </div>
   );
