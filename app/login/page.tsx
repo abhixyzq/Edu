@@ -17,12 +17,14 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const aboutSectionRef = useRef<HTMLDivElement | null>(null);
+  const [interactiveTab, setInteractiveTab] = useState<'map' | 'battles' | 'rewards'>('map');
+
+  const showcaseRef = useRef<HTMLDivElement | null>(null);
   const loginSectionRef = useRef<HTMLDivElement | null>(null);
 
   const scrollToAbout = () => {
     playButtonClick();
-    aboutSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+    showcaseRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const scrollToLogin = () => {
@@ -79,7 +81,7 @@ export default function LoginPage() {
             onClick={scrollToAbout}
             className="text-[11px] font-bold text-amber-200/90 bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1 shadow-md transition-all active:scale-95 cursor-pointer"
           >
-            <span>About nainixOne</span>
+            <span>✨ Feature Deck</span>
             <span className="material-symbols-outlined text-[14px]">arrow_downward</span>
           </button>
         </header>
@@ -198,7 +200,7 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={scrollToAbout}
-            aria-label="View About Section"
+            aria-label="View Game Showcase"
             className="p-2 flex items-center justify-center cursor-pointer group"
           >
             <div className="w-14 h-1.5 rounded-full bg-white/40 group-hover:bg-white/80 group-active:scale-95 transition-all shadow-xs" />
@@ -207,18 +209,18 @@ export default function LoginPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          SCREEN 2: Seamless Slide-Up / Scroll-Down ABOUT Section
+          SCREEN 2: Interactive Gamified Feature & World Deck
       ═══════════════════════════════════════════════════════════════ */}
       <section 
-        ref={aboutSectionRef}
-        className="min-h-[100dvh] w-full shrink-0 snap-start bg-gradient-to-b from-[#09111e] via-[#0f172a] to-[#1e1b4b] text-white p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden"
+        ref={showcaseRef}
+        className="min-h-[100dvh] w-full shrink-0 snap-start bg-gradient-to-b from-[#09111e] via-[#0f172a] to-[#1e1b4b] text-white p-4 sm:p-8 flex flex-col justify-between relative overflow-hidden"
       >
         {/* Background ambient glowing spheres */}
-        <div className="absolute top-10 left-10 w-96 h-96 bg-violet-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-10 left-10 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Top Floating Header */}
-        <div className="max-w-4xl mx-auto w-full flex items-center justify-between z-10 pb-6 border-b border-white/10">
+        {/* Top Header */}
+        <div className="max-w-4xl mx-auto w-full flex items-center justify-between z-10 pb-4 border-b border-white/10">
           <div className="flex items-center gap-2">
             <BrandLogo size="lg" />
           </div>
@@ -233,98 +235,228 @@ export default function LoginPage() {
           </button>
         </div>
 
-        {/* Main About Content Container */}
-        <div className="max-w-4xl mx-auto w-full my-auto py-8 z-10 space-y-8">
+        {/* Main Interactive World Deck */}
+        <div className="max-w-4xl mx-auto w-full my-auto py-6 z-10 space-y-6">
           
-          {/* Hero Pitch */}
-          <div className="text-center space-y-3">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-violet-500/20 border border-violet-400/30 text-amber-300 text-xs font-black uppercase tracking-wider">
-              <span>🚀 India&apos;s #1 Gamified Learning Platform</span>
+          {/* Hero Gamified Title */}
+          <div className="text-center space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-300/30 text-amber-300 text-xs font-black uppercase tracking-wider">
+              <span>🎮 Turn Studies into an Adventure</span>
             </div>
-            <h2 className="font-heading font-black text-3xl sm:text-5xl text-white tracking-tight leading-tight">
-              Master Your Exams, <br className="hidden sm:inline" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-orange-400 to-violet-400">
-                One Quest at a Time.
-              </span>
+            <h2 className="font-game-num font-black text-2xl sm:text-4xl text-white tracking-tight">
+              Level Up Your Exam Ranks
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
-              nainixOne transforms stressful Board and Competitive exam preparation into an engaging, rewarded game. Build streaks, earn gems, and conquer interactive chapter roadmaps.
-            </p>
           </div>
 
-          {/* 4 Feature Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Interactive Feature Category Tabs */}
+          <div className="flex items-center justify-center gap-2 max-w-sm mx-auto p-1.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+            <button
+              type="button"
+              onClick={() => {
+                playButtonClick();
+                setInteractiveTab('map');
+              }}
+              className={`flex-1 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                interactiveTab === 'map'
+                  ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 shadow-md scale-[1.02]'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              🗺️ 3D Map
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                playButtonClick();
+                setInteractiveTab('battles');
+              }}
+              className={`flex-1 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                interactiveTab === 'battles'
+                  ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 shadow-md scale-[1.02]'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              ⚡ Mock Arena
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                playButtonClick();
+                setInteractiveTab('rewards');
+              }}
+              className={`flex-1 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                interactiveTab === 'rewards'
+                  ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 shadow-md scale-[1.02]'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              💎 Perks & Shop
+            </button>
+          </div>
+
+          {/* Interactive Showcase Screen */}
+          <div className="rounded-3xl bg-white/5 border border-white/15 backdrop-blur-xl p-5 sm:p-7 shadow-2xl relative overflow-hidden">
             
-            {/* Card 1 */}
-            <div className="p-5 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-all space-y-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-amber-400/20 border border-amber-300/30 text-amber-300 flex items-center justify-center">
-                <span className="material-symbols-outlined text-[24px]">map</span>
-              </div>
-              <h3 className="font-black text-sm text-white">Gamified Roadmaps</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Topic-by-topic interactive 3D learning trees for Physics, Chemistry, Math & Biology with XP levels, hearts, and milestone unlocks.
-              </p>
-            </div>
+            {/* Tab 1: 3D Map Tree Preview */}
+            {interactiveTab === 'map' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <div className="space-y-3">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-300/20">
+                    Step-by-Step Mastery
+                  </span>
+                  <h3 className="font-heading font-black text-xl sm:text-2xl text-white">
+                    Non-Linear 3D Learning Path
+                  </h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Progress topic-by-topic like a game. Beat levels, unlock treasure chest checkpoints, maintain your streak fire, and level up with our cat mascot!
+                  </p>
+                  
+                  {/* Mini Stats Badges */}
+                  <div className="flex items-center gap-2 pt-1 flex-wrap">
+                    <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-black">
+                      🔥 Daily Streaks
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/30 text-xs font-black">
+                      ❤️ 5 Heart Lives
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 text-xs font-black">
+                      ⚡ Level 1-20
+                    </span>
+                  </div>
+                </div>
 
-            {/* Card 2 */}
-            <div className="p-5 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-all space-y-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-violet-400/20 border border-violet-300/30 text-violet-300 flex items-center justify-center">
-                <span className="material-symbols-outlined text-[24px]">analytics</span>
-              </div>
-              <h3 className="font-black text-sm text-white">Instant AI Analytics</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Take timed mock tests with instant scorecards, accuracy breakdown, LaTeX formula steps, and personalized weak-area drills.
-              </p>
-            </div>
+                {/* Visual 3D Road Map Demonstration */}
+                <div className="rounded-2xl bg-[#131d33] border border-white/10 p-5 flex flex-col items-center justify-center gap-4 relative">
+                  {/* Level 3 Node (Active Golden) */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-b from-amber-300 to-amber-500 border-3 border-white shadow-[0_6px_0_#b45309] flex items-center justify-center text-slate-950 font-game-num font-black text-lg animate-bounce">
+                      3
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs font-black text-amber-300">Active Level</p>
+                      <p className="text-[11px] text-slate-300 font-bold">Coulomb&apos;s Force & Vectors</p>
+                    </div>
+                  </div>
 
-            {/* Card 3 */}
-            <div className="p-5 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-all space-y-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-400/20 border border-emerald-300/30 text-emerald-300 flex items-center justify-center">
-                <span className="material-symbols-outlined text-[24px]">emoji_events</span>
+                  {/* Level 2 Node (Completed) */}
+                  <div className="flex items-center gap-3 opacity-90">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-b from-emerald-400 to-emerald-600 border-2 border-white shadow-[0_4px_0_#047857] flex items-center justify-center text-white font-black text-sm">
+                      ✓
+                    </div>
+                    <div className="text-left">
+                      <p className="text-[10px] font-black text-emerald-400">Mastered</p>
+                      <p className="text-[11px] text-slate-400">Electric Charges & Fields</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 className="font-black text-sm text-white">State Rank Leaderboards</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Compete with classmates across India. Rise from Bronze to Master League, earn exclusive badges, and showcase your rank.
-              </p>
-            </div>
+            )}
 
-            {/* Card 4 */}
-            <div className="p-5 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-all space-y-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-blue-400/20 border border-blue-300/30 text-blue-300 flex items-center justify-center">
-                <span className="material-symbols-outlined text-[24px]">school</span>
+            {/* Tab 2: Mock Arena */}
+            {interactiveTab === 'battles' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <div className="space-y-3">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-violet-300 bg-violet-400/10 px-2.5 py-1 rounded-full border border-violet-300/20">
+                    Timed Test Simulator
+                  </span>
+                  <h3 className="font-heading font-black text-xl sm:text-2xl text-white">
+                    Instant AI Accuracy & Solutions
+                  </h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Attempt real board-pattern timed mock papers. Get instant scorecards, accuracy rates, state leaderboard ranks, and step-by-step LaTeX formula explanations.
+                  </p>
+
+                  <div className="flex items-center gap-2 pt-1 flex-wrap">
+                    <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-black">
+                      ⏱️ 20-Min Timers
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 text-xs font-black">
+                      📊 Accuracy %
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-black">
+                      🏆 State Ranks
+                    </span>
+                  </div>
+                </div>
+
+                {/* Question Card Mockup */}
+                <div className="rounded-2xl bg-[#131d33] border border-white/10 p-5 space-y-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-black text-violet-300">Physics Drill 01</span>
+                    <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-mono font-bold">14:22 Left</span>
+                  </div>
+                  <p className="text-xs font-bold text-white leading-relaxed">
+                    Q: What is the force between two point charges placed in a medium of dielectric constant K?
+                  </p>
+                  <div className="space-y-1.5 text-[11px]">
+                    <div className="p-2 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 font-bold flex items-center justify-between">
+                      <span>A. Decreases by factor 1/K</span>
+                      <span className="text-emerald-400 font-black">✓ Correct</span>
+                    </div>
+                    <div className="p-2 rounded-xl bg-white/5 border border-white/10 text-slate-300">
+                      <span>B. Increases by factor K</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 className="font-black text-sm text-white">All Major Boards</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Curriculum tailored for CBSE, Bihar Board (BSEB), UP Board, ICSE/ISC, JEE Main and NEET UG aspirants (Classes 9–12).
-              </p>
-            </div>
+            )}
+
+            {/* Tab 3: Rewards & Shop */}
+            {interactiveTab === 'rewards' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <div className="space-y-3">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-emerald-300 bg-emerald-400/10 px-2.5 py-1 rounded-full border border-emerald-300/20">
+                    Rewards Economy
+                  </span>
+                  <h3 className="font-heading font-black text-xl sm:text-2xl text-white">
+                    Gems, Heart Refills & Avatars
+                  </h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Earn Gems on every correct answer. Trade them in the Shop for Streak Freezes, Heart Refills, Custom Cat Mascot skins, and exclusive Title Badges!
+                  </p>
+
+                  <div className="flex items-center gap-2 pt-1 flex-wrap">
+                    <span className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-xs font-black">
+                      💎 50 Welcome Gems
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 text-xs font-black">
+                      🛡️ Streak Shield
+                    </span>
+                  </div>
+                </div>
+
+                {/* Shop Cards Grid */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3.5 rounded-2xl bg-[#131d33] border border-white/10 text-center space-y-1.5">
+                    <span className="text-2xl">🛡️</span>
+                    <p className="text-xs font-black text-white">Streak Freeze</p>
+                    <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-black border border-cyan-400/30">
+                      200 💎
+                    </span>
+                  </div>
+                  <div className="p-3.5 rounded-2xl bg-[#131d33] border border-white/10 text-center space-y-1.5">
+                    <span className="text-2xl">💖</span>
+                    <p className="text-xs font-black text-white">Full Heart Refill</p>
+                    <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-black border border-rose-400/30">
+                      350 💎
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
 
           </div>
 
-          {/* Quick Metrics Bar */}
-          <div className="p-4 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md grid grid-cols-3 text-center divide-x divide-white/10">
-            <div>
-              <h4 className="font-black text-lg sm:text-2xl text-amber-300">10,000+</h4>
-              <p className="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider">Scholars</p>
-            </div>
-            <div>
-              <h4 className="font-black text-lg sm:text-2xl text-violet-300">500+</h4>
-              <p className="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider">Mock Papers</p>
-            </div>
-            <div>
-              <h4 className="font-black text-lg sm:text-2xl text-emerald-300">98.4%</h4>
-              <p className="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider">Score Boost</p>
-            </div>
-          </div>
-
-          {/* CTA Footer Row */}
+          {/* Quick Action Button */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <Link
               href="/signup"
               onClick={playButtonClick}
-              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-slate-950 font-black text-sm text-center shadow-lg active:scale-95 transition-all cursor-pointer"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:scale-105 text-slate-950 font-black text-sm text-center shadow-xl active:scale-95 transition-all cursor-pointer"
             >
-              Start Learning for Free (+50 💎)
+              Join the Game for Free (+50 💎)
             </Link>
 
             <button
@@ -332,15 +464,15 @@ export default function LoginPage() {
               onClick={scrollToLogin}
               className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-sm text-center shadow-md active:scale-95 transition-all cursor-pointer"
             >
-              Sign In to Existing Account ↑
+              Sign In to Account ↑
             </button>
           </div>
 
         </div>
 
-        {/* Bottom copyright */}
-        <footer className="max-w-4xl mx-auto w-full text-center text-[11px] text-slate-400 pt-4 border-t border-white/10 z-10">
-          © {new Date().getFullYear()} nainixOne Edu Technologies. Built for champions.
+        {/* Footer */}
+        <footer className="max-w-4xl mx-auto w-full text-center text-[10px] text-slate-500 pt-3 border-t border-white/10 z-10">
+          nainixOne Gamified Learning Ecosystem • Built for high-scorers
         </footer>
       </section>
 
