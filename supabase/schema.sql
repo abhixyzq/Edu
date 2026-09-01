@@ -1,20 +1,21 @@
 -- ========================================================
--- NAINIXONE CLASS 12 PREP DATABASE SCHEMA
--- Target Engine: PostgreSQL / Supabase
--- Status: Production Ready & Fully Idempotent
+-- NAINIXONE CLASS 12 PREP - COMPLETE SUPABASE DATABASE SCHEMA
+-- Target Engine: PostgreSQL 15+ / Supabase
+-- Status: 100% Production Ready, Fully Idempotent & Migration-Safe
 -- Copy and paste this script directly into Supabase SQL Editor
 -- ========================================================
 
--- Enable necessary extensions
+-- Enable necessary PostgreSQL extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- ========================================================
--- 1. PROFILES TABLE (Linked with Supabase Auth)
+-- 1. PROFILES TABLE (Core Student Profiles & Gamification)
 -- ========================================================
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
   name TEXT NOT NULL DEFAULT 'Class 12 Scholar',
+  username TEXT UNIQUE,
   email TEXT NOT NULL UNIQUE,
   avatar_url TEXT DEFAULT NULL,
   target_board TEXT NOT NULL DEFAULT 'cbse',
@@ -25,7 +26,10 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   max_hearts INT NOT NULL DEFAULT 5,
   gems INT NOT NULL DEFAULT 150,
   level INT NOT NULL DEFAULT 1,
-  league_tier TEXT NOT NULL DEFAULT 'Bronze',
+  league_tier TEXT NOT NULL DEFAULT 'Starter League',
+  referred_by TEXT DEFAULT NULL,
+  streak_freeze_count INT NOT NULL DEFAULT 1,
+  last_active_date DATE DEFAULT CURRENT_DATE,
   is_admin BOOLEAN NOT NULL DEFAULT false,
   inventory JSONB NOT NULL DEFAULT '{"streakFreeze":1,"infiniteHeartsPass":0,"doubleXpCount":0}'::jsonb,
   unlocked_nodes JSONB NOT NULL DEFAULT '["phy-1","phy-2","chem-1","math-1","bio-1","eng-1"]'::jsonb,
@@ -34,9 +38,21 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Ensure all columns exist if updating an existing table
+-- Idempotent Column Additions for Existing Databases
 DO $$ 
 BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'username') THEN
+    ALTER TABLE public.profiles ADD COLUMN username TEXT UNIQUE;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'referred_by') THEN
+    ALTER TABLE public.profiles ADD COLUMN referred_by TEXT DEFAULT NULL;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'streak_freeze_count') THEN
+    ALTER TABLE public.profiles ADD COLUMN streak_freeze_count INT NOT NULL DEFAULT 1;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'last_active_date') THEN
+    ALTER TABLE public.profiles ADD COLUMN last_active_date DATE DEFAULT CURRENT_DATE;
+  END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'avatar_url') THEN
     ALTER TABLE public.profiles ADD COLUMN avatar_url TEXT DEFAULT NULL;
   END IF;
@@ -63,7 +79,7 @@ END $$;
 -- Enable RLS
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
--- Helper function: check if caller is an admin
+-- Helper function: Check if caller is an admin
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $$
   SELECT COALESCE(
@@ -77,8 +93,7 @@ DROP POLICY IF EXISTS "Public profiles are viewable by everyone" ON public.profi
 DROP POLICY IF EXISTS "Users can view their own profile or admins view all" ON public.profiles;
 DROP POLICY IF EXISTS "Users can insert their own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
-DROP POLICY IF EXISTS "Admins can view all profiles" ON public.profiles;
-DROP POLICY IF EXISTS "Admins can update all profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Users and admins can update profile" ON public.profiles;
 
 CREATE POLICY "Public profiles are viewable by everyone" 
   ON public.profiles FOR SELECT 
@@ -98,31 +113,62 @@ CREATE POLICY "Users and admins can update profile"
 -- ========================================================
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  v_raw_username TEXT;
+  v_clean_username TEXT;
+  v_referrer_code TEXT;
 BEGIN
+  -- Extract username or generate a clean handle from email/metadata
+  v_raw_username := COALESCE(
+    NEW.raw_user_meta_data->>'username',
+    split_part(NEW.email, '@', 1)
+  );
+  v_clean_username := lower(regexp_replace(v_raw_username, '[^a-z0-9_]', '', 'g'));
+  
+  -- Extract referral handle if present
+  v_referrer_code := NEW.raw_user_meta_data->>'ref';
+
   INSERT INTO public.profiles (
     id,
     name,
+    username,
     email,
     target_board,
     xp_points,
     gems,
     hearts,
     streak_days,
+    referred_by,
     is_admin
   ) VALUES (
     NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1), 'Student'),
+    v_clean_username,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'targetBoard', 'cbse'),
     320,
-    150,
+    -- If user was referred, grant 150 + 50 = 200 initial gems!
+    CASE WHEN v_referrer_code IS NOT NULL AND v_referrer_code <> '' THEN 200 ELSE 150 END,
     5,
     1,
+    v_referrer_code,
     false
   )
   ON CONFLICT (id) DO UPDATE SET
     email = EXCLUDED.email,
     updated_at = timezone('utc'::text, now());
+
+  -- If referred, log the referral reward and award 50 gems to referrer
+  IF v_referrer_code IS NOT NULL AND v_referrer_code <> '' THEN
+    UPDATE public.profiles
+    SET gems = gems + 50
+    WHERE username = lower(v_referrer_code);
+
+    INSERT INTO public.referrals (referrer_username, referee_id, reward_gems)
+    VALUES (lower(v_referrer_code), NEW.id, 50)
+    ON CONFLICT DO NOTHING;
+  END IF;
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -134,15 +180,116 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- ========================================================
--- 3. SUBJECTS TABLE
+-- 3. FRIENDSHIPS / FOLLOWS TABLE (Study Peer Connections)
+-- ========================================================
+CREATE TABLE IF NOT EXISTS public.friendships (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  friend_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  status TEXT NOT NULL DEFAULT 'accepted', -- 'accepted', 'pending'
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  UNIQUE(user_id, friend_id)
+);
+
+ALTER TABLE public.friendships ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can view their friendships" ON public.friendships;
+DROP POLICY IF EXISTS "Users can create friendships" ON public.friendships;
+DROP POLICY IF EXISTS "Users can delete friendships" ON public.friendships;
+
+CREATE POLICY "Users can view their friendships" 
+  ON public.friendships FOR SELECT 
+  USING (auth.uid() = user_id OR auth.uid() = friend_id);
+
+CREATE POLICY "Users can create friendships" 
+  ON public.friendships FOR INSERT 
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete friendships" 
+  ON public.friendships FOR DELETE 
+  USING (auth.uid() = user_id OR auth.uid() = friend_id);
+
+-- ========================================================
+-- 4. REFERRALS TABLE (Refer & Earn 50 Free Gems Tracker)
+-- ========================================================
+CREATE TABLE IF NOT EXISTS public.referrals (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  referrer_username TEXT NOT NULL,
+  referee_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  reward_gems INT NOT NULL DEFAULT 50,
+  status TEXT NOT NULL DEFAULT 'completed',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.referrals ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can view referrals" ON public.referrals;
+CREATE POLICY "Users can view referrals" 
+  ON public.referrals FOR SELECT 
+  USING (true);
+
+-- ========================================================
+-- 5. CHEERS / HIGH-FIVES TABLE (Celebratory Micro-interactions)
+-- ========================================================
+CREATE TABLE IF NOT EXISTS public.user_cheers (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  sender_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  receiver_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  cheer_emoji TEXT NOT NULL DEFAULT '👏',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.user_cheers ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can view cheers" ON public.user_cheers;
+DROP POLICY IF EXISTS "Users can send cheers" ON public.user_cheers;
+
+CREATE POLICY "Users can view cheers" 
+  ON public.user_cheers FOR SELECT 
+  USING (auth.uid() = receiver_id OR auth.uid() = sender_id);
+
+CREATE POLICY "Users can send cheers" 
+  ON public.user_cheers FOR INSERT 
+  WITH CHECK (auth.uid() = sender_id);
+
+-- ========================================================
+-- 6. LIVE ACTIVITY FEED TABLE (Peer Milestones)
+-- ========================================================
+CREATE TABLE IF NOT EXISTS public.activity_feed (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  action_type TEXT NOT NULL, -- 'mock_completed', 'league_promoted', 'streak_milestone', 'quest_completed'
+  action_title TEXT NOT NULL,
+  action_detail TEXT NOT NULL,
+  icon TEXT NOT NULL DEFAULT 'bolt',
+  color TEXT NOT NULL DEFAULT '#7c3aed',
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.activity_feed ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Activity feed is viewable by everyone" ON public.activity_feed;
+DROP POLICY IF EXISTS "Users can insert activity events" ON public.activity_feed;
+
+CREATE POLICY "Activity feed is viewable by everyone" 
+  ON public.activity_feed FOR SELECT 
+  USING (true);
+
+CREATE POLICY "Users can insert activity events" 
+  ON public.activity_feed FOR INSERT 
+  WITH CHECK (auth.uid() = user_id);
+
+-- ========================================================
+-- 7. SUBJECTS TABLE
 -- ========================================================
 CREATE TABLE IF NOT EXISTS public.subjects (
   id TEXT PRIMARY KEY,
   title TEXT NOT NULL,
   category TEXT NOT NULL,
   icon TEXT NOT NULL,
-  color TEXT DEFAULT 'text-[#0060ac]',
-  bg_color TEXT DEFAULT 'bg-[#0060ac]/10',
+  color TEXT DEFAULT 'text-[#7c3aed]',
+  bg_color TEXT DEFAULT 'bg-[#7c3aed]/10',
   total_chapters INT NOT NULL DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -150,10 +297,10 @@ CREATE TABLE IF NOT EXISTS public.subjects (
 DO $$ 
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'subjects' AND column_name = 'color') THEN
-    ALTER TABLE public.subjects ADD COLUMN color TEXT DEFAULT 'text-[#0060ac]';
+    ALTER TABLE public.subjects ADD COLUMN color TEXT DEFAULT 'text-[#7c3aed]';
   END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'subjects' AND column_name = 'bg_color') THEN
-    ALTER TABLE public.subjects ADD COLUMN bg_color TEXT DEFAULT 'bg-[#0060ac]/10';
+    ALTER TABLE public.subjects ADD COLUMN bg_color TEXT DEFAULT 'bg-[#7c3aed]/10';
   END IF;
 END $$;
 
@@ -170,7 +317,7 @@ CREATE POLICY "Admins can update subjects" ON public.subjects FOR UPDATE USING (
 CREATE POLICY "Admins can delete subjects" ON public.subjects FOR DELETE USING (public.is_admin());
 
 -- ========================================================
--- 4. CHAPTERS TABLE
+-- 8. CHAPTERS TABLE
 -- ========================================================
 CREATE TABLE IF NOT EXISTS public.chapters (
   id SERIAL PRIMARY KEY,
@@ -194,7 +341,7 @@ CREATE POLICY "Admins can update chapters" ON public.chapters FOR UPDATE USING (
 CREATE POLICY "Admins can delete chapters" ON public.chapters FOR DELETE USING (public.is_admin());
 
 -- ========================================================
--- 5. TESTS TABLE
+-- 9. TESTS TABLE
 -- ========================================================
 CREATE TABLE IF NOT EXISTS public.tests (
   id TEXT PRIMARY KEY,
@@ -220,7 +367,7 @@ CREATE POLICY "Admins can update tests" ON public.tests FOR UPDATE USING (public
 CREATE POLICY "Admins can delete tests" ON public.tests FOR DELETE USING (public.is_admin());
 
 -- ========================================================
--- 6. QUESTIONS TABLE
+-- 10. QUESTIONS TABLE
 -- ========================================================
 CREATE TABLE IF NOT EXISTS public.questions (
   id SERIAL PRIMARY KEY,
@@ -257,7 +404,7 @@ CREATE POLICY "Admins can update questions" ON public.questions FOR UPDATE USING
 CREATE POLICY "Admins can delete questions" ON public.questions FOR DELETE USING (public.is_admin());
 
 -- ========================================================
--- 7. USER TEST RESULTS TABLE
+-- 11. USER TEST RESULTS TABLE (Mock Exam Analytics)
 -- ========================================================
 CREATE TABLE IF NOT EXISTS public.user_test_results (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -290,7 +437,7 @@ CREATE POLICY "Users can insert their own test results"
   WITH CHECK (auth.uid() = user_id);
 
 -- ========================================================
--- 8. BOOKMARKS & STUDY SAVES TABLE
+-- 12. BOOKMARKS & STUDY SAVES TABLE
 -- ========================================================
 CREATE TABLE IF NOT EXISTS public.bookmarks (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -311,7 +458,7 @@ CREATE POLICY "Users can manage their own bookmarks"
   WITH CHECK (auth.uid() = user_id);
 
 -- ========================================================
--- 9. USER QUESTS & DAILY MISSIONS TABLE
+-- 13. USER QUESTS & DAILY MISSIONS TABLE
 -- ========================================================
 CREATE TABLE IF NOT EXISTS public.user_quests (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -338,10 +485,16 @@ CREATE POLICY "Users can manage their own quests"
   WITH CHECK (auth.uid() = user_id);
 
 -- ========================================================
--- 10. INDEXES FOR LIGHTNING FAST QUERIES
+-- 14. HIGH-PERFORMANCE INDEXES
 -- ========================================================
+CREATE INDEX IF NOT EXISTS idx_profiles_username ON public.profiles(username);
 CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
 CREATE INDEX IF NOT EXISTS idx_profiles_xp ON public.profiles(xp_points DESC);
+CREATE INDEX IF NOT EXISTS idx_profiles_board ON public.profiles(target_board);
+CREATE INDEX IF NOT EXISTS idx_friendships_user ON public.friendships(user_id);
+CREATE INDEX IF NOT EXISTS idx_friendships_friend ON public.friendships(friend_id);
+CREATE INDEX IF NOT EXISTS idx_activity_user ON public.activity_feed(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_referrals_referrer ON public.referrals(referrer_username);
 CREATE INDEX IF NOT EXISTS idx_chapters_subject ON public.chapters(subject_id, chapter_number);
 CREATE INDEX IF NOT EXISTS idx_tests_subject ON public.tests(subject_id);
 CREATE INDEX IF NOT EXISTS idx_questions_test ON public.questions(test_id, question_number);
@@ -351,17 +504,17 @@ CREATE INDEX IF NOT EXISTS idx_bookmarks_user ON public.bookmarks(user_id);
 CREATE INDEX IF NOT EXISTS idx_quests_user ON public.user_quests(user_id, expires_at);
 
 -- ========================================================
--- 11. SAMPLE DATA SEEDING (Idempotent)
+-- 15. SAMPLE DATA SEEDING (Idempotent)
 -- ========================================================
 
 -- Seed Subjects
 INSERT INTO public.subjects (id, title, category, icon, color, bg_color, total_chapters) VALUES
-('physics', 'Physics (Class 12)', 'Science Stream', 'bolt', 'text-[#0060ac]', 'bg-[#0060ac]/10', 14),
-('chemistry', 'Chemistry (Class 12)', 'Science Stream', 'science', 'text-[#3a6a00]', 'bg-[#3a6a00]/10', 16),
-('maths', 'Mathematics (Class 12)', 'Science Stream', 'functions', 'text-[#9b4500]', 'bg-[#9b4500]/10', 13),
-('biology', 'Biology (Class 12)', 'Science Stream', 'eco', 'text-[#254700]', 'bg-[#6dbf00]/20', 16),
-('english', 'English Core (Class 12)', 'Language & Arts', 'menu_book', 'text-[#564338]', 'bg-[#ddc1b3]/30', 12),
-('hindi', 'Hindi Core (Class 12)', 'Language & Arts', 'translate', 'text-[#93000a]', 'bg-[#ffdad6]/40', 12)
+('physics', 'Physics (Class 12)', 'Science Stream', 'bolt', 'text-[#7c3aed]', 'bg-[#7c3aed]/10', 14),
+('chemistry', 'Chemistry (Class 12)', 'Science Stream', 'science', 'text-[#059669]', 'bg-[#059669]/10', 16),
+('maths', 'Mathematics (Class 12)', 'Science Stream', 'functions', 'text-[#ea580c]', 'bg-[#ea580c]/10', 13),
+('biology', 'Biology (Class 12)', 'Science Stream', 'eco', 'text-[#16a34a]', 'bg-[#16a34a]/10', 16),
+('english', 'English Core (Class 12)', 'Language & Arts', 'menu_book', 'text-[#475569]', 'bg-[#475569]/10', 12),
+('hindi', 'Hindi Core (Class 12)', 'Language & Arts', 'translate', 'text-[#dc2626]', 'bg-[#dc2626]/10', 12)
 ON CONFLICT (id) DO UPDATE SET
   title = EXCLUDED.title,
   category = EXCLUDED.category,
@@ -449,7 +602,7 @@ SELECT setval(pg_get_serial_sequence('public.chapters', 'id'), COALESCE((SELECT 
 SELECT setval(pg_get_serial_sequence('public.questions', 'id'), COALESCE((SELECT MAX(id) FROM public.questions), 1));
 
 -- ========================================================
--- HOW TO SET ADMIN USER IN SUPABASE:
--- Run this query after signing up your user:
+-- ADMIN PROMOTION HELPER:
+-- Run this in Supabase SQL Editor to grant admin powers to your email:
 --   UPDATE public.profiles SET is_admin = true WHERE email = 'your@email.com';
 -- ========================================================
