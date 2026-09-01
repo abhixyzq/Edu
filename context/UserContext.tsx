@@ -59,6 +59,37 @@ interface UserContextType {
   logout: () => Promise<void>;
 }
 
+export interface LeagueInfo {
+  id: string;
+  name: string;
+  emoji: string;
+  badge: string;
+  minXp: number;
+  color: string;
+  glow: string;
+  description: string;
+}
+
+export const LEAGUES: LeagueInfo[] = [
+  { id: 'starter', name: 'Starter League', emoji: '🌱', badge: '🌱 Starter', minXp: 0, color: '#10b981', glow: 'rgba(16,185,129,0.3)', description: 'Begin your academic journey' },
+  { id: 'scholar', name: 'Scholar League', emoji: '🪵', badge: '🪵 Scholar', minXp: 400, color: '#b45309', glow: 'rgba(180,83,9,0.3)', description: 'Consistent daily practice' },
+  { id: 'achiever', name: 'Achiever League', emoji: '🔷', badge: '🔷 Achiever', minXp: 900, color: '#3b82f6', glow: 'rgba(59,130,246,0.3)', description: 'Outstanding test scores' },
+  { id: 'elite', name: 'Elite League', emoji: '🥇', badge: '🥇 Elite', minXp: 1500, color: '#eab308', glow: 'rgba(234,179,8,0.3)', description: 'Top competitive performers' },
+  { id: 'master', name: 'Master League', emoji: '💎', badge: '💎 Master', minXp: 2200, color: '#06b6d4', glow: 'rgba(6,182,212,0.3)', description: 'Mastery across all subjects' },
+  { id: 'champion', name: 'Champion League', emoji: '👑', badge: '👑 Champion', minXp: 3000, color: '#f59e0b', glow: 'rgba(245,158,11,0.3)', description: 'State-level exam topper zone' },
+  { id: 'legend', name: 'Legend League', emoji: '⚡', badge: '⚡ Legend', minXp: 4000, color: '#a855f7', glow: 'rgba(168,85,247,0.3)', description: 'Legendary board accuracy' },
+  { id: 'nainix', name: 'Nainix League', emoji: '🌟', badge: '🌟 Nainix', minXp: 5500, color: '#ec4899', glow: 'rgba(236,72,153,0.4)', description: 'The pinnacle of academic excellence' },
+];
+
+export const getLeagueByXP = (xp: number): LeagueInfo => {
+  for (let i = LEAGUES.length - 1; i >= 0; i--) {
+    if (xp >= LEAGUES[i].minXp) {
+      return LEAGUES[i];
+    }
+  }
+  return LEAGUES[0];
+};
+
 const DEFAULT_USER: UserGamifiedState = {
   id: '',
   name: 'Abhishek Kumar',
@@ -75,7 +106,7 @@ const DEFAULT_USER: UserGamifiedState = {
   gems: 150,
   xp: 320,
   level: 3,
-  leagueTier: 'Silver',
+  leagueTier: 'Starter League',
   unlockedNodes: ['phy-1', 'phy-2', 'chem-1', 'math-1', 'bio-1', 'eng-1'],
   completedNodes: {
     'phy-1': { stars: 3, score: 95, completedAt: '2026-08-30' },
@@ -109,64 +140,62 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const storedUsername = localStorage.getItem('edustride_user_username');
     const storedEmail = localStorage.getItem('edustride_user_email');
     const storedBoard = localStorage.getItem('edustride_user_board');
-    const storedXP = localStorage.getItem('edustride_user_xp');
-    const storedGems = localStorage.getItem('edustride_user_gems');
-    const storedHearts = localStorage.getItem('edustride_user_hearts');
-    const storedNodes = localStorage.getItem('edustride_unlocked_nodes');
-    const storedCompleted = localStorage.getItem('edustride_completed_nodes');
-    const storedInv = localStorage.getItem('edustride_inventory');
-    const storedAvatar = localStorage.getItem('edustride_user_avatar');
+    try {
+      const storedAuth = localStorage.getItem('edustride_logged_in');
+      const storedName = localStorage.getItem('edustride_user_name');
+      const storedUsername = localStorage.getItem('edustride_user_username');
+      const storedEmail = localStorage.getItem('edustride_user_email');
+      const storedBoard = localStorage.getItem('edustride_user_board');
+      const storedXP = localStorage.getItem('edustride_user_xp');
+      const storedGems = localStorage.getItem('edustride_user_gems');
+      const storedHearts = localStorage.getItem('edustride_user_hearts');
+      const storedNodes = localStorage.getItem('edustride_unlocked_nodes');
+      const storedCompleted = localStorage.getItem('edustride_completed_nodes');
+      const storedInv = localStorage.getItem('edustride_inventory');
+      const storedAvatar = localStorage.getItem('edustride_user_avatar');
 
-    const soundMuted = getSoundMuted();
+      const soundMuted = getSoundMuted();
 
-    setUser((prev) => {
-      const xpVal = storedXP ? parseInt(storedXP, 10) : prev.xp;
-      const levelVal = Math.floor(xpVal / 100) + 1;
-      const cleanName = storedName || prev.name;
-      const cleanUser = storedUsername || sanitizeUsername(cleanName.replace(/\s+/g, '_')) || 'scholar_12';
+      setUser((prev) => {
+        const xpVal = storedXP ? parseInt(storedXP, 10) : prev.xp;
+        const levelVal = Math.floor(xpVal / 100) + 1;
+        const cleanName = storedName || prev.name;
+        const cleanUser = storedUsername || sanitizeUsername(cleanName.replace(/\s+/g, '_')) || 'scholar_12';
 
-      return {
-        ...prev,
-        isLoggedIn: storedAuth === 'true' && !!storedEmail,
-        name: cleanName,
-        username: cleanUser,
-        email: storedEmail || prev.email,
-        targetBoard: storedBoard || prev.targetBoard,
-        xp: xpVal,
-        level: levelVal,
-        gems: storedGems ? parseInt(storedGems, 10) : prev.gems,
-        hearts: storedHearts ? parseInt(storedHearts, 10) : prev.hearts,
-        unlockedNodes: storedNodes ? JSON.parse(storedNodes) : prev.unlockedNodes,
-        completedNodes: storedCompleted ? JSON.parse(storedCompleted) : prev.completedNodes,
-        inventory: storedInv ? JSON.parse(storedInv) : prev.inventory,
-        avatarUrl: storedAvatar || prev.avatarUrl || '',
-        soundMuted,
-      };
-    });
+        return {
+          ...prev,
+          isLoggedIn: storedAuth === 'true' && !!storedEmail,
+          name: cleanName,
+          username: cleanUser,
+          email: storedEmail || prev.email,
+          targetBoard: storedBoard || prev.targetBoard,
+          xp: xpVal,
+          level: levelVal,
+          leagueTier: getLeagueByXP(xpVal).name,
+          gems: storedGems ? parseInt(storedGems, 10) : prev.gems,
+          hearts: storedHearts ? parseInt(storedHearts, 10) : prev.hearts,
+          unlockedNodes: storedNodes ? JSON.parse(storedNodes) : prev.unlockedNodes,
+          completedNodes: storedCompleted ? JSON.parse(storedCompleted) : prev.completedNodes,
+          inventory: storedInv ? JSON.parse(storedInv) : prev.inventory,
+          avatarUrl: storedAvatar || prev.avatarUrl || '',
+          soundMuted,
+        };
+      });
 
-    if (!isSupabaseConfigured) return;
+      if (!isSupabaseConfigured) return;
 
-    // 2. Check Supabase session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        fetchAndSyncProfile(session.user.id, session.user.email || '');
-      }
-    });
-
-    // 3. Listen to auth state
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        await fetchAndSyncProfile(session.user.id, session.user.email || '');
-      } else if (event === 'SIGNED_OUT') {
-        clearLocalSession();
-      }
-    });
-
-    return () => subscription.unsubscribe();
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          syncUserProfile(session.user.id, session.user.email || '');
+        }
+      });
+    } catch (e) {
+      console.warn('[UserContext] Failed to load local storage:', e);
+    }
   }, []);
 
   // ─── Sync Supabase Profile ───
-  const fetchAndSyncProfile = async (userId: string, email: string) => {
+  const syncUserProfile = async (userId: string, email: string) => {
     try {
       const { data: profile } = await supabase
         .from('profiles')
@@ -195,6 +224,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         streakDays: streak,
         xp: xpVal,
         level: Math.floor(xpVal / 100) + 1,
+        leagueTier: getLeagueByXP(xpVal).name,
         gems: gemsVal,
         hearts: heartsVal,
         isLoggedIn: true,
@@ -239,7 +269,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     setUser((prev) => {
-      const updated = { ...prev, xp: newXP, level: newLevel };
+      const updated = { 
+        ...prev, 
+        xp: newXP, 
+        level: newLevel,
+        leagueTier: getLeagueByXP(newXP).name 
+      };
       localStorage.setItem('edustride_user_xp', newXP.toString());
       return updated;
     });

@@ -2,8 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useUser } from '@/context/UserContext';
-import { playButtonClick } from '@/lib/soundEffects';
+import { useUser, LEAGUES, getLeagueByXP, LeagueInfo } from '@/context/UserContext';
+import { playButtonClick, playGemDing } from '@/lib/soundEffects';
 
 type Timeframe = 'weekly' | 'monthly' | 'alltime';
 type BoardCategory = 'all' | 'cbse' | 'bseb' | 'up' | 'icse';
@@ -31,6 +31,23 @@ export function LeaderboardClient() {
   const [timeframe, setTimeframe] = useState<Timeframe>('weekly');
   const [selectedBoard, setSelectedBoard] = useState<BoardCategory>('all');
   const [selectedUser, setSelectedUser] = useState<LeaderboardUser | null>(null);
+  const [isLeagueModalOpen, setIsLeagueModalOpen] = useState(false);
+
+  // Current League info based on user XP
+  const currentLeague: LeagueInfo = useMemo(() => {
+    return getLeagueByXP(user.xp);
+  }, [user.xp]);
+
+  const currentLeagueIndex = useMemo(() => {
+    return LEAGUES.findIndex((l) => l.id === currentLeague.id);
+  }, [currentLeague]);
+
+  const nextLeague: LeagueInfo | null = useMemo(() => {
+    if (currentLeagueIndex < LEAGUES.length - 1) {
+      return LEAGUES[currentLeagueIndex + 1];
+    }
+    return null;
+  }, [currentLeagueIndex]);
 
   // Mock competitive 15-student league roster
   const rawRoster: LeaderboardUser[] = useMemo(() => {
@@ -316,16 +333,27 @@ export function LeaderboardClient() {
       <div className="w-full pt-3 pb-2 px-3.5 sm:px-6">
         <div className="max-w-md mx-auto space-y-2">
           
-          {/* Header Row: Title + League Badge */}
+          {/* Header Row: Title + League Badge (Clickable) */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h1 className="font-heading text-lg sm:text-xl font-black text-white leading-none tracking-tight">
                 Rankings
               </h1>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[9px] font-black uppercase tracking-wider flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Top 7 Promote 🟢
-              </span>
+              
+              {/* Clickable League Badge with Emoji */}
+              <button
+                type="button"
+                onClick={() => {
+                  playButtonClick();
+                  setIsLeagueModalOpen(true);
+                }}
+                className="px-2.5 py-0.5 rounded-full bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 border border-violet-500/40 text-[10px] font-black uppercase tracking-wider flex items-center gap-1 transition-all cursor-pointer active:scale-95"
+                title="View All 8 Leagues"
+              >
+                <span>{currentLeague.emoji}</span>
+                <span>{currentLeague.name}</span>
+                <span className="text-[9px] text-violet-400">ℹ️</span>
+              </button>
             </div>
 
             <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-500/40">
@@ -502,7 +530,7 @@ export function LeaderboardClient() {
         <div className="space-y-1.5">
           <div className="flex items-center justify-between px-1">
             <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
-              15 Scholars League
+              15 Scholars • {currentLeague.emoji} {currentLeague.name}
             </span>
             <span className="text-[10px] text-emerald-400 font-bold">
               Top 7 Advance 🟢
@@ -578,7 +606,7 @@ export function LeaderboardClient() {
                           @{player.username}
                         </span>
                         <span className="text-[8px] text-zinc-600">•</span>
-                        <span className="text-[10px] font-medium text-zinc-400 truncate leading-tight">
+                        <span className="text-[10px] text-zinc-400 truncate leading-tight">
                           {player.board.replace(' Class 12', '').replace(' (BSEB)', '')}
                         </span>
                       </div>
@@ -619,7 +647,7 @@ export function LeaderboardClient() {
                       <span>Promotion Zone (Top 7 Advance)</span>
                     </div>
                     <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/20 px-1.5 py-0.5 rounded-sm">
-                      Next League ⬆
+                      {nextLeague ? `${nextLeague.emoji} ${nextLeague.name} ⬆` : 'Max League 🌟'}
                     </span>
                   </div>
                 )}
@@ -670,7 +698,7 @@ export function LeaderboardClient() {
               </div>
               <p className="text-[10px] truncate mt-0.5">
                 {currentUserData.rank <= 7 ? (
-                  <span className="text-emerald-400 font-bold">🟢 In Promotion Zone (# {currentUserData.rank})</span>
+                  <span className="text-emerald-400 font-bold">🟢 Promoting to {nextLeague ? nextLeague.name : 'Nainix'} (# {currentUserData.rank})</span>
                 ) : currentUserData.rank >= 13 ? (
                   <span className="text-rose-400 font-bold">🔴 Danger • +{pointsToAvoidDemote} XP to safe</span>
                 ) : (
@@ -695,7 +723,99 @@ export function LeaderboardClient() {
         </div>
       </div>
 
-      {/* ─── 5. Candidate Detail Inspection Modal (Dark Sheet) ─── */}
+      {/* ─── 5. All 8 Leagues Modal (Progression Roadmap) ─── */}
+      {isLeagueModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-[#141418] rounded-t-3xl sm:rounded-3xl p-5 max-w-sm w-full shadow-2xl border border-white/15 animate-in slide-in-from-bottom-5 duration-200 text-white max-h-[85vh] overflow-y-auto">
+            
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div>
+                <h3 className="font-heading font-black text-base text-white flex items-center gap-1.5">
+                  <span>🏆</span>
+                  <span>All 8 Leagues Roadmap</span>
+                </h3>
+                <p className="text-[11px] text-zinc-400">
+                  Top 7 users advance to next league each week
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  playButtonClick();
+                  setIsLeagueModalOpen(false);
+                }}
+                className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-xs font-bold text-zinc-400 hover:text-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* 8 League Cards List */}
+            <div className="space-y-2 my-3.5">
+              {LEAGUES.map((league, idx) => {
+                const isCurrent = league.id === currentLeague.id;
+                const isUnlocked = user.xp >= league.minXp;
+
+                return (
+                  <div
+                    key={league.id}
+                    className={`p-2.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
+                      isCurrent
+                        ? 'bg-violet-950/60 border-violet-500 shadow-[0_0_15px_rgba(124,58,237,0.3)] ring-1 ring-violet-400'
+                        : isUnlocked
+                        ? 'bg-[#18181c] border-white/10 opacity-90'
+                        : 'bg-[#101014] border-white/[0.04] opacity-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-xl shrink-0">
+                        {league.emoji}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="text-xs font-black text-white truncate">
+                            {league.name}
+                          </h4>
+                          {isCurrent && (
+                            <span className="px-1.5 py-0.2 rounded-full bg-violet-600 text-white text-[8px] font-black uppercase">
+                              CURRENT
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-zinc-400 truncate">
+                          {league.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="text-right shrink-0">
+                      <span className="text-[11px] font-bold text-amber-300 block">
+                        {league.minXp} XP
+                      </span>
+                      <span className="text-[8px] text-zinc-500 uppercase font-black">
+                        Tier {idx + 1}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                playButtonClick();
+                setIsLeagueModalOpen(false);
+              }}
+              className="w-full py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-md"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ─── 6. Candidate Detail Inspection Modal (Dark Sheet) ─── */}
       {selectedUser && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-150">
           <div className="bg-[#141418] rounded-t-3xl sm:rounded-3xl p-5 max-w-sm w-full shadow-2xl border border-white/15 animate-in slide-in-from-bottom-5 duration-200 text-white">
@@ -747,7 +867,11 @@ export function LeaderboardClient() {
                 : 'bg-white/[0.03] border-white/[0.06] text-zinc-400'
             }`}>
               <span className="text-[10px] font-black uppercase tracking-wider">
-                {selectedUser.rank <= 7 ? '🟢 Promotion Zone • Advancing to Next League' : selectedUser.rank >= 13 ? '🔴 Relegation Zone • Risk of Demotion' : '⚪ Safe Zone • Retaining Current League'}
+                {selectedUser.rank <= 7 
+                  ? `🟢 Promotion Zone • Advancing to ${nextLeague ? nextLeague.name : 'Nainix League'}` 
+                  : selectedUser.rank >= 13 
+                  ? '🔴 Relegation Zone • Risk of Demotion' 
+                  : '⚪ Safe Zone • Retaining Current League'}
               </span>
             </div>
 
