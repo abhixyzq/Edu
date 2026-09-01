@@ -290,10 +290,10 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* ══ Giant Watermark Behind Mascot (z-0) ══ */}
-            <div className="absolute inset-x-0 top-14 sm:top-16 flex items-center justify-center z-0 select-none pointer-events-none">
-              <h1 className="font-heading font-black text-5xl sm:text-7xl text-white/95 tracking-[0.2em] uppercase drop-shadow-[0_4px_25px_rgba(30,64,175,0.3)] text-center">
-                NAINIXONE
+            {/* ══ Massive Full-Screen Giant Watermark Behind Mascot (z-0) ══ */}
+            <div className="absolute inset-x-0 top-8 sm:top-10 flex items-center justify-center z-0 select-none pointer-events-none w-full overflow-visible px-1">
+              <h1 className="font-heading font-black text-[4.8rem] sm:text-[8.5rem] md:text-[125px] text-white tracking-[0.18em] sm:tracking-[0.28em] uppercase drop-shadow-[0_8px_30px_rgba(255,255,255,0.75)] text-center leading-none whitespace-nowrap pl-3 sm:pl-6 opacity-95">
+                NAINIX
               </h1>
             </div>
 
