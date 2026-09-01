@@ -410,6 +410,47 @@ export function LeaderboardClient() {
 
       <div className="max-w-md mx-auto px-3.5 sm:px-6 space-y-2.5 mt-1">
 
+        {/* ─── 🏆 League Promotion & Champion Mascot Banner ─── */}
+        <div className="bg-white rounded-3xl p-3 sm:p-3.5 border-2 border-b-4 border-[#e2e8f0] shadow-sm relative overflow-hidden flex items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[9px] font-black uppercase tracking-wider mb-1">
+              <span>🏆</span>
+              <span>{currentLeague.emoji} {currentLeague.name}</span>
+            </div>
+            <h3 className="font-heading text-xs sm:text-sm font-black text-slate-900 leading-tight">
+              Top 7 Advance Each Week! 🟢
+            </h3>
+            <p className="text-[10px] text-slate-500 mt-0.5 leading-snug">
+              {currentUserData.rank <= 7 ? (
+                <span className="text-emerald-700 font-bold">You are in Rank #{currentUserData.rank} • Promotion Zone active!</span>
+              ) : (
+                <span>Earn <b className="text-[#7c3aed]">+{pointsToPromote} XP</b> in mock tests to reach the Promotion Zone!</span>
+              )}
+            </p>
+
+            <button
+              type="button"
+              onClick={() => {
+                playButtonClick();
+                setIsLeagueModalOpen(true);
+              }}
+              className="mt-2 py-1 px-2.5 rounded-xl bg-violet-50 hover:bg-violet-100 text-[#7c3aed] font-bold text-[10px] border border-violet-200 transition-colors flex items-center gap-1 cursor-pointer active:scale-95"
+            >
+              <span>View 8 Leagues</span>
+              <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
+            </button>
+          </div>
+
+          {/* Trophy Cat Mascot */}
+          <div className="w-20 sm:w-24 shrink-0 flex items-center justify-center">
+            <img
+              src="/images/trophy_cat.png"
+              alt="Champion Trophy Cat Mascot"
+              className="w-full h-auto object-contain drop-shadow-md hover:scale-105 transition-transform"
+            />
+          </div>
+        </div>
+
         {/* ─── 2. Compact 3D Olympic Micro-Podium Strip (Light Duolingo-Style) ─── */}
         {top1 && (
           <div className="bg-white rounded-3xl p-3 border-2 border-b-4 border-[#e2e8f0] shadow-sm">
@@ -729,14 +770,23 @@ export function LeaderboardClient() {
           <div className="bg-white rounded-t-3xl sm:rounded-3xl p-5 max-w-sm w-full shadow-2xl border border-slate-200 animate-in slide-in-from-bottom-5 duration-200 text-slate-900 max-h-[85vh] overflow-y-auto">
             
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div>
-                <h3 className="font-heading font-black text-base text-slate-900 flex items-center gap-1.5">
-                  <span>🏆</span>
-                  <span>All 8 Leagues Roadmap</span>
-                </h3>
-                <p className="text-[11px] text-slate-500 font-medium">
-                  Top 7 users advance to next league each week
-                </p>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 shrink-0">
+                  <img
+                    src="/images/trophy_cat.png"
+                    alt="Trophy Cat"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-heading font-black text-base text-slate-900 flex items-center gap-1.5">
+                    <span>🏆</span>
+                    <span>All 8 Leagues Roadmap</span>
+                  </h3>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Top 7 users advance to next league each week
+                  </p>
+                </div>
               </div>
               <button
                 type="button"
