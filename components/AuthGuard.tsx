@@ -14,18 +14,21 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     setIsMounted(true);
   }, []);
 
+  const isPublicRoute = 
+    pathname === '/login' || 
+    pathname === '/signup' || 
+    pathname === '/forgot-password' || 
+    pathname === '/forgot-pass';
+
   useEffect(() => {
     if (!isMounted) return;
-
-    const isPublicRoute = pathname === '/login' || pathname === '/signup';
 
     if (!isPublicRoute && !user.isLoggedIn) {
       router.replace('/login');
     }
-  }, [user.isLoggedIn, pathname, router, isMounted]);
+  }, [user.isLoggedIn, pathname, router, isMounted, isPublicRoute]);
 
   // Prevent flash of protected content before redirect
-  const isPublicRoute = pathname === '/login' || pathname === '/signup';
   if (isMounted && !isPublicRoute && !user.isLoggedIn) {
     return (
       <div className="h-screen w-full flex flex-col items-center justify-center bg-[#f4fafd]">

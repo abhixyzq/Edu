@@ -14,7 +14,14 @@ export const Navbar: React.FC = () => {
   const { user } = useUser();
 
   // Hide navbars on test taking screen, auth pages, and admin pages
-  if (pathname?.startsWith('/test/') || pathname === '/login' || pathname === '/signup' || pathname?.startsWith('/admin')) {
+  if (
+    pathname?.startsWith('/test/') || 
+    pathname === '/login' || 
+    pathname === '/signup' || 
+    pathname === '/forgot-password' || 
+    pathname === '/forgot-pass' || 
+    pathname?.startsWith('/admin')
+  ) {
     return null;
   }
 
