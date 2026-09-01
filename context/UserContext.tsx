@@ -32,7 +32,7 @@ export interface UserGamifiedState {
   gems: number;
   xp: number;
   level: number;
-  leagueTier: 'Bronze' | 'Silver' | 'Gold' | 'Sapphire' | 'Diamond';
+  leagueTier: string;
   unlockedNodes: string[];
   completedNodes: Record<string, CompletedNodeData>;
   inventory: UserInventory;
@@ -490,7 +490,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const userId = data?.user?.id;
       if (userId) {
-        await fetchAndSyncProfile(userId, data.user?.email || authEmail);
+        await syncUserProfile(userId, data.user?.email || authEmail);
       }
 
       return { success: true };
