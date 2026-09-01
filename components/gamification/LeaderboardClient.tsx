@@ -30,7 +30,6 @@ export function LeaderboardClient() {
   const { user } = useUser();
   const [timeframe, setTimeframe] = useState<Timeframe>('weekly');
   const [selectedBoard, setSelectedBoard] = useState<BoardCategory>('all');
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<LeaderboardUser | null>(null);
 
   // Mock competitive roster with realistic student performance
@@ -232,19 +231,8 @@ export function LeaderboardClient() {
       if (selectedBoard === 'icse') list = list.filter((u) => u.board.includes('ICSE'));
     }
 
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      list = list.filter(
-        (u) =>
-          u.name.toLowerCase().includes(q) ||
-          u.username.toLowerCase().includes(q) ||
-          u.board.toLowerCase().includes(q) ||
-          u.specialization.toLowerCase().includes(q)
-      );
-    }
-
     return list;
-  }, [rawRoster, selectedBoard, searchQuery]);
+  }, [rawRoster, selectedBoard]);
 
   const top1 = filteredList.find((u) => u.rank === 1);
   const top2 = filteredList.find((u) => u.rank === 2);
@@ -287,47 +275,30 @@ export function LeaderboardClient() {
             </div>
           </div>
 
-          {/* Timeframe & Search Row (Ultra-Compact) */}
-          <div className="flex items-center gap-2">
-            {/* Timeframe Tabs */}
-            <div className="bg-[#141418] p-0.5 rounded-xl border border-white/10 flex items-center flex-1">
-              {(['weekly', 'monthly', 'alltime'] as Timeframe[]).map((tf) => (
-                <button
-                  key={tf}
-                  onClick={() => {
-                    playButtonClick();
-                    setTimeframe(tf);
-                  }}
-                  className={`flex-1 py-1 rounded-lg text-[10px] sm:text-xs font-bold capitalize transition-all cursor-pointer ${
-                    timeframe === tf
-                      ? 'bg-violet-600 text-white shadow-xs font-black'
-                      : 'text-zinc-400 hover:text-zinc-200'
-                  }`}
-                >
-                  {tf === 'alltime' ? 'All Time' : tf}
-                </button>
-              ))}
-            </div>
-
-            {/* Quick Search */}
-            <div className="relative w-32 sm:w-40 shrink-0">
-              <span className="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-zinc-500 text-[14px]">
-                search
-              </span>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search..."
-                className="w-full pl-6 pr-2 py-1 bg-[#141418] rounded-xl border border-white/10 text-[11px] font-medium text-white placeholder:text-zinc-500 focus:border-violet-500 focus:outline-hidden transition-colors"
-              />
-            </div>
+          {/* Timeframe Tabs (Full-width Segmented Control) */}
+          <div className="bg-[#141418] p-0.5 rounded-xl border border-white/10 flex items-center">
+            {(['weekly', 'monthly', 'alltime'] as Timeframe[]).map((tf) => (
+              <button
+                key={tf}
+                onClick={() => {
+                  playButtonClick();
+                  setTimeframe(tf);
+                }}
+                className={`flex-1 py-1.5 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
+                  timeframe === tf
+                    ? 'bg-violet-600 text-white shadow-xs font-black'
+                    : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                {tf === 'alltime' ? 'All Time' : tf}
+              </button>
+            ))}
           </div>
 
           {/* Board Filter Horizontal Chips */}
           <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pt-0.5">
             {[
-              { id: 'all', label: 'All' },
+              { id: 'all', label: 'All Boards' },
               { id: 'cbse', label: 'CBSE' },
               { id: 'bseb', label: 'Bihar (BSEB)' },
               { id: 'up', label: 'UP Board' },
@@ -339,7 +310,7 @@ export function LeaderboardClient() {
                   playButtonClick();
                   setSelectedBoard(b.id as BoardCategory);
                 }}
-                className={`px-2.5 py-0.5 rounded-lg text-[10px] font-bold shrink-0 transition-all cursor-pointer border ${
+                className={`px-3 py-1 rounded-lg text-[10px] font-bold shrink-0 transition-all cursor-pointer border ${
                   selectedBoard === b.id
                     ? 'bg-white/20 text-white border-white/40 font-black'
                     : 'bg-[#141418] text-zinc-400 border-white/5 hover:text-zinc-200'
@@ -359,7 +330,7 @@ export function LeaderboardClient() {
         {top1 && (
           <div className="bg-[#121216] rounded-2xl p-2.5 sm:p-3 border border-white/10 shadow-xl relative overflow-hidden">
             
-            <div className="grid grid-cols-3 gap-1.5 items-end pt-2 pb-0.5">
+            <div className="grid grid-cols-3 gap-1.5 items-end pt-1 pb-0.5">
               
               {/* Rank 2 (Silver) */}
               {top2 && (
@@ -396,18 +367,15 @@ export function LeaderboardClient() {
                 </div>
               )}
 
-              {/* Rank 1 (Gold Champion) - Higher Elevation */}
+              {/* Rank 1 (Gold Champion) - Clean Avatar without crown emoji */}
               <div
                 onClick={() => {
                   playButtonClick();
                   setSelectedUser(top1);
                 }}
-                className="flex flex-col items-center cursor-pointer active:scale-95 transition-all text-center -mt-2"
+                className="flex flex-col items-center cursor-pointer active:scale-95 transition-all text-center"
               >
                 <div className="relative mb-1">
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-sm animate-bounce">
-                    👑
-                  </div>
                   <div className="w-13 h-13 rounded-2xl bg-gradient-to-b from-[#2a2212] via-[#1c1810] to-[#12100a] border-2 border-amber-400/80 p-0.5 shadow-[0_0_15px_rgba(245,158,11,0.25)] flex items-center justify-center overflow-hidden">
                     {top1.avatarUrl || (top1.isCurrentUser && user.avatarUrl) ? (
                       <img src={top1.avatarUrl || user.avatarUrl} alt={top1.name} className="w-full h-full object-cover rounded-xl" />
