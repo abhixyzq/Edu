@@ -31,7 +31,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       id: 'phy-1',
       code: '01',
       title: 'Questions 01 – 05',
-      subtitle: '5 Questions',
+      subtitle: '',
       iconType: 'brain',
       xpReward: 25,
       gemsReward: 10,
@@ -46,7 +46,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       id: 'phy-2',
       code: '02',
       title: 'Questions 06 – 10',
-      subtitle: '5 Questions',
+      subtitle: '',
       iconType: 'atom',
       xpReward: 25,
       gemsReward: 10,
@@ -61,7 +61,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       id: 'phy-3',
       code: '03',
       title: 'Questions 11 – 15',
-      subtitle: '5 Questions',
+      subtitle: '',
       iconType: 'circuit',
       xpReward: 30,
       gemsReward: 15,
@@ -76,7 +76,7 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
       id: 'phy-4',
       code: '04',
       title: 'Questions 16 – 20',
-      subtitle: '5 Questions',
+      subtitle: '',
       iconType: 'atom',
       xpReward: 30,
       gemsReward: 15,
@@ -243,25 +243,25 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
     router.push(`/test/${node.testId}?nodeId=${node.id}&subject=${activeSubject}&title=${encodeURIComponent(node.title)}&offset=${offset}&limit=${limit}`);
   };
 
-  // Exact coordinates matching the uploaded reference image
+  // Exact coordinates: 340px container width
   const CONTAINER_WIDTH = 340;
   const ROW_HEIGHT = 160;
-  const Y_OFFSET = 100;
+  const Y_OFFSET = 70;
 
-  // Alternating Node Center points:
-  // Node 0: Right (x: 285)
-  // Node 1: Left  (x: 55)
-  // Node 2: Right (x: 285)
-  // Node 3: Left  (x: 55)...
+  // Node Centers:
+  // Node 0: Right (x: 280)
+  // Node 1: Left  (x: 60)
+  // Node 2: Right (x: 280)
+  // Node 3: Left  (x: 60)...
   const getNodePoint = (index: number): Point => {
     const y = Y_OFFSET + index * ROW_HEIGHT;
     const isRightSide = index % 2 === 0;
-    const x = isRightSide ? 285 : 55;
+    const x = isRightSide ? 280 : 60;
     return { x, y };
   };
 
   const nodePoints: Point[] = nodes.map((_, i) => getNodePoint(i));
-  const totalTrackHeight = Y_OFFSET + (nodes.length - 1) * ROW_HEIGHT + 120;
+  const totalTrackHeight = Y_OFFSET + (nodes.length - 1) * ROW_HEIGHT + 100;
 
   const getSPath = (p1: Point, p2: Point) => {
     const midY = (p1.y + p2.y) / 2;
@@ -279,7 +279,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   }, [activeSubject, user.completedNodes]);
 
   return (
-    <div className="w-full min-h-screen bg-[#faf6f0] text-slate-900 pb-36 font-sans select-none relative overflow-hidden">
+    <div className="w-full min-h-screen bg-[#faf6f0] text-slate-900 pb-36 font-sans select-none relative">
       
       {/* ─── Background Subtle Micro-Elements (Exact Reference) ─── */}
       <div className="absolute top-28 left-8 text-emerald-400 text-sm font-bold opacity-60 pointer-events-none">+</div>
@@ -289,107 +289,109 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
       <div className="absolute top-[820px] left-6 text-orange-400 text-xs font-bold opacity-50 pointer-events-none">✦</div>
       <div className="absolute top-[1020px] right-12 text-emerald-400 text-sm font-bold opacity-60 pointer-events-none">+</div>
 
-      {/* ─── Top White Rounded Header Card (Sticky / Fixed at Top) ─── */}
-      <div className="sticky top-0 z-40 max-w-md mx-auto w-full bg-[#faf6f0]/95 backdrop-blur-md pb-2">
-        <div className="bg-white rounded-b-[36px] px-5 pt-3 pb-4 shadow-md border-b border-orange-100/80">
-          
-          {/* Top Bar: Left Action / Center Avatar / Right Dark Flame */}
-          <div className="w-full flex items-center justify-between">
-            {/* Share / Profile Button */}
-            <button
-              type="button"
-              onClick={() => router.push('/profile')}
-              className="w-10 h-10 rounded-full bg-[#fbf4eb] flex items-center justify-center text-[#8c6b4e] shadow-2xs hover:bg-[#f5ebd9] transition-colors cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-[19px]">ios_share</span>
-            </button>
+      {/* ─── Top White Rounded Header Card (100% Fixed at Viewport Top) ─── */}
+      <div className="fixed top-0 left-0 right-0 z-40 bg-[#faf6f0]/95 backdrop-blur-md pb-2 shadow-2xs">
+        <div className="max-w-md mx-auto">
+          <div className="bg-white rounded-b-[36px] px-5 pt-3 pb-4 shadow-md border-b border-orange-100/80">
+            
+            {/* Top Bar: Left Action / Center Avatar / Right Dark Flame */}
+            <div className="w-full flex items-center justify-between">
+              {/* Share / Profile Button */}
+              <button
+                type="button"
+                onClick={() => router.push('/profile')}
+                className="w-10 h-10 rounded-full bg-[#fbf4eb] flex items-center justify-center text-[#8c6b4e] shadow-2xs hover:bg-[#f5ebd9] transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[19px]">ios_share</span>
+              </button>
 
-            {/* Center User Avatar */}
-            <div className="relative flex flex-col items-center">
-              <div className="w-14 h-14 rounded-full p-0.5 bg-gradient-to-tr from-orange-400 via-pink-400 to-purple-400 shadow-md">
-                <div className="w-full h-full rounded-full bg-white p-0.5 overflow-hidden flex items-center justify-center">
-                  <img
-                    src={user.avatarUrl || '/images/trophy_cat.png'}
-                    alt="Avatar"
-                    className="w-full h-full object-contain"
-                  />
+              {/* Center User Avatar */}
+              <div className="relative flex flex-col items-center">
+                <div className="w-14 h-14 rounded-full p-0.5 bg-gradient-to-tr from-orange-400 via-pink-400 to-purple-400 shadow-md">
+                  <div className="w-full h-full rounded-full bg-white p-0.5 overflow-hidden flex items-center justify-center">
+                    <img
+                      src={user.avatarUrl || '/images/trophy_cat.png'}
+                      alt="Avatar"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                 </div>
+              </div>
+
+              {/* Right Dark Bonfire Streak Button */}
+              <button
+                type="button"
+                onClick={() => router.push('/leaderboard')}
+                className="w-10 h-10 rounded-full bg-[#1e1b2e] flex items-center justify-center text-orange-400 shadow-md hover:bg-[#2c2842] transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[20px]">local_fire_department</span>
+              </button>
+            </div>
+
+            {/* Stats Counters Row (⚡ 0 | ⚡ 0 / 10,000 | 💎 0) */}
+            <div className="w-full flex items-center justify-around mt-3.5 pt-3 border-t border-slate-100">
+              {/* XP */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-amber-500 text-sm font-black">⚡</span>
+                <span className="font-black text-xs text-slate-800">{user.xp || 0}</span>
+              </div>
+
+              {/* Daily Goal */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-amber-500 text-sm font-black">⚡</span>
+                <span className="font-bold text-xs text-slate-500">{user.xp || 0} / 10,000</span>
+              </div>
+
+              {/* Gems */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-cyan-500 text-sm font-black">💎</span>
+                <span className="font-black text-xs text-slate-800">{user.gems || 0}</span>
               </div>
             </div>
 
-            {/* Right Dark Bonfire Streak Button */}
+          </div>
+
+          {/* Floating Dark Subject Pill: [ My Exercises 🎛️ ] (Exact Reference) */}
+          <div className="relative -mt-3.5 flex justify-center z-50">
             <button
               type="button"
-              onClick={() => router.push('/leaderboard')}
-              className="w-10 h-10 rounded-full bg-[#1e1b2e] flex items-center justify-center text-orange-400 shadow-md hover:bg-[#2c2842] transition-colors cursor-pointer"
+              onClick={() => setShowSubjectMenu(!showSubjectMenu)}
+              className="px-6 py-2 rounded-full bg-[#241f31] hover:bg-[#342d45] text-white font-black text-xs shadow-xl flex items-center gap-2 transition-all active:scale-95 cursor-pointer border border-slate-700/50"
             >
-              <span className="material-symbols-outlined text-[20px]">local_fire_department</span>
+              <span>My Exercises • {currentSubjectObj.name}</span>
+              <span className="material-symbols-outlined text-[15px]">tune</span>
             </button>
+
+            {/* Subject Dropdown Menu */}
+            {showSubjectMenu && (
+              <div className="absolute top-11 z-50 bg-white rounded-2xl p-2 shadow-2xl border border-slate-200 min-w-[220px] animate-in fade-in slide-in-from-top-2">
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 py-1.5">Switch Curriculum</p>
+                {subjectList.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => {
+                      playButtonClick();
+                      setActiveSubject(s.id);
+                      setShowSubjectMenu(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${
+                      activeSubject === s.id ? 'bg-orange-50 text-[#ff6937] font-black' : 'text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>{s.name}</span>
+                    {activeSubject === s.id && <span className="text-[#ff6937] text-xs font-black">✓</span>}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-
-          {/* Stats Counters Row (⚡ 0 | ⚡ 0 / 10,000 | 💎 0) */}
-          <div className="w-full flex items-center justify-around mt-3.5 pt-3 border-t border-slate-100">
-            {/* XP */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-amber-500 text-sm font-black">⚡</span>
-              <span className="font-black text-xs text-slate-800">{user.xp || 0}</span>
-            </div>
-
-            {/* Daily Goal */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-amber-500 text-sm font-black">⚡</span>
-              <span className="font-bold text-xs text-slate-500">{user.xp || 0} / 10,000</span>
-            </div>
-
-            {/* Gems */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-cyan-500 text-sm font-black">💎</span>
-              <span className="font-black text-xs text-slate-800">{user.gems || 0}</span>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Floating Dark Subject Pill: [ My Exercises 🎛️ ] (Exact Reference) */}
-        <div className="relative -mt-3.5 flex justify-center z-40">
-          <button
-            type="button"
-            onClick={() => setShowSubjectMenu(!showSubjectMenu)}
-            className="px-6 py-2 rounded-full bg-[#241f31] hover:bg-[#342d45] text-white font-black text-xs shadow-xl flex items-center gap-2 transition-all active:scale-95 cursor-pointer border border-slate-700/50"
-          >
-            <span>My Exercises • {currentSubjectObj.name}</span>
-            <span className="material-symbols-outlined text-[15px]">tune</span>
-          </button>
-
-          {/* Subject Dropdown Menu */}
-          {showSubjectMenu && (
-            <div className="absolute top-11 z-50 bg-white rounded-2xl p-2 shadow-2xl border border-slate-200 min-w-[220px] animate-in fade-in slide-in-from-top-2">
-              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 py-1.5">Switch Curriculum</p>
-              {subjectList.map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => {
-                    playButtonClick();
-                    setActiveSubject(s.id);
-                    setShowSubjectMenu(false);
-                  }}
-                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${
-                    activeSubject === s.id ? 'bg-orange-50 text-[#ff6937] font-black' : 'text-slate-700 hover:bg-slate-50'
-                  }`}
-                >
-                  <span>{s.name}</span>
-                  {activeSubject === s.id && <span className="text-[#ff6937] text-xs font-black">✓</span>}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 
-      {/* ─── Winding Pathway Canvas (Exact S-Curve from Reference) ─── */}
+      {/* ─── Winding Pathway Canvas (Coordinated Coordinate Space) ─── */}
       <div
-        className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-2 z-10"
+        className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-[175px] z-10"
         style={{ height: `${totalTrackHeight}px` }}
       >
         {/* SVG Path Tracks (Solid Green + Dashed Dark Road) */}
@@ -417,7 +419,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
           })}
         </svg>
 
-        {/* ─── Alternating Stepping Milestone Nodes ─── */}
+        {/* ─── Alternating Stepping Milestone Nodes (Centered at pt.x, pt.y) ─── */}
         {nodes.map((node, index) => {
           const status = getNodeStatus(node, index);
           const isCurrentActive = status === 'active' && index === currentActiveIdx;
@@ -427,44 +429,52 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
           // Odd index  -> Node on Left (Text on Right)
           const textSide: 'left' | 'right' = index % 2 === 0 ? 'left' : 'right';
 
-          // Day Divider Badge (e.g. --- ⚡ DAY 10 ---)
+          // Day Divider Badge (e.g. --- ⚡ CHAPTER 1 ---)
           const showDayDivider = index === 0 || (nodes[index - 1] && nodes[index - 1].unit !== node.unit);
 
           return (
-            <div
-              key={node.id}
-              id={isCurrentActive ? 'active-level-node' : undefined}
-              ref={isCurrentActive ? activeNodeRef : undefined}
-              className="absolute left-0 right-0 z-10 -translate-y-1/2"
-              style={{ top: `${pt.y}px` }}
-            >
-              {/* Day / Unit Divider Embedded on Track */}
+            <React.Fragment key={node.id}>
+              {/* Day / Chapter Divider on Track */}
               {showDayDivider && (
-                <div className="absolute -top-14 left-0 right-0 flex items-center justify-center gap-2 pointer-events-none px-4">
+                <div
+                  className="absolute left-0 right-0 flex items-center justify-center gap-2 pointer-events-none px-4 z-20"
+                  style={{ top: `${pt.y - 65}px` }}
+                >
                   <div className="flex-1 h-[1.5px] border-t-2 border-dashed border-slate-300" />
                   <span className="text-[10px] font-black tracking-wider text-[#ff6937] flex items-center gap-1 uppercase bg-[#faf6f0] px-3 py-1 rounded-full border border-orange-200/80 shadow-2xs">
                     <span className="text-amber-500">⚡</span>
-                    <span className="truncate max-w-[200px]">{node.unitTitle || `DAY ${node.unit * 5}`}</span>
+                    <span className="truncate max-w-[200px]">{node.unitTitle || `CHAPTER ${node.unit}`}</span>
                   </span>
                   <div className="flex-1 h-[1.5px] border-t-2 border-dashed border-slate-300" />
                 </div>
               )}
 
-              <PathNode
-                id={node.id}
-                code={node.code}
-                title={node.title}
-                subtitle={node.subtitle}
-                status={status}
-                isBoss={node.isBoss}
-                themeColor={node.themeColor}
-                iconType={node.iconType}
-                userAvatarUrl={user.avatarUrl}
-                userName={user.name}
-                onClick={() => startLesson(node)}
-                textSide={textSide}
-              />
-            </div>
+              {/* Circle Node Container Centered on Point */}
+              <div
+                id={isCurrentActive ? 'active-level-node' : undefined}
+                ref={isCurrentActive ? activeNodeRef : undefined}
+                className="absolute -translate-x-1/2 -translate-y-1/2 z-10"
+                style={{
+                  left: `${pt.x}px`,
+                  top: `${pt.y}px`,
+                }}
+              >
+                <PathNode
+                  id={node.id}
+                  code={node.code}
+                  title={node.title}
+                  subtitle={node.subtitle}
+                  status={status}
+                  isBoss={node.isBoss}
+                  themeColor={node.themeColor}
+                  iconType={node.iconType}
+                  userAvatarUrl={user.avatarUrl}
+                  userName={user.name}
+                  onClick={() => startLesson(node)}
+                  textSide={textSide}
+                />
+              </div>
+            </React.Fragment>
           );
         })}
       </div>
