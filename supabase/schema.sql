@@ -39,42 +39,25 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 );
 
 -- Idempotent Column Additions for Existing Databases
-DO $$ 
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'username') THEN
-    ALTER TABLE public.profiles ADD COLUMN username TEXT UNIQUE;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'referred_by') THEN
-    ALTER TABLE public.profiles ADD COLUMN referred_by TEXT DEFAULT NULL;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'streak_freeze_count') THEN
-    ALTER TABLE public.profiles ADD COLUMN streak_freeze_count INT NOT NULL DEFAULT 1;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'last_active_date') THEN
-    ALTER TABLE public.profiles ADD COLUMN last_active_date DATE DEFAULT CURRENT_DATE;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'avatar_url') THEN
-    ALTER TABLE public.profiles ADD COLUMN avatar_url TEXT DEFAULT NULL;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'class_level') THEN
-    ALTER TABLE public.profiles ADD COLUMN class_level TEXT NOT NULL DEFAULT 'Class 12';
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'max_hearts') THEN
-    ALTER TABLE public.profiles ADD COLUMN max_hearts INT NOT NULL DEFAULT 5;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'is_admin') THEN
-    ALTER TABLE public.profiles ADD COLUMN is_admin BOOLEAN NOT NULL DEFAULT false;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'inventory') THEN
-    ALTER TABLE public.profiles ADD COLUMN inventory JSONB NOT NULL DEFAULT '{"streakFreeze":1,"infiniteHeartsPass":0,"doubleXpCount":0}'::jsonb;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'unlocked_nodes') THEN
-    ALTER TABLE public.profiles ADD COLUMN unlocked_nodes JSONB NOT NULL DEFAULT '["phy-1","phy-2","chem-1","math-1","bio-1","eng-1"]'::jsonb;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'completed_nodes') THEN
-    ALTER TABLE public.profiles ADD COLUMN completed_nodes JSONB NOT NULL DEFAULT '{"phy-1":{"stars":3,"score":95,"completedAt":"2026-08-30"}}'::jsonb;
-  END IF;
-END $$;
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS username TEXT,
+  ADD COLUMN IF NOT EXISTS avatar_url TEXT DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS target_board TEXT NOT NULL DEFAULT 'cbse',
+  ADD COLUMN IF NOT EXISTS class_level TEXT NOT NULL DEFAULT 'Class 12',
+  ADD COLUMN IF NOT EXISTS streak_days INT NOT NULL DEFAULT 1,
+  ADD COLUMN IF NOT EXISTS xp_points INT NOT NULL DEFAULT 320,
+  ADD COLUMN IF NOT EXISTS hearts INT NOT NULL DEFAULT 5,
+  ADD COLUMN IF NOT EXISTS max_hearts INT NOT NULL DEFAULT 5,
+  ADD COLUMN IF NOT EXISTS gems INT NOT NULL DEFAULT 150,
+  ADD COLUMN IF NOT EXISTS level INT NOT NULL DEFAULT 1,
+  ADD COLUMN IF NOT EXISTS league_tier TEXT NOT NULL DEFAULT 'Starter League',
+  ADD COLUMN IF NOT EXISTS referred_by TEXT DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS streak_freeze_count INT NOT NULL DEFAULT 1,
+  ADD COLUMN IF NOT EXISTS last_active_date DATE DEFAULT CURRENT_DATE,
+  ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS inventory JSONB NOT NULL DEFAULT '{"streakFreeze":1,"infiniteHeartsPass":0,"doubleXpCount":0}'::jsonb,
+  ADD COLUMN IF NOT EXISTS unlocked_nodes JSONB NOT NULL DEFAULT '["phy-1","phy-2","chem-1","math-1","bio-1","eng-1"]'::jsonb,
+  ADD COLUMN IF NOT EXISTS completed_nodes JSONB NOT NULL DEFAULT '{"phy-1":{"stars":3,"score":95,"completedAt":"2026-08-30"}}'::jsonb;
 
 -- Enable RLS
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
