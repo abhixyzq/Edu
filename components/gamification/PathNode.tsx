@@ -18,6 +18,8 @@ export interface PathNodeProps {
   userName?: string;
   onClick: () => void;
   textSide?: 'left' | 'right';
+  unitTitle?: string;
+  xpReward?: number;
 }
 
 export const PathNode: React.FC<PathNodeProps> = ({
@@ -31,7 +33,6 @@ export const PathNode: React.FC<PathNodeProps> = ({
   textSide = 'right',
 }) => {
   const handleClick = () => {
-    if (status === 'locked') return;
     playButtonClick();
     onClick();
   };
@@ -42,138 +43,121 @@ export const PathNode: React.FC<PathNodeProps> = ({
 
   const levelNumber = code.replace(/^0+/, '') || code;
 
+  // Visual avatars / poses
+  const imageSrc = userAvatarUrl || '/images/trophy_cat.png';
+
   return (
-    <div className="relative flex items-center select-none">
+    <div className="relative flex items-center select-none w-full max-w-[340px] mx-auto justify-between px-1">
       
-      {/* ─── 3D Stepping Stone Pedestal (Duolingo Lavender Style) ─── */}
-      <div className="relative flex flex-col items-center">
+      {/* ─── Circular Graphic Node ─── */}
+      <div className={`relative flex flex-col items-center ${textSide === 'left' ? 'order-2' : 'order-1'}`}>
         
-        {/* Active Node: Golden Radiant Glow & Mascot Pin Pointer */}
+        {/* Scholar Mini Avatar Pin on Outer Track Loop (Active State) */}
         {isActive && (
-          <>
-            <div className="absolute -inset-4 rounded-full bg-yellow-300/40 blur-lg animate-pulse pointer-events-none" />
-            <div className="absolute -inset-2 rounded-full border-2 border-yellow-200/80 shadow-[0_0_20px_rgba(253,224,71,0.6)] animate-spin-slow pointer-events-none" />
-            
-            {/* Mascot Pin Pointer Above Active Node */}
-            <div className="absolute -top-13 z-30 flex flex-col items-center animate-bounce">
-              <div className="w-12 h-12 rounded-full bg-white p-1 border-2 border-yellow-400 shadow-xl flex items-center justify-center overflow-hidden ring-2 ring-white">
-                <img
-                  src={userAvatarUrl || '/images/trophy_cat.png'}
-                  alt="Scholar"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              {/* Pointer Triangle */}
-              <div className="w-2.5 h-2.5 bg-white border-r-2 border-b-2 border-yellow-400 rotate-45 -mt-1.5 shadow-2xs" />
+          <div className="absolute -left-6 top-1/2 -translate-y-1/2 z-30 pointer-events-none">
+            <div className="w-7 h-7 rounded-full bg-white p-0.5 border-2 border-[#ff6937] shadow-md flex items-center justify-center overflow-hidden ring-2 ring-orange-100">
+              <img
+                src={imageSrc}
+                alt="Scholar"
+                className="w-full h-full object-contain"
+              />
             </div>
-          </>
+          </div>
         )}
 
-        {/* 3D Pedestal Button */}
+        {/* Circular Node Button */}
         <button
           type="button"
           onClick={handleClick}
-          disabled={isLocked}
-          aria-label={`Level ${levelNumber} - ${title}`}
-          className={`relative w-[76px] h-[76px] sm:w-[84px] sm:h-[84px] rounded-full p-[6px] transition-transform duration-150 flex items-center justify-center ${
-            isLocked
-              ? 'cursor-not-allowed'
-              : 'cursor-pointer hover:scale-105 active:scale-95'
+          aria-label={`Stage ${levelNumber} - ${title}`}
+          className={`relative w-[82px] h-[82px] sm:w-[90px] sm:h-[90px] rounded-full p-1 transition-all duration-200 flex items-center justify-center bg-white cursor-pointer hover:scale-105 active:scale-95 ${
+            isActive
+              ? 'ring-4 ring-pink-300 border-2 border-pink-400 shadow-lg shadow-pink-200/50'
+              : isCompleted
+              ? 'ring-4 ring-purple-200 border-2 border-purple-400 shadow-md shadow-purple-100'
+              : 'ring-4 ring-amber-200 border-2 border-amber-300 shadow-sm opacity-90'
           }`}
-          style={{
-            background: isActive
-              ? 'linear-gradient(180deg, #ffffff 0%, #fff9c4 40%, #e1f5fe 100%)'
-              : isCompleted
-              ? 'linear-gradient(180deg, #ffffff 0%, #edf4fa 50%, #d3e5f5 100%)'
-              : 'linear-gradient(180deg, #ffffff 0%, #edf4fa 50%, #d3e5f5 100%)',
-            boxShadow: isActive
-              ? '0 8px 0 #d7ccc8, 0 12px 18px rgba(0,0,0,0.22)'
-              : isCompleted
-              ? '0 8px 0 #a7d7c5, 0 12px 18px rgba(0,0,0,0.2)'
-              : '0 8px 0 #9cbcd9, 0 12px 18px rgba(0,0,0,0.2)',
-          }}
         >
-          {/* Inner 3D Stepping Disc */}
+          {/* Inner Illustration Disc */}
           <div
-            className="w-full h-full rounded-full flex items-center justify-center shadow-inner relative overflow-hidden"
-            style={{
-              background: isActive
-                ? 'linear-gradient(180deg, #fff176 0%, #fbc02d 60%, #f57f17 100%)'
+            className={`w-full h-full rounded-full flex items-center justify-center overflow-hidden p-2.5 relative ${
+              isActive
+                ? 'bg-gradient-to-br from-pink-50 to-orange-50'
                 : isCompleted
-                ? 'linear-gradient(180deg, #6ee7b7 0%, #10b981 60%, #047857 100%)'
-                : isBoss
-                ? 'linear-gradient(180deg, #fcd34d 0%, #f59e0b 60%, #d97706 100%)'
-                : 'linear-gradient(180deg, #c4d4e6 0%, #9cb3ce 60%, #7d96b4 100%)',
-              boxShadow: 'inset 0 3px 4px rgba(255,255,255,0.8), inset 0 -3px 4px rgba(0,0,0,0.2)',
-            }}
+                ? 'bg-gradient-to-br from-purple-50 to-blue-50'
+                : 'bg-gradient-to-br from-amber-50 to-orange-50'
+            }`}
           >
-            {/* Top Gloss Arc Highlight */}
-            <div className="absolute top-1 left-2 right-2 h-4 rounded-full bg-white/40 blur-[0.5px] pointer-events-none" />
-
-            {/* Embossed Level Number / Icon */}
-            {isBoss ? (
-              <span className="material-symbols-outlined text-[32px] sm:text-[36px] text-white drop-shadow-md">
-                emoji_events
-              </span>
-            ) : (
-              <span
-                className="font-game-num font-bold text-2xl sm:text-[30px] leading-none text-white tracking-tight relative z-10 select-none"
-                style={{
-                  textShadow: '0 2px 4px rgba(0,0,0,0.45)',
-                }}
-              >
-                {levelNumber}
-              </span>
-            )}
+            <img
+              src={imageSrc}
+              alt={title}
+              className="w-full h-full object-contain hover:scale-110 transition-transform"
+            />
           </div>
 
-          {/* Locked Ice-Blue Padlock */}
-          {isLocked && (
-            <div className="absolute -bottom-2 w-7 h-7 rounded-full bg-gradient-to-b from-[#e0f2fe] to-[#bae6fd] border-2 border-white shadow-md flex items-center justify-center text-[#0284c7] z-20">
-              <span className="material-symbols-outlined text-[15px] font-black">lock</span>
-            </div>
-          )}
-
-          {/* Completed Checkmark */}
+          {/* Completed Green Checkmark Badge (Exact Screenshot) */}
           {isCompleted && (
-            <div className="absolute -bottom-2 w-7 h-7 rounded-full bg-gradient-to-b from-[#a7f3d0] to-[#10b981] border-2 border-white shadow-md flex items-center justify-center text-white z-20">
-              <span className="material-symbols-outlined text-[15px] font-black">check</span>
+            <div className="absolute top-0 right-0 w-6 h-6 rounded-full bg-[#22c55e] border-2 border-white shadow-xs flex items-center justify-center text-white z-20">
+              <span className="material-symbols-outlined text-[14px] font-black">check</span>
             </div>
           )}
         </button>
       </div>
 
-      {/* ─── Side Topic Floating Title ─── */}
+      {/* ─── Side Content Information (Exact Reference) ─── */}
       <div
-        className={`absolute top-1/2 -translate-y-1/2 z-20 pointer-events-none flex flex-col ${
-          textSide === 'left'
-            ? 'right-full mr-3.5 items-end text-right'
-            : 'left-full ml-3.5 items-start text-left'
+        className={`flex-1 flex flex-col ${
+          textSide === 'left' ? 'order-1 items-end text-right pr-4' : 'order-2 items-start text-left pl-4'
         }`}
       >
-        <div className="max-w-[130px] sm:max-w-[160px] pointer-events-auto">
-          {/* Topic Title */}
-          <h3
-            className={`text-xs sm:text-sm font-black leading-tight line-clamp-2 select-none ${
-              isLocked
-                ? 'text-white/55'
-                : 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]'
-            }`}
-          >
-            {title}
-          </h3>
+        {/* Title */}
+        <h3 className="font-heading text-base font-black text-slate-800 leading-tight line-clamp-2">
+          {title}
+        </h3>
 
-          {/* Subtitle */}
-          {subtitle && (
-            <p
-              className={`text-[10px] sm:text-[11px] font-bold truncate mt-0.5 select-none ${
-                isLocked ? 'text-white/40' : 'text-purple-100/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]'
-              }`}
+        {/* Subtitle */}
+        <p className="text-xs font-bold text-slate-400 mt-0.5 mb-2">
+          {subtitle || '10 minutes'}
+        </p>
+
+        {/* Action Button Strip (Exact Reference Screenshot) */}
+        {isActive ? (
+          <div className="flex items-center gap-1.5">
+            {/* List Icon Button */}
+            <button
+              type="button"
+              onClick={handleClick}
+              className="w-8 h-8 rounded-xl bg-[#ff6937] hover:bg-[#e85a2b] text-white flex items-center justify-center transition-colors cursor-pointer shadow-md shadow-orange-300/40 active:scale-95"
             >
-              {subtitle}
-            </p>
-          )}
-        </div>
+              <span className="material-symbols-outlined text-[18px]">menu</span>
+            </button>
+            {/* Start Pill Button */}
+            <button
+              type="button"
+              onClick={handleClick}
+              className="px-5 py-1.5 rounded-xl bg-[#ff6937] hover:bg-[#e85a2b] text-white font-black text-xs shadow-md shadow-orange-300/60 flex items-center gap-1 transition-all active:scale-95 cursor-pointer uppercase tracking-wider"
+            >
+              <span>START</span>
+              <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+            </button>
+          </div>
+        ) : isCompleted ? (
+          <button
+            type="button"
+            onClick={handleClick}
+            className="px-4 py-1 rounded-full bg-[#22c55e] text-white font-black text-[10px] tracking-widest uppercase shadow-xs flex items-center gap-1 hover:bg-[#16a34a] transition-colors cursor-pointer"
+          >
+            <span>COMPLETED</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={handleClick}
+            className="px-4 py-1 rounded-full bg-slate-200/90 text-slate-600 font-bold text-[10px] tracking-wider uppercase flex items-center gap-1 hover:bg-slate-300 transition-colors cursor-pointer"
+          >
+            <span>LOCKED</span>
+          </button>
+        )}
       </div>
 
     </div>

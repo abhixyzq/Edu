@@ -7,7 +7,6 @@ import { useUser } from '@/context/UserContext';
 import { supabase } from '@/lib/supabase';
 import { SUBJECTS } from '@/lib/mockData';
 import { playButtonClick } from '@/lib/soundEffects';
-import { XpBoltIcon, GemIcon } from '@/components/icons/AppIcons';
 
 export interface LessonNode {
   id: string;
@@ -31,14 +30,14 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     {
       id: 'phy-1',
       code: '01',
-      title: 'Introduction to Charges & Coulomb Force',
-      subtitle: '5 Questions • Part 1',
+      title: 'Stretching',
+      subtitle: '10 minutes',
       iconType: 'brain',
       xpReward: 25,
       gemsReward: 10,
       testId: '1',
       unit: 1,
-      unitTitle: 'Unit 1 • Electrostatics & Fields',
+      unitTitle: 'DAY 9',
       themeColor: '#10b981',
       offset: 0,
       limit: 5,
@@ -46,14 +45,14 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     {
       id: 'phy-2',
       code: '02',
-      title: 'Electric Fields & Dipole Moment',
-      subtitle: '5 Questions • Part 2',
+      title: 'Meditation',
+      subtitle: '10 minutes',
       iconType: 'atom',
       xpReward: 25,
       gemsReward: 10,
       testId: '1',
       unit: 1,
-      unitTitle: 'Unit 1 • Electrostatics & Fields',
+      unitTitle: 'DAY 9',
       themeColor: '#10b981',
       offset: 5,
       limit: 5,
@@ -61,47 +60,31 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     {
       id: 'phy-3',
       code: '03',
-      title: 'Gauss Law & Electric Flux',
-      subtitle: '5 Questions • Part 3',
+      title: 'Warm up',
+      subtitle: '5 Questions',
       iconType: 'circuit',
       xpReward: 30,
       gemsReward: 15,
-      testId: '2',
+      testId: '1',
       unit: 2,
-      unitTitle: 'Unit 2 • Potential & Capacitance',
-      themeColor: '#3b82f6',
+      unitTitle: 'DAY 10',
+      themeColor: '#ff6937',
       offset: 10,
       limit: 5,
     },
     {
       id: 'phy-4',
       code: '04',
-      title: 'Electrostatic Potential & Capacitors',
-      subtitle: '5 Questions • Part 4',
+      title: 'Morning Workout',
+      subtitle: '10 minutes',
       iconType: 'atom',
       xpReward: 30,
       gemsReward: 15,
       testId: '2',
       unit: 2,
-      unitTitle: 'Unit 2 • Potential & Capacitance',
+      unitTitle: 'DAY 10',
       themeColor: '#3b82f6',
       offset: 0,
-      limit: 5,
-    },
-    {
-      id: 'phy-boss-1',
-      code: '05',
-      title: 'Term 1 Mastery Exam Drill',
-      subtitle: '5 Questions • Boss Challenge',
-      iconType: 'trophy',
-      xpReward: 75,
-      gemsReward: 35,
-      testId: '1',
-      isBoss: true,
-      unit: 2,
-      unitTitle: 'Unit 2 • Potential & Capacitance',
-      themeColor: '#f59e0b',
-      offset: 15,
       limit: 5,
     },
   ],
@@ -124,6 +107,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   const [dbSubjects, setDbSubjects] = useState<Array<{ id: string; name: string }>>([]);
   const [dbNodes, setDbNodes] = useState<LessonNode[] | null>(null);
   const [loadingNodes, setLoadingNodes] = useState(false);
+  const [showSubjectMenu, setShowSubjectMenu] = useState(false);
   const activeNodeRef = useRef<HTMLDivElement | null>(null);
 
   // 1. Fetch Dynamic Subjects from Supabase
@@ -153,9 +137,6 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
           const tests = testsRes.data || [];
           const defaultTestId = tests[0]?.id || '1';
 
-          const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#06b6d4'];
-          const icons = ['brain', 'atom', 'circuit', 'flask', 'math', 'dna'];
-
           const generatedNodes: LessonNode[] = [];
           const CHUNK_SIZE = 5;
           let globalLevelCounter = 1;
@@ -183,15 +164,15 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
               if (numParts === 1) {
                 partTitle = chap.title;
               } else if (isChapterLast) {
-                partTitle = `${chap.title} • Mastery Drill`;
+                partTitle = `${chap.title} • Final Review`;
               }
 
               generatedNodes.push({
                 id: `chap-${chap.id}-p${p + 1}`,
                 code: levelCode,
                 title: partTitle,
-                subtitle: `${endQ - startQ + 1} MCQs • Q${startQ}-Q${endQ}`,
-                iconType: isSubjectBoss ? 'trophy' : (isChapterLast ? 'trophy' : icons[(globalLevelCounter - 1) % icons.length]),
+                subtitle: `5 Questions • Q${startQ}-Q${endQ}`,
+                iconType: 'brain',
                 xpReward: 25 + p * 5,
                 gemsReward: 10 + p * 2,
                 testId: targetTestId,
@@ -199,8 +180,8 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
                 limit: CHUNK_SIZE,
                 isBoss: isChapterLast,
                 unit: unitNum,
-                unitTitle: `Unit ${unitNum} • ${chap.title}`,
-                themeColor: isSubjectBoss ? '#f59e0b' : colors[(unitNum - 1) % colors.length],
+                unitTitle: `DAY ${unitNum * 5 + p}`,
+                themeColor: '#ff6937',
               });
             }
           });
@@ -218,7 +199,6 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
 
     loadDynamicChapters();
 
-    // Realtime listener for chapter changes
     const channel = supabase
       .channel(`realtime:chapters:${activeSubject}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'chapters' }, () => {
@@ -242,12 +222,11 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
     ? dbSubjects
     : SUBJECTS.map((s) => ({ id: s.id, name: s.name }));
 
+  const currentSubjectObj = subjectList.find((s) => s.id === activeSubject) || subjectList[0] || { name: 'Physics' };
+
   const firstIncompleteIdx = nodes.findIndex((n) => !user.completedNodes[n.id]);
   const currentActiveIdx = firstIncompleteIdx === -1 ? nodes.length - 1 : firstIncompleteIdx;
   const currentActiveNode = nodes[currentActiveIdx] || nodes[0];
-
-  const completedCount = nodes.filter((n) => user.completedNodes[n.id]).length;
-  const progressPercent = Math.round((completedCount / nodes.length) * 100);
 
   const getNodeStatus = (node: LessonNode, index: number): NodeStatus => {
     if (user.completedNodes[node.id]) {
@@ -262,10 +241,6 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
     return 'locked';
   };
 
-  const handleNodeClick = (node: LessonNode) => {
-    setSelectedNode(node);
-  };
-
   const startLesson = (node: LessonNode) => {
     playButtonClick();
     const offset = node.offset ?? 0;
@@ -273,39 +248,29 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
     router.push(`/test/${node.testId}?nodeId=${node.id}&subject=${activeSubject}&title=${encodeURIComponent(node.title)}&offset=${offset}&limit=${limit}`);
   };
 
-  // Winding Coordinates
+  // Exact coordinates matching the uploaded reference image
   const CONTAINER_WIDTH = 340;
-  const ROW_HEIGHT = 160;
+  const ROW_HEIGHT = 155;
   const Y_OFFSET = 70;
 
+  // Alternating Node Center points:
+  // Node 0: Right (x: 285)
+  // Node 1: Left  (x: 55)
+  // Node 2: Right (x: 285)
+  // Node 3: Left  (x: 55)...
   const getNodePoint = (index: number): Point => {
     const y = Y_OFFSET + index * ROW_HEIGHT;
-    if (index === 0) return { x: 170, y };
-    const mod = index % 2;
-    const x = mod === 1 ? 75 : 265;
+    const isRightSide = index % 2 === 0;
+    const x = isRightSide ? 285 : 55;
     return { x, y };
   };
 
   const nodePoints: Point[] = nodes.map((_, i) => getNodePoint(i));
   const totalTrackHeight = Y_OFFSET + (nodes.length - 1) * ROW_HEIGHT + 110;
 
-  const getElbowPath = (p1: Point, p2: Point, r: number = 38) => {
-    if (p1.x === p2.x) {
-      return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`;
-    }
+  const getSPath = (p1: Point, p2: Point) => {
     const midY = (p1.y + p2.y) / 2;
-    const isRight = p2.x > p1.x;
-    const dir = isRight ? 1 : -1;
-    const radius = Math.min(r, Math.abs(p2.x - p1.x) / 2, Math.abs(midY - p1.y) / 2);
-
-    return [
-      `M ${p1.x} ${p1.y}`,
-      `L ${p1.x} ${midY - radius}`,
-      `Q ${p1.x} ${midY} ${p1.x + dir * radius} ${midY}`,
-      `L ${p2.x - dir * radius} ${midY}`,
-      `Q ${p2.x} ${midY} ${p2.x} ${midY + radius}`,
-      `L ${p2.x} ${p2.y}`,
-    ].join(' ');
+    return `M ${p1.x} ${p1.y} C ${p1.x} ${midY}, ${p2.x} ${midY}, ${p2.x} ${p2.y}`;
   };
 
   // Auto scroll to active node
@@ -319,180 +284,180 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   }, [activeSubject, user.completedNodes]);
 
   return (
-    <div className="w-full min-h-screen bg-[#9574ea] text-slate-900 pb-36 font-sans select-none relative overflow-hidden">
+    <div className="w-full min-h-screen bg-[#faf6f0] text-slate-900 pb-36 font-sans select-none relative overflow-hidden">
       
-      {/* ─── Atmospheric Dreamy Lavender Background Canvas with Cloud Hills ─── */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#9e7df1] via-[#9472e9] to-[#8660dd] pointer-events-none" />
+      {/* ─── Background Subtle Micro-Elements (Exact Reference) ─── */}
+      <div className="absolute top-28 left-8 text-emerald-400 text-sm font-bold opacity-60 pointer-events-none">+</div>
+      <div className="absolute top-52 right-10 text-orange-400 text-xs font-bold opacity-60 pointer-events-none">✦</div>
+      <div className="absolute top-[420px] left-10 text-emerald-400 text-xs font-bold opacity-50 pointer-events-none">+</div>
+      <div className="absolute top-[600px] right-8 text-pink-400 text-sm font-bold opacity-60 pointer-events-none">✦</div>
+      <div className="absolute top-[820px] left-6 text-orange-400 text-xs font-bold opacity-50 pointer-events-none">✦</div>
+      <div className="absolute top-[1020px] right-12 text-emerald-400 text-sm font-bold opacity-60 pointer-events-none">+</div>
 
-      {/* Floating Cloud Silhouettes in Background */}
-      <div className="absolute top-28 -left-20 w-80 h-32 rounded-full bg-[#8b65e2]/40 blur-sm pointer-events-none" />
-      <div className="absolute top-96 -right-20 w-96 h-40 rounded-full bg-[#825cd9]/45 blur-sm pointer-events-none" />
-      <div className="absolute top-[680px] -left-10 w-80 h-36 rounded-full bg-[#825cd9]/50 blur-sm pointer-events-none" />
-      <div className="absolute top-[1020px] right-0 w-88 h-40 rounded-full bg-[#784ecc]/50 blur-sm pointer-events-none" />
+      {/* ─── Top White Rounded Header Card (100% Matching Screenshot) ─── */}
+      <div className="relative z-30 max-w-md mx-auto">
+        <div className="bg-white rounded-b-[36px] px-5 pt-3 pb-4 shadow-sm border-b border-orange-100/60">
+          
+          {/* Top Bar: Left Action / Center Avatar with 1 Lv badge / Right Dark Flame */}
+          <div className="w-full flex items-center justify-between">
+            {/* Share / Profile Button */}
+            <button
+              type="button"
+              onClick={() => router.push('/profile')}
+              className="w-10 h-10 rounded-full bg-[#fbf4eb] flex items-center justify-center text-[#8c6b4e] shadow-2xs hover:bg-[#f5ebd9] transition-colors cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[19px]">ios_share</span>
+            </button>
 
-      {/* Twinkling Dream Stars */}
-      <div className="absolute top-16 left-12 text-white/35 text-xs font-black pointer-events-none animate-pulse">✦</div>
-      <div className="absolute top-44 right-16 text-white/40 text-sm font-black pointer-events-none animate-pulse">✦</div>
-      <div className="absolute top-80 left-8 text-white/30 text-xs font-black pointer-events-none">✦</div>
-      <div className="absolute top-[520px] right-10 text-white/35 text-sm font-black pointer-events-none">✦</div>
-      <div className="absolute top-[720px] left-16 text-white/40 text-xs font-black pointer-events-none animate-pulse">✦</div>
-      <div className="absolute top-[920px] right-20 text-white/35 text-sm font-black pointer-events-none">✦</div>
-
-      {/* ─── Top Subject Navigation Header ─── */}
-      <div className="relative z-20 max-w-md mx-auto px-4 pt-3 pb-1">
-        
-        {/* Subject Segmented Pills */}
-        <div className="bg-white/85 backdrop-blur-md p-1.5 rounded-2xl border-2 border-white/60 shadow-md flex items-center justify-between gap-1 overflow-x-auto no-scrollbar mb-3">
-          {subjectList.map((s) => {
-            const isSel = activeSubject === s.id;
-            return (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => {
-                  playButtonClick();
-                  setActiveSubject(s.id);
-                }}
-                className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap text-center ${
-                  isSel
-                    ? 'bg-[#7c3aed] text-white shadow-sm scale-[1.02]'
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/50'
-                }`}
-              >
-                {s.name}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Current Active Unit Banner */}
-        <div className="bg-white/95 backdrop-blur-md rounded-3xl p-4 border-2 border-b-4 border-white/80 shadow-lg relative overflow-hidden flex items-center justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-              <span className="text-[10px] font-black uppercase tracking-wider bg-violet-100 text-[#6d28d9] px-2.5 py-0.5 rounded-full border border-violet-200">
-                {user.classLevel || 'Class 12'}
-              </span>
-              <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                {progressPercent}% Complete
+            {/* Center User Avatar with Level Tag */}
+            <div className="relative flex flex-col items-center">
+              <div className="w-14 h-14 rounded-full p-0.5 bg-gradient-to-tr from-orange-400 via-pink-400 to-purple-400 shadow-md">
+                <div className="w-full h-full rounded-full bg-white p-0.5 overflow-hidden flex items-center justify-center">
+                  <img
+                    src={user.avatarUrl || '/images/trophy_cat.png'}
+                    alt="Avatar"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              </div>
+              <span className="absolute -top-1 -right-2 bg-white text-slate-800 text-[10px] font-black px-1.5 py-0.2 rounded-full border border-orange-200 shadow-2xs">
+                {user.classLevel ? user.classLevel.replace('Class ', '') + ' Lv' : '1 Lv'}
               </span>
             </div>
 
-            <h2 className="font-heading text-sm sm:text-base font-black text-slate-900 truncate">
-              {currentActiveNode.unitTitle}
-            </h2>
-            <p className="text-[11px] text-slate-500 truncate mt-0.5">
-              Next: <span className="font-bold text-slate-800">{currentActiveNode.title}</span>
-            </p>
+            {/* Right Dark Bonfire Streak Button */}
+            <button
+              type="button"
+              onClick={() => router.push('/leaderboard')}
+              className="w-10 h-10 rounded-full bg-[#1e1b2e] flex items-center justify-center text-orange-400 shadow-md hover:bg-[#2c2842] transition-colors cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[20px]">local_fire_department</span>
+            </button>
+          </div>
 
-            {/* Progress Bar */}
-            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5 border border-slate-200">
-              <div
-                className="h-full bg-gradient-to-r from-[#7c3aed] to-emerald-500 rounded-full transition-all duration-500 shadow-2xs"
-                style={{ width: `${Math.max(progressPercent, 8)}%` }}
-              />
+          {/* Stats Counters Row (⚡ 0 | ⚡ 0 / 10,000 | 💎 0) */}
+          <div className="w-full flex items-center justify-around mt-3.5 pt-3 border-t border-slate-100">
+            {/* XP */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-amber-500 text-sm font-black">⚡</span>
+              <span className="font-black text-xs text-slate-800">{user.xp || 0}</span>
+            </div>
+
+            {/* Daily Goal */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-amber-500 text-sm font-black">⚡</span>
+              <span className="font-bold text-xs text-slate-500">{user.xp || 0} / 10,000</span>
+            </div>
+
+            {/* Gems */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-cyan-500 text-sm font-black">💎</span>
+              <span className="font-black text-xs text-slate-800">{user.gems || 0}</span>
             </div>
           </div>
 
-          {/* Mascot Graphic */}
-          <div className="w-14 sm:w-16 shrink-0 flex items-center justify-center">
-            <img
-              src="/images/trophy_cat.png"
-              alt="Mascot"
-              className="w-full h-auto object-contain drop-shadow-sm hover:scale-105 transition-transform"
-            />
-          </div>
         </div>
 
+        {/* Floating Dark Subject Pill: [ My Exercises 🎛️ ] (Exact Reference) */}
+        <div className="relative -mt-3.5 flex justify-center z-40">
+          <button
+            type="button"
+            onClick={() => setShowSubjectMenu(!showSubjectMenu)}
+            className="px-6 py-2 rounded-full bg-[#241f31] hover:bg-[#342d45] text-white font-black text-xs shadow-xl flex items-center gap-2 transition-all active:scale-95 cursor-pointer border border-slate-700/50"
+          >
+            <span>My Exercises • {currentSubjectObj.name}</span>
+            <span className="material-symbols-outlined text-[15px]">tune</span>
+          </button>
+
+          {/* Subject Dropdown Menu */}
+          {showSubjectMenu && (
+            <div className="absolute top-11 z-50 bg-white rounded-2xl p-2 shadow-2xl border border-slate-200 min-w-[220px] animate-in fade-in slide-in-from-top-2">
+              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 py-1.5">Switch Curriculum</p>
+              {subjectList.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => {
+                    playButtonClick();
+                    setActiveSubject(s.id);
+                    setShowSubjectMenu(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${
+                    activeSubject === s.id ? 'bg-orange-50 text-[#ff6937] font-black' : 'text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <span>{s.name}</span>
+                  {activeSubject === s.id && <span className="text-[#ff6937] text-xs font-black">✓</span>}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* ─── The Winding Road Canvas with Dashed Center Markings ─── */}
+      {/* ─── Winding Pathway Canvas (Exact S-Curve from Reference) ─── */}
       <div
-        className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-3 z-10"
+        className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-4 z-10"
         style={{ height: `${totalTrackHeight}px` }}
       >
-        {/* SVG Road Pathway */}
+        {/* SVG Path Tracks (Solid Green + Dashed Dark Road) */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible"
           viewBox={`0 0 ${CONTAINER_WIDTH} ${totalTrackHeight}`}
         >
-          {/* Broad Translucent White Road Ribbon */}
           {nodes.slice(0, -1).map((node, index) => {
             const p1 = nodePoints[index];
             const p2 = nodePoints[index + 1];
-            const d = getElbowPath(p1, p2, 42);
+            const d = getSPath(p1, p2);
+            const isCompletedSegment = index < currentActiveIdx;
 
             return (
               <path
-                key={`road-base-${node.id}`}
+                key={`track-${node.id}`}
                 d={d}
                 fill="none"
-                stroke="rgba(255, 255, 255, 0.28)"
-                strokeWidth="56"
+                stroke={isCompletedSegment ? '#22c55e' : '#334155'}
+                strokeWidth={isCompletedSegment ? '3.5' : '2.5'}
+                strokeDasharray={isCompletedSegment ? 'none' : '7 7'}
                 strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            );
-          })}
-
-          {/* Road Surface */}
-          {nodes.slice(0, -1).map((node, index) => {
-            const p1 = nodePoints[index];
-            const p2 = nodePoints[index + 1];
-            const d = getElbowPath(p1, p2, 42);
-
-            return (
-              <path
-                key={`road-surface-${node.id}`}
-                d={d}
-                fill="none"
-                stroke="rgba(255, 255, 255, 0.45)"
-                strokeWidth="44"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            );
-          })}
-
-          {/* Dashed Center Road Line */}
-          {nodes.slice(0, -1).map((node, index) => {
-            const p1 = nodePoints[index];
-            const p2 = nodePoints[index + 1];
-            const d = getElbowPath(p1, p2, 42);
-
-            return (
-              <path
-                key={`road-dash-${node.id}`}
-                d={d}
-                fill="none"
-                stroke="rgba(147, 112, 230, 0.65)"
-                strokeWidth="3.5"
-                strokeDasharray="9 9"
-                strokeLinecap="round"
-                strokeLinejoin="round"
               />
             );
           })}
         </svg>
 
-        {/* ─── 3D Stepping Nodes Layer ─── */}
+        {/* ─── Alternating Stepping Milestone Nodes ─── */}
         {nodes.map((node, index) => {
           const status = getNodeStatus(node, index);
           const isCurrentActive = status === 'active' && index === currentActiveIdx;
           const pt = nodePoints[index];
 
-          const textSide: 'left' | 'right' = index === 0 ? 'right' : (index % 2 === 1 ? 'right' : 'left');
+          // Even index -> Node on Right (Text on Left)
+          // Odd index  -> Node on Left (Text on Right)
+          const textSide: 'left' | 'right' = index % 2 === 0 ? 'left' : 'right';
+
+          // Day Divider Badge (e.g. --- ⚡ DAY 10 ---)
+          const showDayDivider = index === 0 || (nodes[index - 1] && nodes[index - 1].unit !== node.unit);
 
           return (
             <div
               key={node.id}
               id={isCurrentActive ? 'active-level-node' : undefined}
               ref={isCurrentActive ? activeNodeRef : undefined}
-              className="absolute -translate-x-1/2 -translate-y-1/2 z-10"
-              style={{
-                left: `${pt.x}px`,
-                top: `${pt.y}px`,
-              }}
+              className="absolute left-0 right-0 z-10 -translate-y-1/2"
+              style={{ top: `${pt.y}px` }}
             >
+              {/* Day / Unit Divider Embedded on Track */}
+              {showDayDivider && (
+                <div className="absolute -top-12 left-0 right-0 flex items-center justify-center gap-2 pointer-events-none">
+                  <div className="w-12 h-[1.5px] border-t-2 border-dashed border-slate-300" />
+                  <span className="text-[11px] font-black tracking-widest text-[#ff6937] flex items-center gap-1 uppercase">
+                    <span className="text-amber-500">⚡</span>
+                    <span>{node.unitTitle || `DAY ${node.unit * 5}`}</span>
+                  </span>
+                  <div className="w-12 h-[1.5px] border-t-2 border-dashed border-slate-300" />
+                </div>
+              )}
+
               <PathNode
                 id={node.id}
                 code={node.code}
@@ -504,74 +469,13 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
                 iconType={node.iconType}
                 userAvatarUrl={user.avatarUrl}
                 userName={user.name}
-                onClick={() => handleNodeClick(node)}
+                onClick={() => startLesson(node)}
                 textSide={textSide}
               />
             </div>
           );
         })}
       </div>
-
-      {/* ─── Interactive Node Lesson Detail Popup Sheet ─── */}
-      {selectedNode && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 max-w-sm w-full shadow-2xl border border-slate-200 animate-in slide-in-from-bottom-5 duration-200 text-slate-900">
-            
-            {/* Modal Header */}
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <div>
-                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full inline-block mb-1 bg-violet-100 text-[#7c3aed] border border-violet-200">
-                  {selectedNode.unitTitle}
-                </span>
-                <h3 className="font-heading font-black text-lg text-slate-900 leading-tight">
-                  {selectedNode.title}
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedNode(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 text-xs font-bold transition-colors cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-
-            <p className="text-xs text-slate-500 leading-relaxed mb-4">
-              {selectedNode.subtitle}. Complete this checkpoint test to earn gems and advance your streak.
-            </p>
-
-            {/* Rewards Strip */}
-            <div className="grid grid-cols-2 gap-2 mb-5 p-3 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="flex items-center gap-2">
-                <XpBoltIcon size={20} />
-                <div>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Reward</span>
-                  <span className="text-xs font-black text-slate-800">+{selectedNode.xpReward} XP</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <GemIcon size={20} />
-                <div>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Gems</span>
-                  <span className="text-xs font-black text-slate-800">+{selectedNode.gemsReward} Gems</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Action CTA */}
-            <button
-              type="button"
-              onClick={() => startLesson(selectedNode)}
-              className="w-full py-3.5 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-black text-sm transition-all active:scale-95 shadow-md flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>{user.completedNodes[selectedNode.id] ? 'Practice Again' : 'Start Lesson Test'}</span>
-              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-            </button>
-
-          </div>
-        </div>
-      )}
 
     </div>
   );
