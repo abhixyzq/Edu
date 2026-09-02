@@ -267,11 +267,11 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   // Dynamic Coordinate & Geometry Engine:
   // Dynamically adds vertical spacing for Chapter dividers so nothing EVER overlaps!
   const CONTAINER_WIDTH = 340;
-  const ROW_STEP = 155;
-  const CHAPTER_BANNER_GAP = 85;
+  const ROW_STEP = 160;
+  const CHAPTER_BANNER_GAP = 95;
 
   const calculatedTrack = React.useMemo(() => {
-    let currentY = 12;
+    let currentY = 25;
     const points: { pt: Point; dividerY?: number; showDivider: boolean }[] = [];
 
     nodes.forEach((node, index) => {
@@ -291,7 +291,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
       currentY += ROW_STEP;
     });
 
-    const totalHeight = currentY + 50;
+    const totalHeight = currentY + 60;
     return { points, totalHeight };
   }, [nodes]);
 
@@ -397,7 +397,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
 
       {/* ─── Winding Pathway Canvas (Coordinated Coordinate Space) ─── */}
       {nodes.length === 0 ? (
-        <div className="w-full max-w-[340px] mx-auto relative mt-[145px] min-h-[500px] flex flex-col items-center justify-center">
+        <div className="w-full max-w-[340px] mx-auto relative mt-[155px] min-h-[500px] flex flex-col items-center justify-center">
           <div className="flex flex-col items-center gap-3">
             <div className="w-14 h-14 rounded-full border-4 border-orange-200 border-t-[#ff6937] animate-spin" />
             <p className="text-xs font-black tracking-wider text-slate-400 uppercase">Loading Curriculum...</p>
@@ -405,7 +405,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
         </div>
       ) : (
         <div
-          className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-[145px] z-10 animate-in fade-in duration-300"
+          className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-[155px] z-10 animate-in fade-in duration-300"
           style={{ height: `${totalTrackHeight}px` }}
         >
         {/* SVG Path Tracks (Solid Green + Dashed Dark Road) */}

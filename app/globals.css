@@ -12,12 +12,12 @@
 }
 
 :root {
-  --background: #f4fafd;
-  --surface: #f4fafd;
-  --surface-container: #e8eff1;
-  --surface-container-low: #eef5f7;
-  --surface-container-high: #e2e9ec;
-  --surface-container-highest: #dde4e6;
+  --background: #faf6f0;
+  --surface: #faf6f0;
+  --surface-container: #f5ede0;
+  --surface-container-low: #fbf7f2;
+  --surface-container-high: #f0e5d5;
+  --surface-container-highest: #ebdcc9;
   --surface-container-lowest: #ffffff;
   
   --on-surface: #161d1f;
