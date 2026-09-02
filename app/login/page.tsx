@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
 import { playButtonClick, playGemDing } from '@/lib/soundEffects';
 import { ParticleSphere } from '@/components/ParticleSphere';
+import { VoiceCosmos } from '@/components/VoiceCosmos';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,6 +17,15 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [time, setTime] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setTime(new Date());
+    const timer = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const showcaseRef = useRef<HTMLDivElement | null>(null);
   const loginSectionRef = useRef<HTMLDivElement | null>(null);
@@ -24,16 +34,6 @@ export default function LoginPage() {
   const scrollToAbout = () => {
     playButtonClick();
     showcaseRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const scrollToLogin = () => {
-    playButtonClick();
-    loginSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const scrollToCosmos = () => {
-    playButtonClick();
-    cosmosSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -226,67 +226,81 @@ export default function LoginPage() {
         {/* Main Canvas Deck */}
         <div className="max-w-[500px] sm:max-w-[580px] mx-auto bg-[#eef5fc] rounded-[40px] shadow-[0_30px_70px_rgba(0,0,0,0.5)] overflow-hidden border border-white/40 relative">
           
-          {/* ─── 1. Top 3D Isometric Mobile App Cards ─── */}
-          <div className="w-full bg-gradient-to-b from-[#b3d3f5] via-[#c9e1fa] to-[#e4f0fd] pt-6 px-4 pb-3 relative overflow-hidden flex items-center justify-center">
+          {/* ─── 1. Ultra-Modern Big Digital Clock Deck ─── */}
+          <div className="w-full bg-gradient-to-b from-[#091526] via-[#0d1f38] to-[#122844] pt-6 px-4 pb-5 relative overflow-hidden flex flex-col items-center justify-center text-white border-b border-white/10 shadow-inner">
             
-            {/* Ambient Background Glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-36 bg-white/60 blur-2xl pointer-events-none" />
+            {/* Ambient Background Glows */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-36 bg-blue-500/20 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-64 h-20 bg-cyan-400/20 blur-2xl pointer-events-none" />
 
-            <div className="flex items-center justify-center -space-x-5 sm:-space-x-7 py-3 relative z-10">
+            {/* Top Status & Date Header */}
+            <div className="flex items-center justify-between w-full max-w-[360px] mb-3 px-2 z-10">
+              <span className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-cyan-300 bg-cyan-950/70 border border-cyan-500/30 px-2.5 py-1 rounded-full shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                Live Focus Clock
+              </span>
+              <span className="text-[10px] font-bold text-slate-300 tracking-wide">
+                {time ? time.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : 'Live Clock'}
+              </span>
+            </div>
+
+            {/* Big Digital Clock Display Box */}
+            <div className="w-full max-w-[370px] bg-black/45 backdrop-blur-xl border-2 border-white/15 rounded-[26px] p-3.5 sm:p-4 shadow-[0_15px_40px_rgba(0,0,0,0.6),inset_0_0_20px_rgba(56,189,248,0.12)] flex items-center justify-center gap-2 sm:gap-3 relative z-10">
               
-              {/* Left Angled Phone Card */}
-              <div className="w-28 sm:w-32 h-44 sm:h-48 rounded-[20px] bg-white/90 backdrop-blur-md shadow-[0_15px_30px_rgba(30,64,175,0.12)] border border-white p-3 transform -rotate-12 -translate-y-2 flex flex-col justify-between opacity-90 hover:opacity-100 transition-all hover:scale-105">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-blue-600 shadow-xs" />
-                  <span className="text-[9px] font-black tracking-wider text-slate-900">NAINIX</span>
+              {/* Hours Block */}
+              <div className="flex flex-col items-center">
+                <div className="w-16 sm:w-19 h-18 sm:h-21 rounded-2xl bg-gradient-to-b from-white/15 to-white/5 border border-white/20 flex items-center justify-center shadow-lg">
+                  <span className="font-heading font-black text-3xl sm:text-4xl text-white tracking-tight drop-shadow-[0_2px_12px_rgba(255,255,255,0.4)]">
+                    {time ? (time.getHours() % 12 || 12).toString().padStart(2, '0') : '--'}
+                  </span>
                 </div>
-                <div className="space-y-1">
-                  <div className="w-8 h-1.5 rounded-full bg-slate-200" />
-                  <div className="w-14 h-1.5 rounded-full bg-blue-100" />
-                  <p className="text-[7px] text-slate-400 font-bold pt-2">Fast Practice &bull; AI Mocks</p>
-                </div>
+                <span className="text-[7.5px] font-bold uppercase tracking-widest text-slate-400 mt-1">Hours</span>
               </div>
 
-              {/* Center Main Dark Phone Screen */}
-              <div className="w-36 sm:w-44 h-56 sm:h-60 rounded-[24px] bg-[#0c1a2e] text-white shadow-[0_20px_45px_rgba(12,26,46,0.5)] border-2 border-white/60 p-3.5 z-20 flex flex-col justify-between relative transform hover:scale-[1.03] transition-all">
-                {/* Phone Speaker Notch */}
-                <div className="w-10 h-1 rounded-full bg-slate-700 mx-auto" />
-
-                <div className="space-y-2 my-auto">
-                  <div className="p-2 rounded-xl bg-white/10 border border-white/10 flex justify-between items-center text-[8px]">
-                    <span className="text-slate-300 font-medium">Daily Streak</span>
-                    <span className="text-amber-400 font-black">🔥 14 Days</span>
-                  </div>
-                  <div className="p-2 rounded-xl bg-white/10 border border-white/10 flex justify-between items-center text-[8px]">
-                    <span className="text-slate-300 font-medium">Physics Mock #01</span>
-                    <span className="text-emerald-400 font-black">+100 XP</span>
-                  </div>
-                </div>
-
-                {/* Floating Bottom Center Action Button */}
-                <div className="flex items-center justify-center">
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-[0_4px_15px_rgba(37,99,235,0.6)] border border-blue-400">
-                    <span className="material-symbols-outlined text-[18px] text-white">quiz</span>
-                  </div>
-                </div>
+              {/* Pulsing Colon */}
+              <div className="flex flex-col gap-1.5 pb-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
               </div>
 
-              {/* Right Angled Phone Card */}
-              <div className="w-28 sm:w-32 h-44 sm:h-48 rounded-[20px] bg-white/90 backdrop-blur-md shadow-[0_15px_30px_rgba(30,64,175,0.12)] border border-white p-3 transform rotate-12 -translate-y-2 flex flex-col justify-between opacity-90 hover:opacity-100 transition-all hover:scale-105">
-                <div className="space-y-1">
-                  <span className="text-[7px] font-black uppercase text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full">FREE</span>
-                  <h4 className="text-[9px] font-black text-slate-800 leading-tight">
-                    Get your free <br />
-                    <span className="text-blue-600 font-black">Scholar Pass</span>
-                  </h4>
+              {/* Minutes Block */}
+              <div className="flex flex-col items-center">
+                <div className="w-16 sm:w-19 h-18 sm:h-21 rounded-2xl bg-gradient-to-b from-white/15 to-white/5 border border-white/20 flex items-center justify-center shadow-lg">
+                  <span className="font-heading font-black text-3xl sm:text-4xl text-cyan-300 tracking-tight drop-shadow-[0_2px_12px_rgba(34,211,238,0.45)]">
+                    {time ? time.getMinutes().toString().padStart(2, '0') : '--'}
+                  </span>
                 </div>
-                <span className="text-[7px] text-blue-600 font-black flex items-center gap-0.5">
-                  <span>Claim Now</span>
-                  <span className="material-symbols-outlined text-[9px]">arrow_forward</span>
-                </span>
+                <span className="text-[7.5px] font-bold uppercase tracking-widest text-slate-400 mt-1">Minutes</span>
+              </div>
+
+              {/* Pulsing Colon */}
+              <div className="flex flex-col gap-1.5 pb-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              </div>
+
+              {/* Seconds Block */}
+              <div className="flex flex-col items-center">
+                <div className="w-14 sm:w-17 h-18 sm:h-21 rounded-2xl bg-gradient-to-b from-white/15 to-white/5 border border-white/20 flex items-center justify-center shadow-lg relative">
+                  <span className="font-heading font-black text-2xl sm:text-3xl text-amber-300 tracking-tight drop-shadow-[0_2px_10px_rgba(251,191,36,0.45)]">
+                    {time ? time.getSeconds().toString().padStart(2, '0') : '--'}
+                  </span>
+                  {/* AM/PM Tag */}
+                  <span className="absolute top-1.5 right-1.5 text-[6.5px] font-black px-1 rounded bg-white/20 text-white leading-none py-0.5">
+                    {time ? (time.getHours() >= 12 ? 'PM' : 'AM') : 'AM'}
+                  </span>
+                </div>
+                <span className="text-[7.5px] font-bold uppercase tracking-widest text-slate-400 mt-1">Seconds</span>
               </div>
 
             </div>
+
+            {/* Live Study Tracker Subtitle */}
+            <div className="mt-2.5 flex items-center gap-1.5 text-[9.5px] text-slate-300/90 font-medium z-10">
+              <span className="material-symbols-outlined text-[13px] text-amber-400">timer</span>
+              <span>Study Focus Mode &bull; Real-Time Precision</span>
+            </div>
+
           </div>
 
           {/* ─── 2. Main Hero Showcase with Full-Height Mascot & Spacious Depth ─── */}
@@ -315,125 +329,90 @@ export default function LoginPage() {
 
           </div>
 
-          {/* ─── 3. Minimal Sculpted Cut-Out Contour Ribbon ─── */}
-          <div className="w-full relative z-20 -mt-24 sm:-mt-36 pt-0">
-            {/* SVG Sculpted White Background Contour with Compact Trapezoid Cut-Out */}
-            <div className="w-full relative">
-              <svg 
-                viewBox="0 0 1000 160" 
-                preserveAspectRatio="none" 
-                className="w-full h-[125px] sm:h-[145px] drop-shadow-[0_-6px_15px_rgba(30,64,175,0.04)]"
+          {/* ─── 3. Important Community & App Quick Links ─── */}
+          <div className="w-full bg-white/95 backdrop-blur-xl border-t border-slate-200/80 px-4 py-5 flex flex-col gap-3 relative z-20">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                Important Links
+              </span>
+              <span className="text-[9px] font-bold text-slate-400">Join Community</span>
+            </div>
+
+            {/* 2x2 Clean Action Grid */}
+            <div className="grid grid-cols-2 gap-2.5">
+              {/* WhatsApp Channel */}
+              <a
+                href="https://whatsapp.com/channel/0029Vb7D6yP29759"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={playButtonClick}
+                className="flex items-center gap-2.5 p-3 rounded-2xl bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/30 text-[#128C7E] transition-all hover:scale-[1.02] active:scale-95 group shadow-xs cursor-pointer"
               >
-                <path 
-                  d="M 0,0 L 330,0 Q 355,0 370,20 L 395,70 Q 410,85 435,85 L 565,85 Q 590,85 605,70 L 630,20 Q 645,0 670,0 L 1000,0 L 1000,160 L 0,160 Z" 
-                  fill="#ffffff" 
-                />
-              </svg>
-
-              {/* Foreground Minimal 3-Pillar Content Overlay */}
-              <div className="absolute inset-0 w-full grid grid-cols-12 px-3 sm:px-6 pt-2.5 sm:pt-3">
-                
-                {/* Left Block - Minimal */}
-                <div className="col-span-4 flex flex-col justify-between pr-1 pb-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3 h-3 rounded-full bg-[#0f172a] shadow-2xs flex items-center justify-center text-[6.5px] text-white font-bold">N</span>
-                    <span className="w-3 h-3 rounded-full bg-blue-600 shadow-2xs" />
-                  </div>
-                  <div>
-                    <h4 className="text-[9px] sm:text-[11px] font-black text-slate-900 leading-tight">
-                      Smart AI Prep
-                    </h4>
-                    <p className="text-[7px] sm:text-[8px] text-slate-500 font-medium">
-                      Class 12 Boards
-                    </p>
-                  </div>
-                  <Link
-                    href="/subjects"
-                    className="text-[7px] sm:text-[8px] font-black text-blue-600 uppercase tracking-wider hover:underline flex items-center gap-0.5"
-                  >
-                    <span>SERVICES</span>
-                    <span>&rarr;</span>
-                  </Link>
+                <div className="w-8 h-8 rounded-xl bg-[#25D366] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:rotate-6 transition-transform">
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.699c.97.546 1.84.835 2.796.835 3.18 0 5.767-2.586 5.768-5.766 0-3.18-2.587-5.767-5.768-5.767zm3.391 8.172c-.141.396-.714.733-1.011.777-.282.042-.647.067-2.063-.52-1.808-.75-2.975-2.593-3.065-2.713-.09-.12-1.748-2.327-1.748-4.442 0-2.115 1.109-3.155 1.503-3.585.394-.43.86-.538 1.147-.538.287 0 .573.002.825.014.267.012.624-.1.975.742.361.867 1.233 3.011 1.344 3.237.111.226.185.49.037.784-.148.294-.222.477-.444.738-.222.261-.466.584-.666.784-.222.222-.453.463-.195.906.258.443 1.147 1.892 2.463 3.064 1.691 1.506 3.118 1.973 3.56 2.195.443.222.701.185.96-.111.259-.296 1.109-1.294 1.405-1.737.296-.443.591-.37.998-.222.407.148 2.587 1.22 3.03 1.442.443.222.738.333.849.518.111.185.111 1.072-.03 1.468z" />
+                  </svg>
                 </div>
-
-                {/* Center Dip - Minimal */}
-                <div className="col-span-4 flex flex-col items-center justify-start text-center pt-1 px-1">
-                  <Link
-                    href="/signup"
-                    onClick={playButtonClick}
-                    className="inline-flex items-center gap-1 bg-white/85 hover:bg-white backdrop-blur-md border border-white px-2.5 py-0.5 rounded-full shadow-xs text-[7.5px] sm:text-[8.5px] font-black text-slate-800 transition-all hover:scale-105 active:scale-95 mb-1"
-                  >
-                    <span>Start Free</span>
-                    <span className="material-symbols-outlined text-[9px]">arrow_forward</span>
-                  </Link>
-                  <h3 className="font-heading font-black text-[10px] sm:text-[13px] text-white tracking-tight uppercase leading-tight drop-shadow-[0_2px_6px_rgba(30,64,175,0.6)]">
-                    FAST PRACTICE <br />
-                    FAST RESULTS
-                  </h3>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[11px] font-black text-slate-900 leading-tight truncate">WhatsApp</span>
+                  <span className="text-[9px] font-bold text-[#128C7E] truncate">Channel</span>
                 </div>
+              </a>
 
-                {/* Right Block - Minimal */}
-                <div className="col-span-4 flex flex-col justify-between pl-2 pb-2 text-left">
-                  <span className="text-[6.5px] sm:text-[7.5px] font-black text-slate-400 uppercase tracking-wider">
-                    QUESTIONS SOLVED
-                  </span>
-                  <div>
-                    <h3 className="font-heading font-black text-xl sm:text-2xl text-blue-600 leading-none tracking-tight">
-                      90M+
-                    </h3>
-                  </div>
-                  <Link
-                    href="/leaderboard"
-                    className="text-[7px] sm:text-[8px] font-black text-blue-600 uppercase tracking-wider hover:underline flex items-center gap-0.5"
-                  >
-                    <span>RANKS</span>
-                    <span>&uarr;</span>
-                  </Link>
+              {/* Instagram */}
+              <a
+                href="https://instagram.com/nainix.me"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={playButtonClick}
+                className="flex items-center gap-2.5 p-3 rounded-2xl bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/30 text-[#E1306C] transition-all hover:scale-[1.02] active:scale-95 group shadow-xs cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#fd5949] via-[#d6249f] to-[#285AEB] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:rotate-6 transition-transform">
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                  </svg>
                 </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[11px] font-black text-slate-900 leading-tight truncate">Instagram</span>
+                  <span className="text-[9px] font-bold text-[#E1306C] truncate">@nainix.me</span>
+                </div>
+              </a>
 
-              </div>
-            </div>
-          </div>
+              {/* Twitter / X */}
+              <a
+                href="https://twitter.com/nainixone"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={playButtonClick}
+                className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-900/5 hover:bg-slate-900/10 border border-slate-300 text-slate-900 transition-all hover:scale-[1.02] active:scale-95 group shadow-xs cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-xl bg-black text-white flex items-center justify-center shrink-0 shadow-xs group-hover:rotate-6 transition-transform">
+                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[11px] font-black text-slate-900 leading-tight truncate">Twitter / X</span>
+                  <span className="text-[9px] font-bold text-slate-500 truncate">@nainixone</span>
+                </div>
+              </a>
 
-          {/* ─── 4. Elegant Minimal Action & Navigation Bar ─── */}
-          <div className="w-full px-4 pt-4 pb-6 bg-white flex items-center justify-center gap-3">
-            <Link
-              href="/signup"
-              onClick={playButtonClick}
-              className="px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-heading font-black text-[10px] uppercase tracking-wider shadow-md transition-all active:scale-95"
-            >
-              Start Free Roadmaps &rarr;
-            </Link>
-
-            <button
-              type="button"
-              onClick={scrollToLogin}
-              className="px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-heading font-bold text-[10px] uppercase tracking-wider transition-all active:scale-95"
-            >
-              Back to Login ↑
-            </button>
-          </div>
-
-          {/* ─── 6. Footer: "WHO WE SERVE" with Board Badges & Swipe Up Prompt ─── */}
-          <div className="w-full py-6 text-center bg-white border-t border-slate-100/80 px-4 space-y-3">
-            <h4 className="font-heading font-black text-[10px] text-slate-400 uppercase tracking-[0.25em]">
-              WHO WE SERVE
-            </h4>
-            <div className="flex flex-wrap items-center justify-center gap-2 max-w-sm mx-auto">
-              {['CBSE Board', 'Bihar Board BSEB', 'UP Board', 'ICSE / ISC', 'JEE Main', 'NEET UG'].map((board) => (
-                <span
-                  key={board}
-                  className="px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200 text-[8px] font-bold text-slate-700 hover:border-blue-300 transition-colors"
-                >
-                  {board}
-                </span>
-              ))}
-            </div>
-
-            {/* Indicator Prompt to Slide Up to Deck 3 */}
-            <div className="pt-2 flex flex-col items-center justify-center cursor-pointer select-none" onClick={scrollToCosmos}>
-              <div className="w-8 h-1 bg-slate-200 rounded-full mb-1 animate-pulse" />
-              <span className="text-[7.5px] font-mono font-bold text-slate-400 tracking-wider">SWIPE UP FOR COSMOS &uarr;</span>
+              {/* Official App */}
+              <a
+                href="/nainixOne_Class12_Latest.apk"
+                download="nainixOne_Class12_Latest.apk"
+                onClick={playButtonClick}
+                className="flex items-center gap-2.5 p-3 rounded-2xl bg-purple-600/10 hover:bg-purple-600/20 border border-purple-600/30 text-[#7c3aed] transition-all hover:scale-[1.02] active:scale-95 group shadow-xs cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-xl bg-[#7c3aed] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:rotate-6 transition-transform">
+                  <span className="material-symbols-outlined text-[18px]">android</span>
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[11px] font-black text-slate-900 leading-tight truncate">Download App</span>
+                  <span className="text-[9px] font-bold text-[#7c3aed] truncate">Direct APK</span>
+                </div>
+              </a>
             </div>
           </div>
 
@@ -441,7 +420,7 @@ export default function LoginPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          SCREEN 3: 3D PARTICLE SPHERE (Pure Animation, True Black, No UI)
+          SCREEN 3: CUTE MIMIC VOICE ASSISTANT (3D Particle Sphere + Echo Voice)
       ══════════════════════════════════════════════════════════════════ */}
       <section
         ref={cosmosSectionRef}
@@ -450,9 +429,7 @@ export default function LoginPage() {
           scrollSnapStop: 'always',
         }}
       >
-        <div className="w-full h-full max-w-[460px] max-h-[460px] sm:max-w-[540px] sm:max-h-[540px] flex items-center justify-center p-4">
-          <ParticleSphere particleCount={4200} radius={140} className="w-full h-full" />
-        </div>
+        <VoiceCosmos />
       </section>
 
     </div>

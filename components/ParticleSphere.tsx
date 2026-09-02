@@ -14,6 +14,11 @@ export function ParticleSphere({
   className = '',
 }: ParticleSphereProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const radiusRef = useRef(radius);
+
+  useEffect(() => {
+    radiusRef.current = radius;
+  }, [radius]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -41,11 +46,11 @@ export function ParticleSphere({
     window.addEventListener('resize', updateDimensions);
 
     interface IndependentParticle {
-      theta: number; // Longitude angle (0 to 2*PI)
-      phi: number; // Latitude angle (0 to PI)
+      theta: number;
+      phi: number;
       baseR: number;
-      dTheta: number; // Independent speed along longitude
-      dPhi: number; // Independent speed along latitude
+      dTheta: number;
+      dPhi: number;
       radialWaveAmp: number;
       radialWaveFreq: number;
       phase: number;
@@ -60,7 +65,7 @@ export function ParticleSphere({
 
     const points: IndependentParticle[] = [];
     const count = particleCount || 3800;
-    const r = radius;
+    const initialR = 135;
 
     for (let i = 0; i < count; i++) {
       // Isotropic uniform sphere surface distribution
@@ -77,7 +82,7 @@ export function ParticleSphere({
 
       // Slight radial variance for volumetric depth
       const radialOffset = (Math.random() - 0.5) * 12;
-      const baseR = r + radialOffset;
+      const baseR = initialR + radialOffset;
 
       const isPolar = Math.abs(Math.cos(phi)) > 0.75;
       const isAccent = Math.random() < 0.12; // 12% cyan/electric cosmic accent stars
@@ -187,8 +192,9 @@ export function ParticleSphere({
           p.dPhi = -Math.abs(p.dPhi);
         }
 
-        // Independent subtle breathing wave
-        const currentR = p.baseR + Math.sin(frame * p.radialWaveFreq + p.phase) * p.radialWaveAmp;
+        // Independent subtle breathing wave with real-time audio radius
+        const rScale = (radiusRef.current || 135) / 135;
+        const currentR = p.baseR * rScale + Math.sin(frame * p.radialWaveFreq + p.phase) * p.radialWaveAmp;
         const sinPhi = Math.sin(p.phi);
         const localX = currentR * sinPhi * Math.cos(p.theta);
         const localY = currentR * Math.cos(p.phi);
@@ -211,6 +217,7 @@ export function ParticleSphere({
       // Depth sorting for authentic 3D layering
       points.sort((a, b) => a.z - b.z);
 
+      const activeR = radiusRef.current || 135;
       for (let i = 0; i < points.length; i++) {
         const p = points[i];
 
@@ -218,7 +225,7 @@ export function ParticleSphere({
         const projY = center + p.y;
 
         // Depth & independent twinkling
-        const normalizedZ = (p.z + r) / (2 * r); // 0 (back) to 1 (front)
+        const normalizedZ = (p.z + activeR) / (2 * activeR); // 0 (back) to 1 (front)
         const twinkle = Math.sin(frame * p.pulseSpeed + p.phase) * 0.25 + 0.75;
         const alpha = Math.min(
           1,
