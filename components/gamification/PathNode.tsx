@@ -43,111 +43,107 @@ export const PathNode: React.FC<PathNodeProps> = ({
   const levelNumber = code.replace(/^0+/, '') || code;
 
   return (
-    <div className="relative flex items-center select-none group">
+    <div className="relative flex items-center select-none">
       
-      {/* ─── Smart Game Quest Node ─── */}
+      {/* ─── 3D Stepping Stone Pedestal (Duolingo Lavender Style) ─── */}
       <div className="relative flex flex-col items-center">
         
-        {/* Active Node: Pulsing Radar Aura & Scholar Avatar Pin */}
+        {/* Active Node: Golden Radiant Glow & Mascot Pin Pointer */}
         {isActive && (
           <>
-            {/* Ambient Energy Halo */}
-            <div className="absolute -inset-3 rounded-full bg-violet-500/25 blur-md animate-pulse pointer-events-none" />
-            <div className="absolute -inset-1 rounded-full border-2 border-violet-400/50 animate-ping pointer-events-none opacity-40" />
-
-            {/* Scholar Avatar Pin Pointer */}
+            <div className="absolute -inset-4 rounded-full bg-yellow-300/40 blur-lg animate-pulse pointer-events-none" />
+            <div className="absolute -inset-2 rounded-full border-2 border-yellow-200/80 shadow-[0_0_20px_rgba(253,224,71,0.6)] animate-spin-slow pointer-events-none" />
+            
+            {/* Mascot Pin Pointer Above Active Node */}
             <div className="absolute -top-13 z-30 flex flex-col items-center animate-bounce">
-              <div className="px-2 py-0.5 rounded-full bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest shadow-md border border-violet-400/60 mb-0.5 whitespace-nowrap">
-                Next Quest
-              </div>
-              <div className="w-10 h-10 rounded-full bg-white p-0.5 border-2 border-[#7c3aed] shadow-xl flex items-center justify-center overflow-hidden ring-2 ring-violet-200">
+              <div className="w-12 h-12 rounded-full bg-white p-1 border-2 border-yellow-400 shadow-xl flex items-center justify-center overflow-hidden ring-2 ring-white">
                 <img
                   src={userAvatarUrl || '/images/trophy_cat.png'}
                   alt="Scholar"
                   className="w-full h-full object-contain"
                 />
               </div>
-              {/* Pointer Arrow */}
-              <div className="w-2 h-2 bg-white border-r-2 border-b-2 border-[#7c3aed] rotate-45 -mt-1 shadow-xs" />
+              {/* Pointer Triangle */}
+              <div className="w-2.5 h-2.5 bg-white border-r-2 border-b-2 border-yellow-400 rotate-45 -mt-1.5 shadow-2xs" />
             </div>
           </>
         )}
 
-        {/* 3D Smart Game Disc Button */}
+        {/* 3D Pedestal Button */}
         <button
           type="button"
           onClick={handleClick}
           disabled={isLocked}
-          aria-label={`Stage ${levelNumber} - ${title}`}
-          className={`relative w-[72px] h-[72px] sm:w-[80px] sm:h-[80px] rounded-full p-1.5 transition-all duration-200 flex items-center justify-center ${
+          aria-label={`Level ${levelNumber} - ${title}`}
+          className={`relative w-[76px] h-[76px] sm:w-[84px] sm:h-[84px] rounded-full p-[6px] transition-transform duration-150 flex items-center justify-center ${
             isLocked
-              ? 'cursor-not-allowed opacity-75'
+              ? 'cursor-not-allowed'
               : 'cursor-pointer hover:scale-105 active:scale-95'
           }`}
+          style={{
+            background: isActive
+              ? 'linear-gradient(180deg, #ffffff 0%, #fff9c4 40%, #e1f5fe 100%)'
+              : isCompleted
+              ? 'linear-gradient(180deg, #ffffff 0%, #edf4fa 50%, #d3e5f5 100%)'
+              : 'linear-gradient(180deg, #ffffff 0%, #edf4fa 50%, #d3e5f5 100%)',
+            boxShadow: isActive
+              ? '0 8px 0 #d7ccc8, 0 12px 18px rgba(0,0,0,0.22)'
+              : isCompleted
+              ? '0 8px 0 #a7d7c5, 0 12px 18px rgba(0,0,0,0.2)'
+              : '0 8px 0 #9cbcd9, 0 12px 18px rgba(0,0,0,0.2)',
+          }}
         >
-          {/* Outer Ring Pedestal */}
+          {/* Inner 3D Stepping Disc */}
           <div
-            className={`w-full h-full rounded-full p-1 flex items-center justify-center transition-all ${
-              isActive
-                ? 'bg-gradient-to-b from-[#8b5cf6] to-[#6d28d9] shadow-[0_8px_20px_rgba(124,58,237,0.35)] ring-4 ring-violet-400/30'
+            className="w-full h-full rounded-full flex items-center justify-center shadow-inner relative overflow-hidden"
+            style={{
+              background: isActive
+                ? 'linear-gradient(180deg, #fff176 0%, #fbc02d 60%, #f57f17 100%)'
                 : isCompleted
-                ? 'bg-gradient-to-b from-[#10b981] to-[#047857] shadow-[0_6px_16px_rgba(16,185,129,0.25)] ring-2 ring-emerald-300/40'
+                ? 'linear-gradient(180deg, #6ee7b7 0%, #10b981 60%, #047857 100%)'
                 : isBoss
-                ? 'bg-gradient-to-b from-amber-400 to-amber-600 shadow-md ring-2 ring-amber-300'
-                : 'bg-gradient-to-b from-slate-200 to-slate-300 shadow-inner'
-            }`}
+                ? 'linear-gradient(180deg, #fcd34d 0%, #f59e0b 60%, #d97706 100%)'
+                : 'linear-gradient(180deg, #c4d4e6 0%, #9cb3ce 60%, #7d96b4 100%)',
+              boxShadow: 'inset 0 3px 4px rgba(255,255,255,0.8), inset 0 -3px 4px rgba(0,0,0,0.2)',
+            }}
           >
-            {/* Inner Core Stepping Surface */}
-            <div
-              className={`w-full h-full rounded-full flex items-center justify-center relative overflow-hidden ${
-                isActive
-                  ? 'bg-gradient-to-b from-[#7c3aed] to-[#5b21b6] text-white'
-                  : isCompleted
-                  ? 'bg-gradient-to-b from-[#059669] to-[#065f46] text-white'
-                  : isBoss
-                  ? 'bg-gradient-to-b from-amber-500 to-amber-700 text-white'
-                  : 'bg-slate-100 text-slate-400'
-              }`}
-            >
-              {/* Gloss Arc Top Highlight */}
-              <div className="absolute top-1 left-2 right-2 h-3.5 rounded-full bg-white/30 blur-[0.5px] pointer-events-none" />
+            {/* Top Gloss Arc Highlight */}
+            <div className="absolute top-1 left-2 right-2 h-4 rounded-full bg-white/40 blur-[0.5px] pointer-events-none" />
 
-              {/* Core Icon / Stage Number */}
-              {isCompleted ? (
-                <div className="flex flex-col items-center justify-center">
-                  <span className="material-symbols-outlined text-[24px] sm:text-[28px] font-black leading-none text-white drop-shadow-xs">
-                    check
-                  </span>
-                  <div className="flex gap-0.5 text-[8px] text-amber-300 leading-none mt-0.5">
-                    ★
-                  </div>
-                </div>
-              ) : isLocked ? (
-                <span className="material-symbols-outlined text-[18px] sm:text-[20px] text-slate-400">
-                  lock
-                </span>
-              ) : isBoss ? (
-                <span className="material-symbols-outlined text-[28px] sm:text-[32px] text-amber-200 drop-shadow-sm animate-pulse">
-                  emoji_events
-                </span>
-              ) : (
-                <span className="font-heading font-black text-xl sm:text-2xl text-white tracking-tight leading-none drop-shadow-sm">
-                  {levelNumber}
-                </span>
-              )}
-            </div>
+            {/* Embossed Level Number / Icon */}
+            {isBoss ? (
+              <span className="material-symbols-outlined text-[32px] sm:text-[36px] text-white drop-shadow-md">
+                emoji_events
+              </span>
+            ) : (
+              <span
+                className="font-game-num font-bold text-2xl sm:text-[30px] leading-none text-white tracking-tight relative z-10 select-none"
+                style={{
+                  textShadow: '0 2px 4px rgba(0,0,0,0.45)',
+                }}
+              >
+                {levelNumber}
+              </span>
+            )}
           </div>
 
-          {/* Level Complete Star Crown Badge */}
+          {/* Locked Ice-Blue Padlock */}
+          {isLocked && (
+            <div className="absolute -bottom-2 w-7 h-7 rounded-full bg-gradient-to-b from-[#e0f2fe] to-[#bae6fd] border-2 border-white shadow-md flex items-center justify-center text-[#0284c7] z-20">
+              <span className="material-symbols-outlined text-[15px] font-black">lock</span>
+            </div>
+          )}
+
+          {/* Completed Checkmark */}
           {isCompleted && (
-            <div className="absolute -bottom-1 w-6 h-6 rounded-full bg-emerald-600 border-2 border-white shadow-xs flex items-center justify-center text-white text-[11px] font-black z-20">
-              ✓
+            <div className="absolute -bottom-2 w-7 h-7 rounded-full bg-gradient-to-b from-[#a7f3d0] to-[#10b981] border-2 border-white shadow-md flex items-center justify-center text-white z-20">
+              <span className="material-symbols-outlined text-[15px] font-black">check</span>
             </div>
           )}
         </button>
       </div>
 
-      {/* ─── Smart Floating Quest Card ─── */}
+      {/* ─── Side Topic Floating Title ─── */}
       <div
         className={`absolute top-1/2 -translate-y-1/2 z-20 pointer-events-none flex flex-col ${
           textSide === 'left'
@@ -155,38 +151,25 @@ export const PathNode: React.FC<PathNodeProps> = ({
             : 'left-full ml-3.5 items-start text-left'
         }`}
       >
-        <div
-          className={`max-w-[135px] sm:max-w-[165px] p-2.5 rounded-2xl border backdrop-blur-md transition-all ${
-            isActive
-              ? 'bg-white/95 border-violet-300/80 shadow-[0_8px_25px_rgba(124,58,237,0.12)] ring-1 ring-violet-400/20'
-              : isCompleted
-              ? 'bg-white/90 border-slate-200 shadow-xs'
-              : 'bg-white/60 border-slate-200/50 opacity-55'
-          }`}
-        >
-          {/* Stage Pill */}
-          <div className={`flex items-center gap-1 mb-1 ${textSide === 'left' ? 'justify-end' : 'justify-start'}`}>
-            <span
-              className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                isActive
-                  ? 'bg-violet-100 text-[#7c3aed]'
-                  : isCompleted
-                  ? 'bg-emerald-100 text-emerald-800'
-                  : 'bg-slate-100 text-slate-500'
-              }`}
-            >
-              Stage {levelNumber}
-            </span>
-          </div>
-
+        <div className="max-w-[130px] sm:max-w-[160px] pointer-events-auto">
           {/* Topic Title */}
-          <h3 className="text-xs font-black text-slate-900 leading-snug line-clamp-2">
+          <h3
+            className={`text-xs sm:text-sm font-black leading-tight line-clamp-2 select-none ${
+              isLocked
+                ? 'text-white/55'
+                : 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]'
+            }`}
+          >
             {title}
           </h3>
 
-          {/* Subtitle / MCQ count */}
+          {/* Subtitle */}
           {subtitle && (
-            <p className="text-[10px] font-semibold text-slate-500 truncate mt-0.5">
+            <p
+              className={`text-[10px] sm:text-[11px] font-bold truncate mt-0.5 select-none ${
+                isLocked ? 'text-white/40' : 'text-purple-100/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]'
+              }`}
+            >
               {subtitle}
             </p>
           )}
