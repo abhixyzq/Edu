@@ -304,7 +304,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
               <span className="material-symbols-outlined text-[19px]">ios_share</span>
             </button>
 
-            {/* Center User Avatar with Level Tag */}
+            {/* Center User Avatar */}
             <div className="relative flex flex-col items-center">
               <div className="w-14 h-14 rounded-full p-0.5 bg-gradient-to-tr from-orange-400 via-pink-400 to-purple-400 shadow-md">
                 <div className="w-full h-full rounded-full bg-white p-0.5 overflow-hidden flex items-center justify-center">
@@ -315,9 +315,6 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
                   />
                 </div>
               </div>
-              <span className="absolute -top-1 -right-2 bg-white text-slate-800 text-[10px] font-black px-1.5 py-0.2 rounded-full border border-orange-200 shadow-2xs">
-                {user.classLevel ? user.classLevel.replace('Class ', '') + ' Lv' : '1 Lv'}
-              </span>
             </div>
 
             {/* Right Dark Bonfire Streak Button */}
