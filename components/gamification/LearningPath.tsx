@@ -105,19 +105,15 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   const [activeSubject, setActiveSubject] = useState(initialSubject);
   const [selectedNode, setSelectedNode] = useState<LessonNode | null>(null);
   const [dbSubjects, setDbSubjects] = useState<Array<{ id: string; name: string }>>([]);
-  // Hydrate instantly from cache if available to prevent any millisecond flicker
-  const [dbNodes, setDbNodes] = useState<LessonNode[] | null>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const cached = localStorage.getItem(`edu_path_cache_${initialSubject}`);
-        if (cached) return JSON.parse(cached);
-      } catch {}
-    }
-    return null;
-  });
+  const [dbNodes, setDbNodes] = useState<LessonNode[] | null>(null);
   const [loadingNodes, setLoadingNodes] = useState<boolean>(true);
+  const [mounted, setMounted] = useState(false);
   const [showSubjectMenu, setShowSubjectMenu] = useState(false);
   const activeNodeRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // 1. Fetch Dynamic Subjects from Supabase
   useEffect(() => {
@@ -302,6 +298,14 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
     }, 250);
     return () => clearTimeout(timer);
   }, [activeSubject, user.completedNodes]);
+
+  if (!mounted) {
+    return (
+      <div className="w-full min-h-screen bg-[#faf6f0] flex flex-col items-center justify-center">
+        <div className="w-12 h-12 rounded-full border-4 border-orange-200 border-t-[#ff6937] animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen bg-[#faf6f0] text-slate-900 pb-36 font-sans select-none relative">
