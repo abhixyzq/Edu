@@ -166,7 +166,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
                 id: `chap-${chap.id}-p${p + 1}`,
                 code: levelCode,
                 title: partTitle,
-                subtitle: `${endQ - startQ + 1} Questions`,
+                subtitle: '',
                 iconType: 'brain',
                 xpReward: 25 + p * 5,
                 gemsReward: 10 + p * 2,

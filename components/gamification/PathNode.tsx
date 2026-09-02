@@ -111,36 +111,19 @@ export const PathNode: React.FC<PathNodeProps> = ({
         }`}
       >
         {/* Title */}
-        <h3 className="font-heading text-base font-black text-slate-800 leading-tight line-clamp-2">
+        <h3 className="font-heading text-base font-black text-slate-800 leading-tight mb-2">
           {title}
         </h3>
 
-        {/* Subtitle */}
-        <p className="text-xs font-bold text-slate-400 mt-0.5 mb-2">
-          {subtitle || '10 minutes'}
-        </p>
-
-        {/* Action Button Strip (Exact Reference Screenshot) */}
+        {/* Action Button Strip */}
         {isActive ? (
-          <div className="flex items-center gap-1.5">
-            {/* List Icon Button */}
-            <button
-              type="button"
-              onClick={handleClick}
-              className="w-8 h-8 rounded-xl bg-[#ff6937] hover:bg-[#e85a2b] text-white flex items-center justify-center transition-colors cursor-pointer shadow-md shadow-orange-300/40 active:scale-95"
-            >
-              <span className="material-symbols-outlined text-[18px]">menu</span>
-            </button>
-            {/* Start Pill Button */}
-            <button
-              type="button"
-              onClick={handleClick}
-              className="px-5 py-1.5 rounded-xl bg-[#ff6937] hover:bg-[#e85a2b] text-white font-black text-xs shadow-md shadow-orange-300/60 flex items-center gap-1 transition-all active:scale-95 cursor-pointer uppercase tracking-wider"
-            >
-              <span>START</span>
-              <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleClick}
+            className="px-4 py-1 rounded-full bg-[#ff6937] text-white font-black text-[10px] tracking-widest uppercase shadow-xs flex items-center gap-1 hover:bg-[#e85a2b] transition-colors cursor-pointer animate-pulse"
+          >
+            <span>IN PROGRESS</span>
+          </button>
         ) : isCompleted ? (
           <button
             type="button"
