@@ -210,7 +210,7 @@ export default function ProfilePage() {
                 OFFICIAL ANDROID APP
               </span>
               <span className="text-[10px] bg-amber-400 text-amber-950 font-black px-2 py-0.5 rounded-full shadow-2xs">
-                v1.0.2 APK
+                v1.0.3 Latest
               </span>
             </div>
 
@@ -223,7 +223,7 @@ export default function ProfilePage() {
 
             {/* Direct Download Button */}
             <a
-              href={`/EduStride_Class12_v1.0.2.apk?v=latest`}
+              href="/nainixOne_Class12_Latest.apk"
               download="nainixOne_Class12_Latest.apk"
               onClick={playButtonClick}
               className="mt-4 w-full py-3.5 px-4 rounded-2xl bg-white hover:bg-violet-50 text-[#6d28d9] font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
@@ -386,6 +386,26 @@ export default function ProfilePage() {
             </Link>
           </div>
         )}
+
+        {/* ─── About nainixOne & App Info Card ─── */}
+        <Link
+          href="/about"
+          onClick={playButtonClick}
+          className="bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs flex items-center justify-between group hover:border-violet-300 transition-all active:scale-98"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-violet-100 text-[#7c3aed] flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 transition-transform">
+              <span className="material-symbols-outlined text-[22px]">info</span>
+            </div>
+            <div>
+              <h3 className="font-heading text-sm font-black text-slate-900">About nainixOne</h3>
+              <p className="text-[11px] text-slate-500">App info, features & direct APK download</p>
+            </div>
+          </div>
+          <span className="material-symbols-outlined text-slate-400 group-hover:text-[#7c3aed] transition-colors">
+            chevron_right
+          </span>
+        </Link>
 
         {/* ─── Sign Out ─── */}
         <div className="flex justify-center pt-2">
