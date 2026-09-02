@@ -105,8 +105,17 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   const [activeSubject, setActiveSubject] = useState(initialSubject);
   const [selectedNode, setSelectedNode] = useState<LessonNode | null>(null);
   const [dbSubjects, setDbSubjects] = useState<Array<{ id: string; name: string }>>([]);
-  const [dbNodes, setDbNodes] = useState<LessonNode[] | null>(null);
-  const [loadingNodes, setLoadingNodes] = useState(false);
+  // Hydrate instantly from cache if available to prevent any millisecond flicker
+  const [dbNodes, setDbNodes] = useState<LessonNode[] | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem(`edu_path_cache_${initialSubject}`);
+        if (cached) return JSON.parse(cached);
+      } catch {}
+    }
+    return null;
+  });
+  const [loadingNodes, setLoadingNodes] = useState<boolean>(true);
   const [showSubjectMenu, setShowSubjectMenu] = useState(false);
   const activeNodeRef = useRef<HTMLDivElement | null>(null);
 
@@ -121,12 +130,26 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
     loadSubjects();
   }, []);
 
-  // 2. Fetch Dynamic Chapters & Tests with 5-Question Chunking
+  // 2. Fetch Dynamic Chapters & Tests with 5-Question Chunking + Instant LocalStorage Cache
   useEffect(() => {
     let isMounted = true;
 
+    // Try reading cache immediately on subject change
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem(`edu_path_cache_${activeSubject}`);
+        if (cached) {
+          setDbNodes(JSON.parse(cached));
+          setLoadingNodes(false);
+        } else {
+          setLoadingNodes(true);
+        }
+      } catch {
+        setLoadingNodes(true);
+      }
+    }
+
     async function loadDynamicChapters() {
-      setLoadingNodes(true);
       try {
         const [chaptersRes, testsRes] = await Promise.all([
           supabase.from('chapters').select('*').eq('subject_id', activeSubject).order('chapter_number'),
@@ -182,11 +205,14 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
           });
 
           setDbNodes(generatedNodes);
-        } else if (isMounted) {
-          setDbNodes(null);
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem(`edu_path_cache_${activeSubject}`, JSON.stringify(generatedNodes));
+            } catch {}
+          }
         }
       } catch {
-        if (isMounted) setDbNodes(null);
+        // preserve cache or fallback
       } finally {
         if (isMounted) setLoadingNodes(false);
       }
@@ -210,8 +236,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
     };
   }, [activeSubject]);
 
-  const fallbackNodes = LESSON_PATH[activeSubject] || LESSON_PATH.physics;
-  const nodes = dbNodes && dbNodes.length > 0 ? dbNodes : fallbackNodes;
+  const nodes = dbNodes && dbNodes.length > 0 ? dbNodes : [];
 
   const subjectList = dbSubjects.length > 0
     ? dbSubjects
@@ -390,10 +415,18 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
       </div>
 
       {/* ─── Winding Pathway Canvas (Coordinated Coordinate Space) ─── */}
-      <div
-        className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-[175px] z-10"
-        style={{ height: `${totalTrackHeight}px` }}
-      >
+      {nodes.length === 0 ? (
+        <div className="w-full max-w-[340px] mx-auto relative mt-[175px] min-h-[500px] flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-14 h-14 rounded-full border-4 border-orange-200 border-t-[#ff6937] animate-spin" />
+            <p className="text-xs font-black tracking-wider text-slate-400 uppercase">Loading Curriculum...</p>
+          </div>
+        </div>
+      ) : (
+        <div
+          className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-[175px] z-10 animate-in fade-in duration-300"
+          style={{ height: `${totalTrackHeight}px` }}
+        >
         {/* SVG Path Tracks (Solid Green + Dashed Dark Road) */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible"
@@ -477,7 +510,8 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
             </React.Fragment>
           );
         })}
-      </div>
+        </div>
+      )}
 
     </div>
   );
