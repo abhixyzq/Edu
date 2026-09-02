@@ -331,10 +331,10 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
       <div className="absolute top-[820px] left-6 text-orange-400 text-xs font-bold opacity-50 pointer-events-none">✦</div>
       <div className="absolute top-[1020px] right-12 text-emerald-400 text-sm font-bold opacity-60 pointer-events-none">+</div>
 
-      {/* ─── Top White Rounded Header Card (100% Fixed at Viewport Top) ─── */}
-      <div className="fixed top-0 left-0 right-0 z-40 bg-[#faf6f0]/95 backdrop-blur-md pb-2 shadow-2xs">
-        <div className="max-w-md mx-auto">
-          <div className="bg-white rounded-b-[36px] px-5 pt-3 pb-4 shadow-md border-b border-orange-100/80">
+      {/* ─── Top White Rounded Header Card (Only Curved Card Fixed) ─── */}
+      <div className="fixed top-0 left-0 right-0 z-40 pointer-events-none">
+        <div className="max-w-md mx-auto pointer-events-auto">
+          <div className="bg-white rounded-b-[36px] px-5 pt-3 pb-4 shadow-lg border-b border-orange-100/80">
             
             {/* Top Bar: Left Action / Center Avatar / Right Dark Flame */}
             <div className="w-full flex items-center justify-between">
