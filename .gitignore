@@ -39,3 +39,4 @@ yarn-error.log*
 # typescript
 *.apk
 !public/EduStride_Class12_v1.0.2.apk
+!public/nainixOne_Class12_Latest.apk
