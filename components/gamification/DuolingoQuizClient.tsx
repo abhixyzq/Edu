@@ -32,8 +32,19 @@ export function DuolingoQuizClient() {
 
   const { user, addXP, addGems, deductHeart, refillHearts, completeNode, toggleSound } = useUser();
 
-  const [questions, setQuestions] = useState<Question[]>(MOCK_QUESTIONS.slice(0, 5));
+  const cacheKey = `edu_quiz_cache_${testId}_${subjectId}_${offset}_${limit}`;
+
+  const [questions, setQuestions] = useState<Question[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem(`edu_quiz_cache_${testId}_${subjectId}_${offset}_${limit}`);
+        if (cached) return JSON.parse(cached);
+      } catch {}
+    }
+    return [];
+  });
   const [loadingQuestions, setLoadingQuestions] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
@@ -46,12 +57,26 @@ export function DuolingoQuizClient() {
   const [mascotMood, setMascotMood] = useState<MascotMood>('idle');
   const [screenShake, setScreenShake] = useState(false);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Dynamic Supabase Question Loading with 5-Question Round Slicing
   useEffect(() => {
     let isMounted = true;
 
+    // Try reading cache on key change
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+          setQuestions(JSON.parse(cached));
+          setLoadingQuestions(false);
+        }
+      } catch {}
+    }
+
     async function loadQuizQuestions() {
-      setLoadingQuestions(true);
       try {
         // 1. Try querying questions by test_id
         let { data: qData } = await supabase
@@ -113,16 +138,14 @@ export function DuolingoQuizClient() {
           const roundQuestions = chunked.length > 0 ? chunked : formatted.slice(0, Math.min(limit, 5));
 
           setQuestions(roundQuestions);
-          setCurrentIndex(0);
-          setSelectedKey(null);
-          setIsAnswerChecked(false);
-        } else if (isMounted) {
-          const fallbackChunk = MOCK_QUESTIONS.slice(offset, offset + limit);
-          setQuestions(fallbackChunk.length > 0 ? fallbackChunk : MOCK_QUESTIONS.slice(0, 5));
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem(cacheKey, JSON.stringify(roundQuestions));
+            } catch {}
+          }
         }
       } catch {
-        const fallbackChunk = MOCK_QUESTIONS.slice(offset, offset + limit);
-        setQuestions(fallbackChunk.length > 0 ? fallbackChunk : MOCK_QUESTIONS.slice(0, 5));
+        // preserve cache or state
       } finally {
         if (isMounted) setLoadingQuestions(false);
       }
@@ -132,7 +155,7 @@ export function DuolingoQuizClient() {
     return () => {
       isMounted = false;
     };
-  }, [testId, subjectId, offset, limit]);
+  }, [testId, subjectId, offset, limit, cacheKey]);
 
   const currentQ = questions[currentIndex] || questions[0];
   const progressPercent = questions.length > 0
@@ -233,6 +256,35 @@ export function DuolingoQuizClient() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedKey, isAnswerChecked]);
+
+  // If Loading or Hydrating, render a clean skeleton placeholder with NO dummy questions
+  if (!mounted || questions.length === 0) {
+    return (
+      <div className="fixed inset-0 w-full h-[100dvh] bg-white flex flex-col justify-between p-6 sm:p-10 font-sans select-none">
+        {/* Top Header Placeholder */}
+        <div className="w-full flex items-center justify-between border-b border-slate-100 pb-4 max-w-2xl mx-auto">
+          <div className="w-8 h-8 rounded-full bg-slate-100 animate-pulse" />
+          <div className="w-48 h-3.5 rounded-full bg-slate-100 animate-pulse mx-4" />
+          <div className="w-16 h-6 rounded-full bg-slate-100 animate-pulse" />
+        </div>
+
+        {/* Question & Options Skeleton */}
+        <div className="w-full max-w-xl mx-auto flex flex-col gap-4 my-auto">
+          <div className="w-28 h-5 bg-orange-50 rounded-lg animate-pulse" />
+          <div className="w-full h-14 bg-slate-100 rounded-2xl animate-pulse" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+            <div className="h-16 bg-slate-50 rounded-2xl animate-pulse border-2 border-slate-100" />
+            <div className="h-16 bg-slate-50 rounded-2xl animate-pulse border-2 border-slate-100" />
+            <div className="h-16 bg-slate-50 rounded-2xl animate-pulse border-2 border-slate-100" />
+            <div className="h-16 bg-slate-50 rounded-2xl animate-pulse border-2 border-slate-100" />
+          </div>
+        </div>
+
+        {/* Footer Placeholder */}
+        <div className="w-full max-w-xl mx-auto h-14 bg-slate-100 rounded-2xl animate-pulse" />
+      </div>
+    );
+  }
 
   // If Finished, render the Victory Screen
   if (isFinished) {
