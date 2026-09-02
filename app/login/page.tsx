@@ -5,8 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
 import { playButtonClick, playGemDing } from '@/lib/soundEffects';
-import { ParticleSphere } from '@/components/ParticleSphere';
-import { VoiceCosmos } from '@/components/VoiceCosmos';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,7 +27,6 @@ export default function LoginPage() {
 
   const showcaseRef = useRef<HTMLDivElement | null>(null);
   const loginSectionRef = useRef<HTMLDivElement | null>(null);
-  const cosmosSectionRef = useRef<HTMLDivElement | null>(null);
 
   const scrollToAbout = () => {
     playButtonClick();
@@ -417,19 +414,6 @@ export default function LoginPage() {
           </div>
 
         </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════
-          SCREEN 3: CUTE MIMIC VOICE ASSISTANT (3D Particle Sphere + Echo Voice)
-      ══════════════════════════════════════════════════════════════════ */}
-      <section
-        ref={cosmosSectionRef}
-        className="snap-start snap-always w-full h-[100dvh] min-h-[100dvh] bg-black relative flex items-center justify-center overflow-hidden p-0 m-0"
-        style={{
-          scrollSnapStop: 'always',
-        }}
-      >
-        <VoiceCosmos />
       </section>
 
     </div>
