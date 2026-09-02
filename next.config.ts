@@ -5,7 +5,8 @@ const isCapacitor = process.env.CAPACITOR_BUILD === 'true';
 const nextConfig: NextConfig = {
   ...(isCapacitor ? { output: 'export' } : {}),
   images: {
-    unoptimized: true,
+    // Optimization ON for web; disabled only for Capacitor static export
+    unoptimized: isCapacitor,
   },
   allowedDevOrigins: [
     "10.148.20.243:3000",

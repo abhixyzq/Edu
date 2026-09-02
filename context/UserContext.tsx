@@ -93,27 +93,25 @@ export const getLeagueByXP = (xp: number): LeagueInfo => {
 
 const DEFAULT_USER: UserGamifiedState = {
   id: '',
-  name: 'Abhishek Kumar',
-  username: 'abhishek_12',
+  name: '',
+  username: '',
   email: '',
   classLevel: 'Class 12',
-  streakDays: 7,
+  streakDays: 0,
   targetBoard: 'cbse',
   isLoggedIn: false,
   isAdmin: false,
   hearts: 5,
   maxHearts: 5,
   infiniteHeartsUntil: null,
-  gems: 150,
-  xp: 320,
-  level: 3,
+  gems: 0,
+  xp: 0,
+  level: 1,
   leagueTier: 'Starter League',
-  unlockedNodes: ['phy-1', 'phy-2', 'chem-1', 'math-1', 'bio-1', 'eng-1'],
-  completedNodes: {
-    'phy-1': { stars: 3, score: 95, completedAt: '2026-08-30' },
-  },
+  unlockedNodes: ['phy-1', 'chem-1', 'math-1', 'bio-1', 'eng-1'],
+  completedNodes: {},
   inventory: {
-    streakFreeze: 1,
+    streakFreeze: 0,
     infiniteHeartsPass: 0,
     doubleXpCount: 0,
   },
@@ -135,12 +133,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // ─── On Mount: Restore state from localStorage + sync Supabase ───
   useEffect(() => {
-    // 1. Restore local storage
-    const storedAuth = localStorage.getItem('edustride_logged_in');
-    const storedName = localStorage.getItem('edustride_user_name');
-    const storedUsername = localStorage.getItem('edustride_user_username');
-    const storedEmail = localStorage.getItem('edustride_user_email');
-    const storedBoard = localStorage.getItem('edustride_user_board');
     try {
       const storedAuth = localStorage.getItem('edustride_logged_in');
       const storedName = localStorage.getItem('edustride_user_name');

@@ -53,7 +53,7 @@ export const PathNode: React.FC<PathNodeProps> = ({
             ? 'ring-4 ring-orange-300 border-2 border-orange-400 shadow-xl shadow-orange-200/60'
             : isCompleted
             ? 'ring-4 ring-emerald-200 border-2 border-emerald-400 shadow-md shadow-emerald-100'
-            : 'ring-4 ring-slate-200 border-2 border-slate-300 shadow-xs opacity-75'
+            : 'ring-4 ring-slate-200 border-2 border-slate-300 shadow-xs'
         }`}
       >
         {/* Inner Disc with Bold Number 1, 2, 3... */}
@@ -117,7 +117,7 @@ export const PathNode: React.FC<PathNodeProps> = ({
             <button
               type="button"
               onClick={handleClick}
-              className="px-3.5 py-1 rounded-full bg-slate-200/90 text-slate-500 font-bold text-[9px] sm:text-[10px] tracking-wider uppercase flex items-center gap-1 hover:bg-slate-300 transition-colors cursor-pointer"
+              className="px-3.5 py-1 rounded-full bg-slate-200 text-slate-500 font-bold text-[9px] sm:text-[10px] tracking-wider uppercase flex items-center gap-1 hover:bg-slate-300 transition-colors cursor-pointer"
             >
               <span>LOCKED</span>
             </button>

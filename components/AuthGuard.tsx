@@ -19,7 +19,6 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     '/signup',
     '/forgot-password',
     '/forgot-pass',
-    '/about',
     '/privacy',
     '/terms',
     '/refund',

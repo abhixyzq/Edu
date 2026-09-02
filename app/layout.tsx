@@ -179,8 +179,9 @@ export default function RootLayout({
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* All fonts in one request — no duplicates */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Space+Grotesk:wght@700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@700;900&family=Fredoka:wght@600;700&family=Lilita+One&family=Montserrat:wght@200;300;400;500;700;800;900&family=Nunito+Sans:ital,opsz,wght@0,6..12,300..900;1,6..12,300..900&family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Quicksand:wght@500;600;700&family=Sniglet:wght@800&family=Space+Grotesk:wght@700&display=swap"
           rel="stylesheet"
         />
         <link

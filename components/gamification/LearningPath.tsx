@@ -370,25 +370,53 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
               </button>
             </div>
 
-            {/* Stats Counters Row (⚡ 0 | ⚡ 0 / 10,000 | 💎 0) */}
-            <div className="w-full flex items-center justify-around mt-3.5 pt-3 border-t border-slate-100">
+            {/* Stats Counters Row (XP | Gems | Streak | Lives) */}
+            <div className="w-full grid grid-cols-4 items-center justify-items-center mt-3 pt-2.5 border-t border-slate-100">
               {/* XP */}
-              <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => router.push('/profile')}
+                className="flex items-center gap-1 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                title="XP Points"
+              >
                 <span className="text-amber-500 text-sm font-black">⚡</span>
                 <span className="font-black text-xs text-slate-800">{user.xp || 0}</span>
-              </div>
-
-              {/* Daily Goal */}
-              <div className="flex items-center gap-1.5">
-                <span className="text-amber-500 text-sm font-black">⚡</span>
-                <span className="font-bold text-xs text-slate-500">{user.xp || 0} / 10,000</span>
-              </div>
+              </button>
 
               {/* Gems */}
-              <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => router.push('/store')}
+                className="flex items-center gap-1 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                title="Gems Store"
+              >
                 <span className="text-cyan-500 text-sm font-black">💎</span>
                 <span className="font-black text-xs text-slate-800">{user.gems || 0}</span>
-              </div>
+              </button>
+
+              {/* Streak */}
+              <button
+                type="button"
+                onClick={() => router.push('/leaderboard')}
+                className="flex items-center gap-1 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                title="Day Streak"
+              >
+                <span className="text-orange-500 text-sm font-black">🔥</span>
+                <span className="font-black text-xs text-slate-800">{user.streakDays || 0}</span>
+              </button>
+
+              {/* Lives / Hearts */}
+              <button
+                type="button"
+                onClick={() => router.push('/store')}
+                className="flex items-center gap-1 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                title="Lives & Heart Refill"
+              >
+                <span className="text-rose-500 text-sm font-black">❤️</span>
+                <span className="font-black text-xs text-slate-800">
+                  {user.infiniteHeartsUntil && Date.now() < user.infiniteHeartsUntil ? '∞' : (user.hearts ?? 5)}
+                </span>
+              </button>
             </div>
 
           </div>

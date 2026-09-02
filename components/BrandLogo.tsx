@@ -6,7 +6,6 @@ interface BrandLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   variant?: 'light' | 'dark';
   className?: string;
-  showTextOnly?: boolean;
 }
 
 export const BrandLogo: React.FC<BrandLogoProps> = ({

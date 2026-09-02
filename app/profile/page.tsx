@@ -387,26 +387,6 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* ─── About nainixOne & App Info Card ─── */}
-        <Link
-          href="/about"
-          onClick={playButtonClick}
-          className="bg-white rounded-3xl p-4 border-2 border-[#e2e8f0] shadow-xs flex items-center justify-between group hover:border-violet-300 transition-all active:scale-98"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-violet-100 text-[#7c3aed] flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined text-[22px]">info</span>
-            </div>
-            <div>
-              <h3 className="font-heading text-sm font-black text-slate-900">About nainixOne</h3>
-              <p className="text-[11px] text-slate-500">App info, features & direct APK download</p>
-            </div>
-          </div>
-          <span className="material-symbols-outlined text-slate-400 group-hover:text-[#7c3aed] transition-colors">
-            chevron_right
-          </span>
-        </Link>
-
         {/* ─── Sign Out ─── */}
         <div className="flex justify-center pt-2">
           <button

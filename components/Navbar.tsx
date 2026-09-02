@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
 import { playButtonClick } from '@/lib/soundEffects';
-import { GemIcon, HeartLifeIcon, StreakFlameIcon, NainixOneLogo } from '@/components/icons/AppIcons';
+import { GemIcon, HeartLifeIcon, StreakFlameIcon } from '@/components/icons/AppIcons';
 
 import { BrandLogo } from '@/components/BrandLogo';
 
@@ -20,7 +20,6 @@ export const Navbar: React.FC = () => {
     pathname === '/signup' || 
     pathname === '/forgot-password' || 
     pathname === '/forgot-pass' || 
-    pathname === '/about' || 
     pathname === '/privacy' || 
     pathname === '/terms' || 
     pathname === '/refund' || 
@@ -63,10 +62,10 @@ export const Navbar: React.FC = () => {
               
               {/* 1. Gems Capsule */}
               <Link
-                href="/shop"
+                href="/store"
                 onClick={handleTabClick}
                 className="px-2.5 py-1 rounded-2xl bg-cyan-50/80 hover:bg-cyan-100/90 border border-cyan-200/80 flex items-center gap-1.5 transition-all active:scale-95 shadow-[0_2px_8px_rgba(6,182,212,0.12)] group"
-                title="Your Gems"
+                title="Your Gems & Store"
               >
                 <GemIcon size={18} className="group-hover:scale-115 transition-transform" />
                 <span className="text-xs font-black text-cyan-900">{user.gems}</span>
@@ -74,10 +73,10 @@ export const Navbar: React.FC = () => {
 
               {/* 2. Lives / Hearts Capsule */}
               <Link
-                href="/shop"
+                href="/store"
                 onClick={handleTabClick}
                 className="px-2.5 py-1 rounded-2xl bg-rose-50/80 hover:bg-rose-100/90 border border-rose-200/80 flex items-center gap-1.5 transition-all active:scale-95 shadow-[0_2px_8px_rgba(244,63,94,0.12)] group"
-                title="Your Lives"
+                title="Your Lives & Store"
               >
                 <HeartLifeIcon size={18} className="group-hover:scale-115 transition-transform" />
                 <span className="text-xs font-black text-rose-900">
