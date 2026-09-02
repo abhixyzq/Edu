@@ -427,6 +427,7 @@ ALTER TABLE public.user_test_results ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users can view their own test results" ON public.user_test_results;
 DROP POLICY IF EXISTS "Users can insert their own test results" ON public.user_test_results;
 DROP POLICY IF EXISTS "Admins can view all test results" ON public.user_test_results;
+DROP POLICY IF EXISTS "Users can view their own test results or admin all" ON public.user_test_results;
 
 CREATE POLICY "Users can view their own test results or admin all" 
   ON public.user_test_results FOR SELECT 
