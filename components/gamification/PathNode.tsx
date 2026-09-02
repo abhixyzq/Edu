@@ -52,50 +52,38 @@ export const PathNode: React.FC<PathNodeProps> = ({
       {/* ─── Circular Graphic Node ─── */}
       <div className={`relative flex flex-col items-center ${textSide === 'left' ? 'order-2' : 'order-1'}`}>
         
-        {/* Scholar Mini Avatar Pin on Outer Track Loop (Active State) */}
-        {isActive && (
-          <div className="absolute -left-6 top-1/2 -translate-y-1/2 z-30 pointer-events-none">
-            <div className="w-7 h-7 rounded-full bg-white p-0.5 border-2 border-[#ff6937] shadow-md flex items-center justify-center overflow-hidden ring-2 ring-orange-100">
-              <img
-                src={imageSrc}
-                alt="Scholar"
-                className="w-full h-full object-contain"
-              />
-            </div>
-          </div>
-        )}
-
         {/* Circular Node Button */}
         <button
           type="button"
           onClick={handleClick}
           aria-label={`Stage ${levelNumber} - ${title}`}
-          className={`relative w-[82px] h-[82px] sm:w-[90px] sm:h-[90px] rounded-full p-1 transition-all duration-200 flex items-center justify-center bg-white cursor-pointer hover:scale-105 active:scale-95 ${
+          className={`relative w-[76px] h-[76px] sm:w-[84px] sm:h-[84px] rounded-full p-1 transition-all duration-200 flex items-center justify-center bg-white cursor-pointer hover:scale-105 active:scale-95 ${
             isActive
-              ? 'ring-4 ring-pink-300 border-2 border-pink-400 shadow-lg shadow-pink-200/50'
+              ? 'ring-4 ring-orange-300 border-2 border-orange-400 shadow-lg shadow-orange-200/50'
               : isCompleted
-              ? 'ring-4 ring-purple-200 border-2 border-purple-400 shadow-md shadow-purple-100'
-              : 'ring-4 ring-amber-200 border-2 border-amber-300 shadow-sm opacity-90'
+              ? 'ring-4 ring-emerald-200 border-2 border-emerald-400 shadow-md shadow-emerald-100'
+              : 'ring-4 ring-slate-200 border-2 border-slate-300 shadow-xs opacity-75'
           }`}
         >
-          {/* Inner Illustration Disc */}
+          {/* Inner Disc with Bold Number 1, 2, 3... */}
           <div
-            className={`w-full h-full rounded-full flex items-center justify-center overflow-hidden p-2.5 relative ${
+            className={`w-full h-full rounded-full flex items-center justify-center relative shadow-inner ${
               isActive
-                ? 'bg-gradient-to-br from-pink-50 to-orange-50'
+                ? 'bg-gradient-to-br from-[#ff7a45] to-[#ff5222] text-white'
                 : isCompleted
-                ? 'bg-gradient-to-br from-purple-50 to-blue-50'
-                : 'bg-gradient-to-br from-amber-50 to-orange-50'
+                ? 'bg-gradient-to-br from-[#22c55e] to-[#16a34a] text-white'
+                : 'bg-slate-100 text-slate-400'
             }`}
           >
-            <img
-              src={imageSrc}
-              alt={title}
-              className="w-full h-full object-contain hover:scale-110 transition-transform"
-            />
+            {/* Top Gloss Highlight */}
+            <div className="absolute top-1 left-2 right-2 h-3.5 rounded-full bg-white/30 blur-[0.5px] pointer-events-none" />
+
+            <span className="font-heading font-black text-2xl sm:text-3xl leading-none select-none drop-shadow-xs">
+              {levelNumber}
+            </span>
           </div>
 
-          {/* Completed Green Checkmark Badge (Exact Screenshot) */}
+          {/* Completed Green Checkmark Badge */}
           {isCompleted && (
             <div className="absolute top-0 right-0 w-6 h-6 rounded-full bg-[#22c55e] border-2 border-white shadow-xs flex items-center justify-center text-white z-20">
               <span className="material-symbols-outlined text-[14px] font-black">check</span>
