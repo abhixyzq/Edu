@@ -392,48 +392,12 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
             </div>
 
           </div>
-
-          {/* Floating Dark Subject Pill: [ My Exercises 🎛️ ] (Exact Reference) */}
-          <div className="relative -mt-3.5 flex justify-center z-50">
-            <button
-              type="button"
-              onClick={() => setShowSubjectMenu(!showSubjectMenu)}
-              className="px-6 py-2 rounded-full bg-[#241f31] hover:bg-[#342d45] text-white font-black text-xs shadow-xl flex items-center gap-2 transition-all active:scale-95 cursor-pointer border border-slate-700/50"
-            >
-              <span>My Exercises • {currentSubjectObj.name}</span>
-              <span className="material-symbols-outlined text-[15px]">tune</span>
-            </button>
-
-            {/* Subject Dropdown Menu */}
-            {showSubjectMenu && (
-              <div className="absolute top-11 z-50 bg-white rounded-2xl p-2 shadow-2xl border border-slate-200 min-w-[220px] animate-in fade-in slide-in-from-top-2">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 py-1.5">Switch Curriculum</p>
-                {subjectList.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => {
-                      playButtonClick();
-                      setActiveSubject(s.id);
-                      setShowSubjectMenu(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${
-                      activeSubject === s.id ? 'bg-orange-50 text-[#ff6937] font-black' : 'text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    <span>{s.name}</span>
-                    {activeSubject === s.id && <span className="text-[#ff6937] text-xs font-black">✓</span>}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
       {/* ─── Winding Pathway Canvas (Coordinated Coordinate Space) ─── */}
       {nodes.length === 0 ? (
-        <div className="w-full max-w-[340px] mx-auto relative mt-[165px] min-h-[500px] flex flex-col items-center justify-center">
+        <div className="w-full max-w-[340px] mx-auto relative mt-[125px] min-h-[500px] flex flex-col items-center justify-center">
           <div className="flex flex-col items-center gap-3">
             <div className="w-14 h-14 rounded-full border-4 border-orange-200 border-t-[#ff6937] animate-spin" />
             <p className="text-xs font-black tracking-wider text-slate-400 uppercase">Loading Curriculum...</p>
@@ -441,7 +405,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
         </div>
       ) : (
         <div
-          className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-[165px] z-10 animate-in fade-in duration-300"
+          className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-[125px] z-10 animate-in fade-in duration-300"
           style={{ height: `${totalTrackHeight}px` }}
         >
         {/* SVG Path Tracks (Solid Green + Dashed Dark Road) */}
@@ -529,6 +493,42 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
         })}
         </div>
       )}
+
+      {/* ─── Floating Bottom Subject Switcher Pill: [ My Exercises • Physics 🎛️ ] ─── */}
+      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center">
+        {/* Subject Dropdown Menu popping UP */}
+        {showSubjectMenu && (
+          <div className="mb-2.5 bg-white rounded-2xl p-2 shadow-2xl border border-slate-200 min-w-[240px] animate-in fade-in slide-in-from-bottom-2">
+            <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 py-1.5">Switch Curriculum</p>
+            {subjectList.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => {
+                  playButtonClick();
+                  setActiveSubject(s.id);
+                  setShowSubjectMenu(false);
+                }}
+                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${
+                  activeSubject === s.id ? 'bg-orange-50 text-[#ff6937] font-black' : 'text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                <span>{s.name}</span>
+                {activeSubject === s.id && <span className="text-[#ff6937] text-xs font-black">✓</span>}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setShowSubjectMenu(!showSubjectMenu)}
+          className="px-6 py-2.5 rounded-full bg-[#241f31] hover:bg-[#342d45] text-white font-black text-xs shadow-2xl flex items-center gap-2 transition-all active:scale-95 cursor-pointer border border-slate-700/60 ring-2 ring-white/60"
+        >
+          <span>My Exercises • {currentSubjectObj.name}</span>
+          <span className="material-symbols-outlined text-[15px]">tune</span>
+        </button>
+      </div>
 
     </div>
   );
