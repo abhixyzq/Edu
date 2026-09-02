@@ -14,11 +14,21 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     setIsMounted(true);
   }, []);
 
-  const isPublicRoute = 
-    pathname === '/login' || 
-    pathname === '/signup' || 
-    pathname === '/forgot-password' || 
-    pathname === '/forgot-pass';
+  const PUBLIC_ROUTES = [
+    '/login',
+    '/signup',
+    '/forgot-password',
+    '/forgot-pass',
+    '/about',
+    '/privacy',
+    '/terms',
+    '/refund',
+    '/disclaimer',
+  ];
+
+  const isPublicRoute = PUBLIC_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  );
 
   useEffect(() => {
     if (!isMounted) return;

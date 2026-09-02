@@ -411,6 +411,31 @@ export default function LoginPage() {
                 </div>
               </a>
             </div>
+
+            {/* ─── Legal & Compliance Footer Links ─── */}
+            <div className="pt-3.5 mt-1 border-t border-slate-100 flex flex-col items-center gap-1.5 text-center">
+              <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] font-semibold text-slate-500">
+                <Link href="/privacy" className="hover:text-slate-900 hover:underline transition-colors">
+                  Privacy Policy
+                </Link>
+                <span>&bull;</span>
+                <Link href="/terms" className="hover:text-slate-900 hover:underline transition-colors">
+                  Terms of Service
+                </Link>
+                <span>&bull;</span>
+                <Link href="/refund" className="hover:text-slate-900 hover:underline transition-colors">
+                  Refund Policy
+                </Link>
+                <span>&bull;</span>
+                <Link href="/disclaimer" className="hover:text-slate-900 hover:underline transition-colors">
+                  Disclaimer
+                </Link>
+              </div>
+
+              <p className="text-[8.5px] text-slate-400 font-medium">
+                &copy; 2026 nainixOne &bull; All Rights Reserved
+              </p>
+            </div>
           </div>
 
         </div>
