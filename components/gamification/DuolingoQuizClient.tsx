@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import confetti from 'canvas-confetti';
 import { useUser } from '@/context/UserContext';
+import { supabase } from '@/lib/supabase';
 import { MOCK_QUESTIONS, Question } from '@/lib/mockData';
 import {
   playCorrectChime,
@@ -20,13 +21,17 @@ import { HeartLifeIcon, StreakFlameIcon, GemIcon, XpBoltIcon } from '@/component
 
 export function DuolingoQuizClient() {
   const router = useRouter();
+  const params = useParams();
   const searchParams = useSearchParams();
+  const testId = (params?.id as string) || searchParams?.get('testId') || '1';
   const nodeId = searchParams?.get('nodeId') || 'phy-1';
   const lessonTitle = searchParams?.get('title') || 'Class 12 Concept Quiz';
   const subjectId = searchParams?.get('subject') || 'physics';
 
   const { user, addXP, addGems, deductHeart, refillHearts, completeNode, toggleSound } = useUser();
 
+  const [questions, setQuestions] = useState<Question[]>(MOCK_QUESTIONS);
+  const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
@@ -39,10 +44,91 @@ export function DuolingoQuizClient() {
   const [mascotMood, setMascotMood] = useState<MascotMood>('idle');
   const [screenShake, setScreenShake] = useState(false);
 
-  // Lesson Questions (use mock questions or subset)
-  const questions: Question[] = MOCK_QUESTIONS;
-  const currentQ = questions[currentIndex];
-  const progressPercent = ((currentIndex + (isAnswerChecked && isCorrect ? 1 : 0)) / questions.length) * 100;
+  // Dynamic Supabase Question Loading
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadQuizQuestions() {
+      setLoadingQuestions(true);
+      try {
+        // 1. Try querying questions by test_id
+        let { data: qData } = await supabase
+          .from('questions')
+          .select('*')
+          .eq('test_id', testId)
+          .order('question_number');
+
+        // 2. If no questions for this exact test_id, try fetching questions from tests under this subject
+        if (!qData || qData.length === 0) {
+          const { data: subTests } = await supabase
+            .from('tests')
+            .select('id')
+            .eq('subject_id', subjectId);
+
+          if (subTests && subTests.length > 0) {
+            const testIds = subTests.map((t: any) => t.id);
+            const { data: subQ } = await supabase
+              .from('questions')
+              .select('*')
+              .in('test_id', testIds)
+              .order('question_number')
+              .limit(20);
+
+            if (subQ && subQ.length > 0) {
+              qData = subQ;
+            }
+          }
+        }
+
+        // 3. Transform questions to UI format
+        if (isMounted && qData && qData.length > 0) {
+          const KEY_MAP = ['A', 'B', 'C', 'D'];
+          const formatted: Question[] = qData.map((q: any) => {
+            let ansLetter = 'A';
+            if (typeof q.correct_answer === 'number') {
+              ansLetter = KEY_MAP[q.correct_answer] || 'A';
+            } else {
+              ansLetter = String(q.correct_answer).trim().toUpperCase();
+            }
+
+            return {
+              id: q.id,
+              questionText: q.question_text,
+              options: [
+                { key: 'A', text: q.option_a },
+                { key: 'B', text: q.option_b },
+                { key: 'C', text: q.option_c || 'None of these' },
+                { key: 'D', text: q.option_d || 'All of the above' },
+              ],
+              correctAnswer: ansLetter,
+              marks: 4,
+              explanation: q.explanation || '',
+              subject: subjectId,
+            };
+          });
+
+          setQuestions(formatted);
+          setCurrentIndex(0);
+          setSelectedKey(null);
+          setIsAnswerChecked(false);
+        }
+      } catch {
+        // fallback to default mock questions
+      } finally {
+        if (isMounted) setLoadingQuestions(false);
+      }
+    }
+
+    loadQuizQuestions();
+    return () => {
+      isMounted = false;
+    };
+  }, [testId, subjectId]);
+
+  const currentQ = questions[currentIndex] || questions[0];
+  const progressPercent = questions.length > 0
+    ? ((currentIndex + (isAnswerChecked && isCorrect ? 1 : 0)) / questions.length) * 100
+    : 0;
 
   // Handle Option Select
   const handleSelectOption = (key: string) => {
