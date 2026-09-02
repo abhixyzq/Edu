@@ -289,11 +289,11 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
       <div className="absolute top-[820px] left-6 text-orange-400 text-xs font-bold opacity-50 pointer-events-none">✦</div>
       <div className="absolute top-[1020px] right-12 text-emerald-400 text-sm font-bold opacity-60 pointer-events-none">+</div>
 
-      {/* ─── Top White Rounded Header Card (100% Matching Screenshot) ─── */}
-      <div className="relative z-30 max-w-md mx-auto">
-        <div className="bg-white rounded-b-[36px] px-5 pt-3 pb-4 shadow-sm border-b border-orange-100/60">
+      {/* ─── Top White Rounded Header Card (Sticky / Fixed at Top) ─── */}
+      <div className="sticky top-0 z-40 max-w-md mx-auto w-full bg-[#faf6f0]/95 backdrop-blur-md pb-2">
+        <div className="bg-white rounded-b-[36px] px-5 pt-3 pb-4 shadow-md border-b border-orange-100/80">
           
-          {/* Top Bar: Left Action / Center Avatar with 1 Lv badge / Right Dark Flame */}
+          {/* Top Bar: Left Action / Center Avatar / Right Dark Flame */}
           <div className="w-full flex items-center justify-between">
             {/* Share / Profile Button */}
             <button
