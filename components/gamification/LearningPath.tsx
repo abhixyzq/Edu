@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { PathNode, NodeStatus } from './PathNode';
 import { useUser } from '@/context/UserContext';
+import { supabase } from '@/lib/supabase';
 import { SUBJECTS } from '@/lib/mockData';
 import { playButtonClick } from '@/lib/soundEffects';
 import { XpBoltIcon, GemIcon } from '@/components/icons/AppIcons';
@@ -287,9 +288,101 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   const { user } = useUser();
   const [activeSubject, setActiveSubject] = useState(initialSubject);
   const [selectedNode, setSelectedNode] = useState<LessonNode | null>(null);
+  const [dbSubjects, setDbSubjects] = useState<Array<{ id: string; name: string }>>([]);
+  const [dbNodes, setDbNodes] = useState<LessonNode[] | null>(null);
+  const [loadingNodes, setLoadingNodes] = useState(false);
   const activeNodeRef = useRef<HTMLDivElement | null>(null);
 
-  const nodes = LESSON_PATH[activeSubject] || LESSON_PATH.physics;
+  // 1. Fetch Dynamic Subjects from Supabase
+  useEffect(() => {
+    async function loadSubjects() {
+      const { data } = await supabase.from('subjects').select('id, title').order('title');
+      if (data && data.length > 0) {
+        setDbSubjects(data.map((s: any) => ({ id: s.id, name: s.title })));
+      }
+    }
+    loadSubjects();
+  }, []);
+
+  // 2. Fetch Dynamic Chapters & Tests for Active Subject from Supabase + Realtime Sync
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadDynamicChapters() {
+      setLoadingNodes(true);
+      try {
+        const [chaptersRes, testsRes] = await Promise.all([
+          supabase.from('chapters').select('*').eq('subject_id', activeSubject).order('chapter_number'),
+          supabase.from('tests').select('id, title, subject_id').eq('subject_id', activeSubject),
+        ]);
+
+        if (isMounted && chaptersRes.data && chaptersRes.data.length > 0) {
+          const tests = testsRes.data || [];
+          const defaultTestId = tests[0]?.id || '1';
+
+          const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#06b6d4'];
+          const icons = ['brain', 'atom', 'circuit', 'flask', 'math', 'dna'];
+
+          const generatedNodes: LessonNode[] = chaptersRes.data.map((chap: any, idx: number) => {
+            const isLast = idx === chaptersRes.data.length - 1;
+            const matchingTest = tests.find((t: any) =>
+              t.title.toLowerCase().includes(chap.title.toLowerCase()) ||
+              chap.title.toLowerCase().includes(t.title.toLowerCase())
+            );
+
+            const unitNum = Math.ceil((idx + 1) / 2);
+            return {
+              id: `chap-${chap.id}`,
+              code: String(chap.chapter_number || idx + 1).padStart(2, '0'),
+              title: chap.title,
+              subtitle: `${chap.question_count || 15} High-Yield Questions • Board Drill`,
+              iconType: isLast ? 'trophy' : icons[idx % icons.length],
+              xpReward: 25 + idx * 5,
+              gemsReward: 10 + idx * 2,
+              testId: matchingTest?.id || defaultTestId,
+              isBoss: isLast,
+              unit: unitNum,
+              unitTitle: `Unit ${unitNum} • ${chap.title}`,
+              themeColor: isLast ? '#f59e0b' : colors[idx % colors.length],
+            };
+          });
+
+          setDbNodes(generatedNodes);
+        } else if (isMounted) {
+          setDbNodes(null);
+        }
+      } catch {
+        if (isMounted) setDbNodes(null);
+      } finally {
+        if (isMounted) setLoadingNodes(false);
+      }
+    }
+
+    loadDynamicChapters();
+
+    // Realtime listener for chapter changes
+    const channel = supabase
+      .channel(`realtime:chapters:${activeSubject}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'chapters' }, () => {
+        loadDynamicChapters();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'tests' }, () => {
+        loadDynamicChapters();
+      })
+      .subscribe();
+
+    return () => {
+      isMounted = false;
+      supabase.removeChannel(channel);
+    };
+  }, [activeSubject]);
+
+  const fallbackNodes = LESSON_PATH[activeSubject] || LESSON_PATH.physics;
+  const nodes = dbNodes && dbNodes.length > 0 ? dbNodes : fallbackNodes;
+
+  const subjectList = dbSubjects.length > 0
+    ? dbSubjects
+    : SUBJECTS.map((s) => ({ id: s.id, name: s.name }));
 
   const firstIncompleteIdx = nodes.findIndex((n) => !user.completedNodes[n.id]);
   const currentActiveIdx = firstIncompleteIdx === -1 ? nodes.length - 1 : firstIncompleteIdx;
@@ -390,7 +483,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
         
         {/* Subject Segmented Pills */}
         <div className="bg-white/85 backdrop-blur-md p-1.5 rounded-2xl border-2 border-white/60 shadow-md flex items-center justify-between gap-1 overflow-x-auto no-scrollbar mb-3">
-          {SUBJECTS.map((s) => {
+          {subjectList.map((s) => {
             const isSel = activeSubject === s.id;
             return (
               <button
