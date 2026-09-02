@@ -1,21 +1,98 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '@/context/UserContext';
 import { playButtonClick, playGemDing } from '@/lib/soundEffects';
+import { BrandLogo } from '@/components/BrandLogo';
 
-export default function LoginPage() {
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 140 : -140,
+    opacity: 0,
+    scale: 0.98,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+    transition: {
+      x: { type: 'spring', stiffness: 340, damping: 30 },
+      opacity: { duration: 0.2 },
+    },
+  },
+  exit: (direction: number) => ({
+    x: direction < 0 ? 140 : -140,
+    opacity: 0,
+    scale: 0.98,
+    transition: {
+      x: { type: 'spring', stiffness: 340, damping: 30 },
+      opacity: { duration: 0.15 },
+    },
+  }),
+};
+
+function LoginFormContent({ initialMode = 'login' }: { initialMode?: 'login' | 'signup' }) {
   const router = useRouter();
-  const { login } = useUser();
+  const searchParams = useSearchParams();
+  const { login, signup, setTargetBoard, setClassLevel, addGems } = useUser();
+
+  // Mode & sliding state
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>(initialMode);
+  const [slideDirection, setSlideDirection] = useState<number>(1);
+
+  // Sync mode with search param ?mode=signup
+  useEffect(() => {
+    const modeParam = searchParams.get('mode');
+    if (modeParam === 'signup' && authMode !== 'signup') {
+      setSlideDirection(1);
+      setAuthMode('signup');
+    } else if (modeParam === 'login' && authMode !== 'login') {
+      setSlideDirection(-1);
+      setAuthMode('login');
+    }
+  }, [searchParams]);
+
+  const switchMode = (newMode: 'login' | 'signup') => {
+    if (newMode === authMode) return;
+    playButtonClick();
+    setError('');
+    setSlideDirection(newMode === 'signup' ? 1 : -1);
+    setAuthMode(newMode);
+  };
+
+  // Login State
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+
+  // Signup State
+  const [signupStep, setSignupStep] = useState<1 | 2>(1);
+  const [fullName, setFullName] = useState('');
+  const [signupUsername, setSignupUsername] = useState('');
+  const [usernameTouched, setUsernameTouched] = useState(false);
+  const [contact, setContact] = useState('');
+  const [classLevelVal, setClassLevelState] = useState('Class 12');
+  const [boardVal, setBoardState] = useState('cbse');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [agreedTerms, setAgreedTerms] = useState(true);
+  const [refCode, setRefCode] = useState<string | null>(null);
+
+  // General Status
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [time, setTime] = useState<Date | null>(null);
+
+  useEffect(() => {
+    const ref = searchParams.get('ref');
+    if (ref) {
+      setRefCode(ref.toLowerCase().trim().replace(/[^a-z0-9_]/g, ''));
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     setTime(new Date());
@@ -33,7 +110,16 @@ export default function LoginPage() {
     showcaseRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleNameChange = (val: string) => {
+    setFullName(val);
+    if (!usernameTouched) {
+      const generated = val.toLowerCase().trim().replace(/[^a-z0-9]/g, '_').slice(0, 15);
+      setSignupUsername(generated);
+    }
+  };
+
+  // Handle Login Submit
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!identifier.trim() || !password.trim()) {
       setError('Please enter your username and password.');
@@ -54,150 +140,486 @@ export default function LoginPage() {
     }
   };
 
+  // Handle Signup Next Step
+  const handleSignupNextStep = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    playButtonClick();
+
+    if (!fullName.trim()) return setError('Please enter your full name.');
+    if (!signupUsername.trim() || signupUsername.length < 3) return setError('Username must be 3-20 characters.');
+    if (!contact.includes('@')) return setError('Please enter a valid email address.');
+
+    setSignupStep(2);
+  };
+
+  // Handle Signup Final Submit
+  const handleSignupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    playButtonClick();
+
+    if (signupPassword.length < 6) return setError('Password must be at least 6 characters.');
+    if (!agreedTerms) return setError('Please agree to Terms of Service.');
+    
+    setLoading(true);
+    const cleanUser = signupUsername.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    const result = await signup(fullName.trim(), contact.trim().toLowerCase(), signupPassword, boardVal, cleanUser);
+    setLoading(false);
+
+    if (result.success) {
+      setTargetBoard(boardVal);
+      setClassLevel(classLevelVal);
+
+      if (refCode) {
+        addGems(50);
+        try {
+          const currentCount = parseInt(localStorage.getItem('edustride_referral_count') || '0', 10);
+          localStorage.setItem('edustride_referral_count', (currentCount + 1).toString());
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      playGemDing();
+      router.push('/');
+    } else {
+      setError(result.error || 'Account creation failed. Please try again.');
+    }
+  };
+
   return (
-    <div className="h-[100dvh] w-full overflow-y-auto snap-y snap-mandatory overscroll-y-contain scroll-smooth font-sans select-none bg-[#09111e]">
+    <div className="h-[100dvh] w-full overflow-y-auto snap-y snap-mandatory overscroll-y-contain scroll-smooth font-sans select-none bg-[#faf6f0]">
       
       {/* ═══════════════════════════════════════════════════════════════
-          SCREEN 1: Photorealistic Night Sconce Login Screen
+          SCREEN 1: nainixOne App Signature Sliding Auth Screen
       ═══════════════════════════════════════════════════════════════ */}
       <section 
         ref={loginSectionRef}
-        className="h-[100dvh] w-full shrink-0 snap-start snap-always flex flex-col justify-between items-center p-4 relative overflow-hidden bg-cover bg-top sm:bg-center"
+        className="h-[100dvh] w-full shrink-0 snap-start snap-always flex flex-col justify-between items-center p-4 relative overflow-hidden bg-[#faf6f0]"
         style={{
-          backgroundImage: `url('/images/night_brick_sconce_bg.jpg')`,
+          backgroundImage: 'radial-gradient(#e5dec9 1.5px, transparent 1.5px)',
+          backgroundSize: '24px 24px',
           scrollSnapStop: 'always',
         }}
       >
-        {/* Top Back Navigation */}
+        {/* Top Navigation */}
         <header className="w-full shrink-0 flex justify-between items-center max-w-sm mx-auto pt-2 z-30">
-          <Link
-            href="/"
-            onClick={playButtonClick}
-            className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md flex items-center justify-center text-white/90 hover:text-white transition-all active:scale-95 cursor-pointer shadow-lg"
-          >
-            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
-          </Link>
+          <div className="flex items-center gap-2.5">
+            <Link
+              href="/"
+              onClick={playButtonClick}
+              className="w-10 h-10 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center justify-center text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all active:scale-95 cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+            </Link>
+            <Link href="/" onClick={playButtonClick} className="cursor-pointer active:scale-95 transition-transform">
+              <BrandLogo size="md" />
+            </Link>
+          </div>
           
           <button
             type="button"
             onClick={scrollToAbout}
-            className="text-[11px] font-bold text-amber-200/90 bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full flex items-center gap-1 shadow-md transition-all active:scale-95 cursor-pointer"
+            className="text-[11px] font-black text-[#7c3aed] bg-purple-50 hover:bg-purple-100 border border-purple-200/80 px-3.5 py-1.5 rounded-full flex items-center gap-1 shadow-2xs transition-all active:scale-95 cursor-pointer"
           >
             <span>Explore Showcase</span>
-            <span className="material-symbols-outlined text-[14px]">arrow_downward</span>
+            <span className="material-symbols-outlined text-[15px]">arrow_downward</span>
           </button>
         </header>
 
-        {/* Main Frosted Glassmorphism Login Card */}
-        <main className="w-full max-w-[340px] sm:max-w-[370px] relative z-20 my-auto">
-          <div 
-            className="w-full rounded-[30px] p-6 sm:p-7 backdrop-blur-md border border-white/30 shadow-[0_20px_50px_rgba(0,0,0,0.6),0_0_25px_rgba(254,240,138,0.12)] flex flex-col items-center"
-            style={{
-              background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(13, 27, 49, 0.55) 100%)',
-            }}
-          >
-            {/* Card Title */}
-            <h1 className="font-heading font-black text-3xl text-white tracking-wide text-center mb-5 drop-shadow-md">
-              Login
-            </h1>
+        {/* Main Sliding App Theme Auth Card */}
+        <main className="w-full max-w-[345px] sm:max-w-[375px] relative z-20 my-auto">
+          <div className="w-full bg-white rounded-[32px] p-5 sm:p-7 border border-slate-200/90 shadow-[0_12px_40px_rgba(0,0,0,0.06)] flex flex-col items-center overflow-hidden">
+            
+            {/* ─── Brand Logo inside Card Header ─── */}
+            <div className="mb-3.5 flex flex-col items-center">
+              <BrandLogo size="lg" />
+            </div>
+
+            {/* ─── Segmented Slide Switcher Tab ─── */}
+            <div className="w-full p-1 bg-slate-100 rounded-2xl flex items-center relative mb-4">
+              <button
+                type="button"
+                onClick={() => switchMode('login')}
+                className={`relative z-10 flex-1 py-2 text-xs font-black transition-colors text-center cursor-pointer ${
+                  authMode === 'login' ? 'text-[#7c3aed]' : 'text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                Login
+                {authMode === 'login' && (
+                  <motion.div
+                    layoutId="activeAuthPill"
+                    className="absolute inset-0 bg-white rounded-xl shadow-xs -z-10"
+                    transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                  />
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => switchMode('signup')}
+                className={`relative z-10 flex-1 py-2 text-xs font-black transition-colors text-center cursor-pointer ${
+                  authMode === 'signup' ? 'text-[#7c3aed]' : 'text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                Register
+                {authMode === 'signup' && (
+                  <motion.div
+                    layoutId="activeAuthPill"
+                    className="absolute inset-0 bg-white rounded-xl shadow-xs -z-10"
+                    transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                  />
+                )}
+              </button>
+            </div>
 
             {/* Error Message Banner */}
             {error && (
-              <div className="w-full mb-3 p-2.5 rounded-xl bg-rose-500/25 border border-rose-400/40 text-rose-100 text-xs font-semibold text-center backdrop-blur-md">
-                {error}
+              <div className="w-full mb-3 p-2.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold text-center flex items-center justify-center gap-1.5">
+                <span className="material-symbols-outlined text-[16px]">error</span>
+                <span>{error}</span>
               </div>
             )}
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="w-full space-y-3.5">
-              {/* Field 1: Username */}
-              <div className="relative w-full">
-                <input
-                  type="text"
-                  placeholder="Username"
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  className="w-full pl-5 pr-11 py-3.5 rounded-full bg-white/10 border border-white/30 text-white placeholder:text-white/70 text-xs sm:text-sm font-medium outline-none focus:border-white focus:bg-white/20 focus:ring-2 focus:ring-white/25 transition-all backdrop-blur-sm shadow-inner"
-                  required
-                />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/85 material-symbols-outlined text-[20px] pointer-events-none">
-                  person
-                </span>
-              </div>
+            {/* ─── Swipeable & Animated Sliding Container ─── */}
+            <div className="w-full overflow-hidden relative">
+              <AnimatePresence initial={false} custom={slideDirection} mode="wait">
+                
+                {/* ═══════════ LOGIN VIEW ═══════════ */}
+                {authMode === 'login' ? (
+                  <motion.div
+                    key="login-form"
+                    custom={slideDirection}
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.2}
+                    onDragEnd={(_, { offset, velocity }) => {
+                      const swipe = Math.abs(offset.x) * velocity.x;
+                      if (offset.x < -40 || swipe < -200) {
+                        switchMode('signup');
+                      }
+                    }}
+                    className="w-full flex flex-col items-center touch-pan-y"
+                  >
+                    {/* Header */}
+                    <div className="flex flex-col items-center mb-3">
+                      <span className="w-11 h-11 rounded-2xl bg-purple-100 text-[#7c3aed] flex items-center justify-center mb-1 shadow-inner">
+                        <span className="material-symbols-outlined text-[24px]">lock_open</span>
+                      </span>
+                      <h1 className="font-heading font-black text-xl text-slate-900 tracking-tight text-center">
+                        Welcome Back!
+                      </h1>
+                      <p className="text-[11px] font-semibold text-slate-500 mt-0.5">
+                        Log in to continue your streak 🔥
+                      </p>
+                    </div>
 
-              {/* Field 2: Password */}
-              <div className="relative w-full">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-5 pr-11 py-3.5 rounded-full bg-white/10 border border-white/30 text-white placeholder:text-white/70 text-xs sm:text-sm font-medium outline-none focus:border-white focus:bg-white/20 focus:ring-2 focus:ring-white/25 transition-all backdrop-blur-sm shadow-inner"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/85 hover:text-white cursor-pointer flex items-center"
-                >
-                  <span className="material-symbols-outlined text-[19px]">
-                    {showPassword ? 'visibility_off' : 'lock'}
-                  </span>
-                </button>
-              </div>
+                    <form onSubmit={handleLoginSubmit} className="w-full space-y-3">
+                      {/* Username */}
+                      <div className="relative w-full">
+                        <input
+                          type="text"
+                          placeholder="Username"
+                          value={identifier}
+                          onChange={(e) => setIdentifier(e.target.value)}
+                          className="w-full pl-4 pr-10 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs font-semibold outline-none focus:border-[#7c3aed] focus:bg-white focus:ring-4 focus:ring-purple-500/10 transition-all shadow-2xs"
+                          required
+                        />
+                        <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-[18px] pointer-events-none">
+                          person
+                        </span>
+                      </div>
 
-              {/* Remember Me & Forgot Password */}
-              <div className="w-full flex items-center justify-between text-xs text-white/90 pt-0.5 px-1">
-                <label className="flex items-center gap-1.5 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-3.5 h-3.5 rounded border border-white/50 bg-white/10 accent-white cursor-pointer"
-                  />
-                  <span className="text-[11px] font-medium text-white/90">Remember me</span>
-                </label>
+                      {/* Password */}
+                      <div className="relative w-full">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="Password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="w-full pl-4 pr-10 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs font-semibold outline-none focus:border-[#7c3aed] focus:bg-white focus:ring-4 focus:ring-purple-500/10 transition-all shadow-2xs"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer flex items-center"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">
+                            {showPassword ? 'visibility_off' : 'lock'}
+                          </span>
+                        </button>
+                      </div>
 
-                <Link
-                  href="/forgot-password"
-                  onClick={playButtonClick}
-                  className="text-[11px] font-medium text-white/90 hover:text-white hover:underline cursor-pointer"
-                >
-                  Forgot password?
-                </Link>
-              </div>
+                      {/* Options */}
+                      <div className="w-full flex items-center justify-between text-xs pt-0.5 px-0.5">
+                        <label className="flex items-center gap-1.5 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                            className="w-3.5 h-3.5 rounded border border-slate-300 text-[#7c3aed] focus:ring-purple-500 accent-[#7c3aed] cursor-pointer"
+                          />
+                          <span className="text-[10.5px] font-bold text-slate-600">Remember me</span>
+                        </label>
 
-              {/* Login Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full mt-2 py-3.5 rounded-full bg-white hover:bg-slate-100 text-[#09111e] font-heading font-black text-sm sm:text-base shadow-[0_8px_25px_rgba(0,0,0,0.4)] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
-              >
-                {loading ? (
-                  <span className="w-5 h-5 border-2 border-[#09111e] border-t-transparent rounded-full animate-spin" />
+                        <Link
+                          href="/forgot-password"
+                          onClick={playButtonClick}
+                          className="text-[10.5px] font-bold text-[#7c3aed] hover:underline cursor-pointer"
+                        >
+                          Forgot password?
+                        </Link>
+                      </div>
+
+                      {/* Login Button */}
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full mt-1.5 py-3 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-heading font-black text-xs sm:text-sm shadow-md shadow-purple-500/20 border-b-4 border-[#5b21b6] active:translate-y-0.5 active:border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
+                      >
+                        {loading ? (
+                          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <span>Login</span>
+                        )}
+                      </button>
+                    </form>
+
+                    {/* Slide Helper Hint */}
+                    <div className="mt-3.5 text-center flex items-center justify-center gap-1 text-[11px] font-semibold text-slate-400">
+                      <span>Swipe left or</span>
+                      <button
+                        type="button"
+                        onClick={() => switchMode('signup')}
+                        className="font-black text-[#7c3aed] hover:underline cursor-pointer ml-0.5"
+                      >
+                        Register Free →
+                      </button>
+                    </div>
+                  </motion.div>
                 ) : (
-                  <span>Login</span>
-                )}
-              </button>
-            </form>
+                  /* ═══════════ SIGNUP VIEW ═══════════ */
+                  <motion.div
+                    key="signup-form"
+                    custom={slideDirection}
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.2}
+                    onDragEnd={(_, { offset, velocity }) => {
+                      const swipe = Math.abs(offset.x) * velocity.x;
+                      if (offset.x > 40 || swipe > 200) {
+                        switchMode('login');
+                      }
+                    }}
+                    className="w-full flex flex-col items-center touch-pan-y"
+                  >
+                    {/* Header */}
+                    <div className="flex flex-col items-center mb-2.5">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <div className={`w-6 h-1 rounded-full transition-all ${
+                          signupStep === 1 ? 'bg-[#7c3aed]' : 'bg-slate-200'
+                        }`} />
+                        <div className={`w-6 h-1 rounded-full transition-all ${
+                          signupStep === 2 ? 'bg-[#7c3aed]' : 'bg-slate-200'
+                        }`} />
+                      </div>
+                      <h1 className="font-heading font-black text-xl text-slate-900 tracking-tight text-center">
+                        {signupStep === 1 ? 'Create Account' : 'Choose Goal'}
+                      </h1>
+                      <p className="text-[11px] font-semibold text-slate-500 mt-0.5">
+                        {signupStep === 1 
+                          ? (refCode ? `🎁 +50 Gems from @${refCode}` : 'Join thousands of scholars')
+                          : 'Select target class & set password'
+                        }
+                      </p>
+                    </div>
 
-            {/* Register Link */}
-            <div className="mt-4 text-center">
-              <p className="text-xs text-white/85">
-                Don&apos;t have an account?{' '}
-                <Link
-                  href="/signup"
-                  onClick={playButtonClick}
-                  className="font-black text-white hover:underline cursor-pointer"
-                >
-                  Register
-                </Link>
-              </p>
+                    {signupStep === 1 ? (
+                      /* Step 1 Form */
+                      <form onSubmit={handleSignupNextStep} className="w-full space-y-2.5">
+                        <div className="relative w-full">
+                          <input
+                            type="text"
+                            placeholder="Full Name"
+                            value={fullName}
+                            onChange={(e) => handleNameChange(e.target.value)}
+                            className="w-full pl-4 pr-10 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs font-semibold outline-none focus:border-[#7c3aed] focus:bg-white focus:ring-4 focus:ring-purple-500/10 transition-all shadow-2xs"
+                            required
+                          />
+                          <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-[18px] pointer-events-none">
+                            person
+                          </span>
+                        </div>
+
+                        <div className="relative w-full">
+                          <input
+                            type="text"
+                            placeholder="Username"
+                            value={signupUsername}
+                            onChange={(e) => {
+                              setUsernameTouched(true);
+                              setSignupUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''));
+                            }}
+                            className="w-full pl-4 pr-10 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs font-semibold outline-none focus:border-[#7c3aed] focus:bg-white focus:ring-4 focus:ring-purple-500/10 transition-all shadow-2xs"
+                            required
+                          />
+                          <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-[18px] pointer-events-none">
+                            alternate_email
+                          </span>
+                        </div>
+
+                        <div className="relative w-full">
+                          <input
+                            type="email"
+                            placeholder="Email Address"
+                            value={contact}
+                            onChange={(e) => setContact(e.target.value)}
+                            className="w-full pl-4 pr-10 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs font-semibold outline-none focus:border-[#7c3aed] focus:bg-white focus:ring-4 focus:ring-purple-500/10 transition-all shadow-2xs"
+                            required
+                          />
+                          <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-[18px] pointer-events-none">
+                            mail
+                          </span>
+                        </div>
+
+                        <button
+                          type="submit"
+                          className="w-full mt-1.5 py-3 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-heading font-black text-xs sm:text-sm shadow-md shadow-purple-500/20 border-b-4 border-[#5b21b6] active:translate-y-0.5 active:border-b-2 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          <span>Continue</span>
+                          <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                        </button>
+                      </form>
+                    ) : (
+                      /* Step 2 Form */
+                      <form onSubmit={handleSignupSubmit} className="w-full space-y-2.5">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="relative">
+                            <select
+                              value={classLevelVal}
+                              onChange={(e) => setClassLevelState(e.target.value)}
+                              className="w-full pl-3 pr-7 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs font-bold outline-none focus:border-[#7c3aed] focus:bg-white transition-all appearance-none cursor-pointer"
+                            >
+                              <option value="Class 12">Class 12</option>
+                              <option value="Class 11">Class 11</option>
+                              <option value="Class 10">Class 10</option>
+                              <option value="Class 9">Class 9</option>
+                            </select>
+                            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-[16px] pointer-events-none">
+                              expand_more
+                            </span>
+                          </div>
+
+                          <div className="relative">
+                            <select
+                              value={boardVal}
+                              onChange={(e) => setBoardState(e.target.value)}
+                              className="w-full pl-3 pr-7 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs font-bold outline-none focus:border-[#7c3aed] focus:bg-white transition-all appearance-none cursor-pointer"
+                            >
+                              <option value="cbse">CBSE</option>
+                              <option value="icse">ICSE</option>
+                              <option value="state">State Board</option>
+                              <option value="jee">JEE Main</option>
+                              <option value="neet">NEET UG</option>
+                            </select>
+                            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-[16px] pointer-events-none">
+                              expand_more
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="relative w-full">
+                          <input
+                            type={showSignupPassword ? 'text' : 'password'}
+                            placeholder="Password (min. 6 chars)"
+                            value={signupPassword}
+                            onChange={(e) => setSignupPassword(e.target.value)}
+                            className="w-full pl-4 pr-10 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs font-semibold outline-none focus:border-[#7c3aed] focus:bg-white focus:ring-4 focus:ring-purple-500/10 transition-all shadow-2xs"
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowSignupPassword(!showSignupPassword)}
+                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer flex items-center"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">
+                              {showSignupPassword ? 'visibility_off' : 'lock'}
+                            </span>
+                          </button>
+                        </div>
+
+                        <div className="w-full flex items-center text-xs pt-0.5 px-0.5">
+                          <label className="flex items-center gap-1.5 cursor-pointer select-none">
+                            <input
+                              type="checkbox"
+                              checked={agreedTerms}
+                              onChange={(e) => setAgreedTerms(e.target.checked)}
+                              className="w-3.5 h-3.5 rounded border border-slate-300 text-[#7c3aed] focus:ring-purple-500 accent-[#7c3aed] cursor-pointer"
+                            />
+                            <span className="text-[10px] font-bold text-slate-600">
+                              Agree to Terms & Privacy
+                            </span>
+                          </label>
+                        </div>
+
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              playButtonClick();
+                              setSignupStep(1);
+                            }}
+                            className="py-2.5 px-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black transition-all active:scale-95 cursor-pointer"
+                          >
+                            ← Back
+                          </button>
+
+                          <button
+                            type="submit"
+                            disabled={loading}
+                            className="flex-1 py-2.5 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-heading font-black text-xs sm:text-sm shadow-md shadow-purple-500/20 border-b-4 border-[#5b21b6] active:translate-y-0.5 active:border-b-2 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-75"
+                          >
+                            {loading ? (
+                              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <span>Register</span>
+                            )}
+                          </button>
+                        </div>
+                      </form>
+                    )}
+
+                    {/* Slide Helper Hint */}
+                    <div className="mt-3 text-center flex items-center justify-center gap-1 text-[11px] font-semibold text-slate-400">
+                      <span>Swipe right or</span>
+                      <button
+                        type="button"
+                        onClick={() => switchMode('login')}
+                        className="font-black text-[#7c3aed] hover:underline cursor-pointer ml-0.5"
+                      >
+                        ← Login
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+
+              </AnimatePresence>
             </div>
+
           </div>
         </main>
 
-        {/* ─── Minimal Single Line Pull Indicator ─── */}
+        {/* ─── Pull Indicator ─── */}
         <footer className="w-full shrink-0 flex flex-col items-center pb-3 pt-2 z-20">
           <button
             type="button"
@@ -205,7 +627,7 @@ export default function LoginPage() {
             aria-label="View Showcase"
             className="p-2 flex items-center justify-center cursor-pointer group"
           >
-            <div className="w-14 h-1.5 rounded-full bg-white/40 group-hover:bg-white/80 group-active:scale-95 transition-all shadow-xs" />
+            <div className="w-14 h-1.5 rounded-full bg-slate-300 group-hover:bg-slate-400 group-active:scale-95 transition-all shadow-2xs" />
           </button>
         </footer>
       </section>
@@ -442,5 +864,17 @@ export default function LoginPage() {
       </section>
 
     </div>
+  );
+}
+
+export default function LoginPage({ initialMode = 'login' }: { initialMode?: 'login' | 'signup' }) {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[100dvh] w-full flex items-center justify-center bg-[#faf6f0]">
+        <div className="w-8 h-8 border-3 border-[#7c3aed] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <LoginFormContent initialMode={initialMode} />
+    </Suspense>
   );
 }
