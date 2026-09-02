@@ -17,7 +17,7 @@ const LearningPath = dynamic(
 
 export default function HomePage() {
   return (
-    <main className="w-full mx-auto pb-24 font-sans bg-transparent">
+    <main className="w-full mx-auto pb-24 font-sans bg-[#faf6f0]">
       <LearningPath initialSubject="physics" />
     </main>
   );
