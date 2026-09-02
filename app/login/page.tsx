@@ -58,16 +58,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="h-[100dvh] w-full overflow-y-auto snap-y snap-mandatory scroll-smooth font-sans select-none bg-[#09111e]">
+    <div className="h-[100dvh] w-full overflow-y-auto snap-y snap-mandatory overscroll-y-contain scroll-smooth font-sans select-none bg-[#09111e]">
       
       {/* ═══════════════════════════════════════════════════════════════
           SCREEN 1: Photorealistic Night Sconce Login Screen
       ═══════════════════════════════════════════════════════════════ */}
       <section 
         ref={loginSectionRef}
-        className="h-[100dvh] w-full shrink-0 snap-start flex flex-col justify-between items-center p-4 relative overflow-hidden bg-cover bg-top sm:bg-center"
+        className="h-[100dvh] w-full shrink-0 snap-start snap-always flex flex-col justify-between items-center p-4 relative overflow-hidden bg-cover bg-top sm:bg-center"
         style={{
           backgroundImage: `url('/images/night_brick_sconce_bg.jpg')`,
+          scrollSnapStop: 'always',
         }}
       >
         {/* Top Back Navigation */}
@@ -217,7 +218,10 @@ export default function LoginPage() {
       ═══════════════════════════════════════════════════════════════ */}
       <section 
         ref={showcaseRef}
-        className="min-h-[100dvh] w-full shrink-0 snap-start bg-[#0f1d30] text-slate-900 overflow-y-auto py-6 px-3 sm:px-8 relative"
+        className="min-h-[100dvh] w-full shrink-0 snap-start snap-always bg-[#0f1d30] text-slate-900 overflow-y-auto py-6 px-3 sm:px-8 relative"
+        style={{
+          scrollSnapStop: 'always',
+        }}
       >
         {/* Main Canvas Deck */}
         <div className="max-w-[500px] sm:max-w-[580px] mx-auto bg-[#eef5fc] rounded-[40px] shadow-[0_30px_70px_rgba(0,0,0,0.5)] overflow-hidden border border-white/40 relative">
@@ -437,69 +441,17 @@ export default function LoginPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          SCREEN 3: 3D PARTICLE SPHERE COSMOS DECK (Matching User GIF)
+          SCREEN 3: 3D PARTICLE SPHERE (Pure Animation, True Black, No UI)
       ══════════════════════════════════════════════════════════════════ */}
       <section
         ref={cosmosSectionRef}
-        className="snap-start snap-always w-full min-h-[100dvh] bg-[#04060a] relative flex flex-col items-center justify-between text-white overflow-hidden py-8 px-4"
+        className="snap-start snap-always w-full h-[100dvh] min-h-[100dvh] bg-black relative flex items-center justify-center overflow-hidden p-0 m-0"
+        style={{
+          scrollSnapStop: 'always',
+        }}
       >
-        {/* Subtle Ambient Radial Lighting */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(30,58,138,0.15)_0%,transparent_70%)] pointer-events-none" />
-
-        {/* Top Header */}
-        <div className="w-full max-w-md flex items-center justify-between z-20 relative pt-2">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#22d3ee]" />
-            <span className="font-heading font-black text-xs text-white tracking-widest">NAINIX ONE</span>
-          </div>
-          <span className="text-[8px] font-mono text-cyan-300/80 bg-cyan-950/50 border border-cyan-500/30 px-2.5 py-0.5 rounded-full">
-            COSMOS ENGINE
-          </span>
-        </div>
-
-        {/* Centerpiece: Interactive 3D Rotating Particle Sphere */}
-        <div className="relative z-20 flex flex-col items-center justify-center my-auto w-full max-w-sm">
-          <div className="w-72 h-72 sm:w-80 sm:h-80 relative flex items-center justify-center">
-            <ParticleSphere particleCount={4200} radius={120} className="w-full h-full" />
-          </div>
-
-          <div className="text-center space-y-2 mt-2 max-w-xs">
-            <h2 className="font-heading font-black text-xl sm:text-2xl text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-slate-400 tracking-tight uppercase">
-              The Universe of Mastery
-            </h2>
-            <p className="text-[9px] sm:text-[10px] text-slate-400 font-medium leading-relaxed">
-              Every point represents a question solved, a concept mastered, and a future unlocked across India.
-            </p>
-          </div>
-        </div>
-
-        {/* Bottom Actions */}
-        <div className="w-full max-w-xs flex flex-col items-center gap-2.5 z-20 pb-4">
-          <Link
-            href="/signup"
-            onClick={playButtonClick}
-            className="w-full py-3 rounded-full bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 text-white font-heading font-black text-xs uppercase tracking-wider text-center shadow-[0_0_30px_rgba(6,182,212,0.4)] hover:brightness-110 active:scale-95 transition-all"
-          >
-            Enter nainixOne Free &rarr;
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={scrollToLogin}
-              className="text-[9px] font-mono text-slate-400 hover:text-white uppercase tracking-wider transition-colors"
-            >
-              Back to Login &uarr;
-            </button>
-            <span className="text-slate-600">•</span>
-            <button
-              type="button"
-              onClick={scrollToAbout}
-              className="text-[9px] font-mono text-slate-400 hover:text-white uppercase tracking-wider transition-colors"
-            >
-              Showcase Deck &uarr;
-            </button>
-          </div>
+        <div className="w-full h-full max-w-[460px] max-h-[460px] sm:max-w-[540px] sm:max-h-[540px] flex items-center justify-center p-4">
+          <ParticleSphere particleCount={4200} radius={140} className="w-full h-full" />
         </div>
       </section>
 
