@@ -264,25 +264,38 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
     router.push(`/test/${node.testId}?nodeId=${node.id}&subject=${activeSubject}&title=${encodeURIComponent(node.title)}&offset=${offset}&limit=${limit}`);
   };
 
-  // Exact coordinates: 340px container width
+  // Dynamic Coordinate & Geometry Engine:
+  // Dynamically adds vertical spacing for Chapter dividers so nothing EVER overlaps!
   const CONTAINER_WIDTH = 340;
-  const ROW_HEIGHT = 160;
-  const Y_OFFSET = 70;
+  const ROW_STEP = 160;
+  const CHAPTER_BANNER_GAP = 90;
 
-  // Node Centers:
-  // Node 0: Right (x: 280)
-  // Node 1: Left  (x: 60)
-  // Node 2: Right (x: 280)
-  // Node 3: Left  (x: 60)...
-  const getNodePoint = (index: number): Point => {
-    const y = Y_OFFSET + index * ROW_HEIGHT;
-    const isRightSide = index % 2 === 0;
-    const x = isRightSide ? 280 : 60;
-    return { x, y };
-  };
+  const calculatedTrack = React.useMemo(() => {
+    let currentY = 50;
+    const points: { pt: Point; dividerY?: number; showDivider: boolean }[] = [];
 
-  const nodePoints: Point[] = nodes.map((_, i) => getNodePoint(i));
-  const totalTrackHeight = Y_OFFSET + (nodes.length - 1) * ROW_HEIGHT + 100;
+    nodes.forEach((node, index) => {
+      const showDivider = index === 0 || (nodes[index - 1] && nodes[index - 1].unit !== node.unit);
+      let dividerY: number | undefined = undefined;
+
+      if (showDivider) {
+        dividerY = currentY;
+        currentY += CHAPTER_BANNER_GAP;
+      }
+
+      const isRightSide = index % 2 === 0;
+      const x = isRightSide ? 285 : 55;
+      const pt = { x, y: currentY };
+
+      points.push({ pt, dividerY, showDivider });
+      currentY += ROW_STEP;
+    });
+
+    const totalHeight = currentY + 60;
+    return { points, totalHeight };
+  }, [nodes]);
+
+  const { points: nodeLayouts, totalHeight: totalTrackHeight } = calculatedTrack;
 
   const getSPath = (p1: Point, p2: Point) => {
     const midY = (p1.y + p2.y) / 2;
@@ -437,8 +450,8 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
           viewBox={`0 0 ${CONTAINER_WIDTH} ${totalTrackHeight}`}
         >
           {nodes.slice(0, -1).map((node, index) => {
-            const p1 = nodePoints[index];
-            const p2 = nodePoints[index + 1];
+            const p1 = nodeLayouts[index]?.pt || { x: 285, y: 0 };
+            const p2 = nodeLayouts[index + 1]?.pt || { x: 55, y: 0 };
             const d = getSPath(p1, p2);
             const isCompletedSegment = index < currentActiveIdx;
 
@@ -460,28 +473,28 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
         {nodes.map((node, index) => {
           const status = getNodeStatus(node, index);
           const isCurrentActive = status === 'active' && index === currentActiveIdx;
-          const pt = nodePoints[index];
+          const layout = nodeLayouts[index] || { pt: { x: 285, y: 0 }, showDivider: false };
+          const pt = layout.pt;
 
           // Even index -> Node on Right (Text on Left)
           // Odd index  -> Node on Left (Text on Right)
           const textSide: 'left' | 'right' = index % 2 === 0 ? 'left' : 'right';
 
-          // Day Divider Badge (e.g. --- ⚡ CHAPTER 1 ---)
-          const showDayDivider = index === 0 || (nodes[index - 1] && nodes[index - 1].unit !== node.unit);
-
           return (
             <React.Fragment key={node.id}>
-              {/* Day / Chapter Divider on Track */}
-              {showDayDivider && (
+              {/* Day / Chapter Divider Banner with Full Title & No Truncation */}
+              {layout.showDivider && layout.dividerY !== undefined && (
                 <div
-                  className="absolute left-0 right-0 flex items-center justify-center gap-2 pointer-events-none px-4 z-20"
-                  style={{ top: `${pt.y - 65}px` }}
+                  className="absolute left-0 right-0 flex items-center justify-center gap-2 pointer-events-none px-2 z-20"
+                  style={{ top: `${layout.dividerY}px` }}
                 >
                   <div className="flex-1 h-[1.5px] border-t-2 border-dashed border-slate-300" />
-                  <span className="text-[10px] font-black tracking-wider text-[#ff6937] flex items-center gap-1 uppercase bg-[#faf6f0] px-3 py-1 rounded-full border border-orange-200/80 shadow-2xs">
-                    <span className="text-amber-500">⚡</span>
-                    <span className="truncate max-w-[200px]">{node.unitTitle || `CHAPTER ${node.unit}`}</span>
-                  </span>
+                  <div className="max-w-[280px] bg-[#faf6f0] px-3.5 py-1.5 rounded-2xl border border-orange-200/90 shadow-2xs text-center">
+                    <span className="text-[10px] sm:text-[11px] font-black tracking-wider text-[#ff6937] flex items-center justify-center gap-1 uppercase leading-normal">
+                      <span className="text-amber-500 shrink-0">⚡</span>
+                      <span>{node.unitTitle || `CHAPTER ${node.unit}`}</span>
+                    </span>
+                  </div>
                   <div className="flex-1 h-[1.5px] border-t-2 border-dashed border-slate-300" />
                 </div>
               )}
