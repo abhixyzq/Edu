@@ -249,15 +249,16 @@ export function MasterCurriculumImporterModal({
 
     setImporting(true);
     setErrorMsg('');
-    setProgressMsg('Analyzing subjects & curriculum...');
+    setProgressMsg('Analyzing subjects, chapters & tests...');
 
     try {
-      // 1. Group by Subject & Class
+      // 1. Group by Subject, Chapter, and Test
       const subjectMap = new Map<string, { id: string; title: string; category: string }>();
-      const testMap = new Map<string, { id: string; title: string; subject_id: string; category: string; questions: any[] }>();
+      const chapterMap = new Map<string, { subject_id: string; title: string; count: number }>();
+      const testMap = new Map<string, { id: string; title: string; subject_id: string; questions: any[] }>();
 
       validRows.forEach((row) => {
-        const subId = row.subjectName.toLowerCase().replace(/[^a-z0-9]/g, '_').trim();
+        const subId = row.subjectName.toLowerCase().replace(/[^a-z0-9]/g, '_').trim() || 'general';
         if (!subjectMap.has(subId)) {
           subjectMap.set(subId, {
             id: subId,
@@ -266,6 +267,18 @@ export function MasterCurriculumImporterModal({
           });
         }
 
+        // Chapter Key
+        const chapTitle = row.chapterName.trim() || 'General Unit';
+        const chapKey = `${subId}:::${chapTitle.toLowerCase()}`;
+        if (!chapterMap.has(chapKey)) {
+          chapterMap.set(chapKey, {
+            subject_id: subId,
+            title: chapTitle,
+            count: 0,
+          });
+        }
+        chapterMap.get(chapKey)!.count += 1;
+
         // Test Unique Key
         const testSlug = `${subId}-${row.testTitle.toLowerCase().replace(/[^a-z0-9]/g, '-').trim()}`;
         if (!testMap.has(testSlug)) {
@@ -273,7 +286,6 @@ export function MasterCurriculumImporterModal({
             id: testSlug,
             title: row.testTitle.trim(),
             subject_id: subId,
-            category: row.classLevel.trim() || 'Class 12',
             questions: [],
           });
         }
@@ -292,55 +304,108 @@ export function MasterCurriculumImporterModal({
       // 2. Upsert Subjects
       setProgressMsg(`Syncing ${subjectMap.size} subjects to database...`);
       for (const [, sub] of subjectMap) {
-        await supabase.from('subjects').upsert({
+        // Count chapters for this subject
+        const chapCount = Array.from(chapterMap.values()).filter((c) => c.subject_id === sub.id).length || 1;
+        const { error: subErr } = await supabase.from('subjects').upsert({
           id: sub.id,
           title: sub.title,
           category: sub.category,
           icon: 'menu_book',
-          total_chapters: 10,
+          color: 'text-[#7c3aed]',
+          bg_color: 'bg-[#7c3aed]/10',
+          total_chapters: chapCount,
         }, { onConflict: 'id' });
+        if (subErr) throw subErr;
       }
 
-      // 3. Upsert Tests
+      // 3. Upsert Chapters
+      setProgressMsg(`Configuring ${chapterMap.size} chapters...`);
+      // Fetch existing chapters for numbering
+      const { data: existingChapters } = await supabase.from('chapters').select('subject_id, title, chapter_number');
+      const existingMap = new Map<string, number>();
+      (existingChapters || []).forEach((ec: any) => {
+        existingMap.set(`${ec.subject_id}:::${ec.title.toLowerCase()}`, ec.chapter_number);
+      });
+
+      let chapterIdx = 1;
+      for (const [key, chap] of chapterMap) {
+        const existingNum = existingMap.get(key);
+        const chapterNum = existingNum ?? chapterIdx++;
+        
+        // Check if chapter already exists to update or insert
+        const { data: foundChap } = await supabase
+          .from('chapters')
+          .select('id')
+          .eq('subject_id', chap.subject_id)
+          .ilike('title', chap.title)
+          .maybeSingle();
+
+        if (foundChap) {
+          await supabase.from('chapters').update({
+            question_count: chap.count,
+          }).eq('id', foundChap.id);
+        } else {
+          const { error: chapErr } = await supabase.from('chapters').insert({
+            subject_id: chap.subject_id,
+            chapter_number: chapterNum,
+            title: chap.title,
+            question_count: chap.count,
+          });
+          if (chapErr) throw chapErr;
+        }
+      }
+
+      // 4. Upsert Tests
       setProgressMsg(`Configuring ${testMap.size} test papers...`);
+      let totalQuestionsImported = 0;
+
       for (const [, test] of testMap) {
-        await supabase.from('tests').upsert({
+        const qCount = test.questions.length;
+        const { error: testErr } = await supabase.from('tests').upsert({
           id: test.id,
           title: test.title,
           subject_id: test.subject_id,
-          category: test.category,
-          total_questions: test.questions.length,
-          total_marks: test.questions.length * 4,
-          duration_minutes: Math.max(test.questions.length * 2, 15),
+          total_questions: qCount,
+          total_marks: qCount * 4,
+          passing_marks: Math.ceil(qCount * 4 * 0.35),
+          duration_minutes: Math.max(qCount * 2, 15),
         }, { onConflict: 'id' });
 
-        // 4. Batch Insert Questions
+        if (testErr) throw testErr;
+
+        // 5. Clean prior questions for this test and batch insert new questions
+        await supabase.from('questions').delete().eq('test_id', test.id);
+
         const qPayload = test.questions.map((q, idx) => ({
           test_id: test.id,
           question_number: idx + 1,
           question_text: q.question_text,
           option_a: q.option_a,
           option_b: q.option_b,
-          option_c: q.option_c,
-          option_d: q.option_d,
+          option_c: q.option_c || 'None of these',
+          option_d: q.option_d || 'All of the above',
           correct_answer: q.correct_answer,
-          explanation: q.explanation,
+          explanation: q.explanation || '',
+          admin_notes: 'Master CSV Import',
         }));
 
-        await supabase.from('questions').insert(qPayload);
+        const { error: qErr } = await supabase.from('questions').insert(qPayload);
+        if (qErr) throw qErr;
+
+        totalQuestionsImported += qPayload.length;
       }
 
       playGemDing();
       setImportStats({
         subjects: subjectMap.size,
         tests: testMap.size,
-        questions: validRows.length,
+        questions: totalQuestionsImported,
       });
       setProgressMsg('Import Complete! 🎉');
       setImporting(false);
       if (onSuccess) onSuccess();
     } catch (err: any) {
-      setErrorMsg(err.message || 'Import failed. Please check database connection.');
+      setErrorMsg(err.message || 'Import failed. Please check database connection or permissions.');
       setImporting(false);
     }
   }
