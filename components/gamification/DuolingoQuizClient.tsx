@@ -27,10 +27,12 @@ export function DuolingoQuizClient() {
   const nodeId = searchParams?.get('nodeId') || 'phy-1';
   const lessonTitle = searchParams?.get('title') || 'Class 12 Concept Quiz';
   const subjectId = searchParams?.get('subject') || 'physics';
+  const offset = parseInt(searchParams?.get('offset') || '0', 10);
+  const limit = parseInt(searchParams?.get('limit') || '5', 10);
 
   const { user, addXP, addGems, deductHeart, refillHearts, completeNode, toggleSound } = useUser();
 
-  const [questions, setQuestions] = useState<Question[]>(MOCK_QUESTIONS);
+  const [questions, setQuestions] = useState<Question[]>(MOCK_QUESTIONS.slice(0, 5));
   const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
@@ -44,7 +46,7 @@ export function DuolingoQuizClient() {
   const [mascotMood, setMascotMood] = useState<MascotMood>('idle');
   const [screenShake, setScreenShake] = useState(false);
 
-  // Dynamic Supabase Question Loading
+  // Dynamic Supabase Question Loading with 5-Question Round Slicing
   useEffect(() => {
     let isMounted = true;
 
@@ -71,8 +73,7 @@ export function DuolingoQuizClient() {
               .from('questions')
               .select('*')
               .in('test_id', testIds)
-              .order('question_number')
-              .limit(20);
+              .order('question_number');
 
             if (subQ && subQ.length > 0) {
               qData = subQ;
@@ -107,13 +108,21 @@ export function DuolingoQuizClient() {
             };
           });
 
-          setQuestions(formatted);
+          // Extract exact 5-question round chunk for this level node
+          const chunked = formatted.slice(offset, offset + limit);
+          const roundQuestions = chunked.length > 0 ? chunked : formatted.slice(0, Math.min(limit, 5));
+
+          setQuestions(roundQuestions);
           setCurrentIndex(0);
           setSelectedKey(null);
           setIsAnswerChecked(false);
+        } else if (isMounted) {
+          const fallbackChunk = MOCK_QUESTIONS.slice(offset, offset + limit);
+          setQuestions(fallbackChunk.length > 0 ? fallbackChunk : MOCK_QUESTIONS.slice(0, 5));
         }
       } catch {
-        // fallback to default mock questions
+        const fallbackChunk = MOCK_QUESTIONS.slice(offset, offset + limit);
+        setQuestions(fallbackChunk.length > 0 ? fallbackChunk : MOCK_QUESTIONS.slice(0, 5));
       } finally {
         if (isMounted) setLoadingQuestions(false);
       }
@@ -123,7 +132,7 @@ export function DuolingoQuizClient() {
     return () => {
       isMounted = false;
     };
-  }, [testId, subjectId]);
+  }, [testId, subjectId, offset, limit]);
 
   const currentQ = questions[currentIndex] || questions[0];
   const progressPercent = questions.length > 0

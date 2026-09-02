@@ -23,6 +23,8 @@ export interface LessonNode {
   unit: number;
   unitTitle: string;
   themeColor: string;
+  offset?: number;
+  limit?: number;
 }
 
 const LESSON_PATH: Record<string, LessonNode[]> = {
@@ -323,28 +325,53 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
           const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#06b6d4'];
           const icons = ['brain', 'atom', 'circuit', 'flask', 'math', 'dna'];
 
-          const generatedNodes: LessonNode[] = chaptersRes.data.map((chap: any, idx: number) => {
-            const isLast = idx === chaptersRes.data.length - 1;
+          const generatedNodes: LessonNode[] = [];
+          const CHUNK_SIZE = 5;
+          let globalLevelCounter = 1;
+
+          chaptersRes.data.forEach((chap: any, chapIdx: number) => {
             const matchingTest = tests.find((t: any) =>
               t.title.toLowerCase().includes(chap.title.toLowerCase()) ||
               chap.title.toLowerCase().includes(t.title.toLowerCase())
             );
+            const targetTestId = matchingTest?.id || defaultTestId;
+            const totalQ = chap.question_count && chap.question_count > 0 ? chap.question_count : 15;
+            const numParts = Math.max(1, Math.ceil(totalQ / CHUNK_SIZE));
+            const isLastChapter = chapIdx === chaptersRes.data.length - 1;
 
-            const unitNum = Math.ceil((idx + 1) / 2);
-            return {
-              id: `chap-${chap.id}`,
-              code: String(chap.chapter_number || idx + 1).padStart(2, '0'),
-              title: chap.title,
-              subtitle: `${chap.question_count || 15} High-Yield Questions • Board Drill`,
-              iconType: isLast ? 'trophy' : icons[idx % icons.length],
-              xpReward: 25 + idx * 5,
-              gemsReward: 10 + idx * 2,
-              testId: matchingTest?.id || defaultTestId,
-              isBoss: isLast,
-              unit: unitNum,
-              unitTitle: `Unit ${unitNum} • ${chap.title}`,
-              themeColor: isLast ? '#f59e0b' : colors[idx % colors.length],
-            };
+            for (let p = 0; p < numParts; p++) {
+              const startQ = p * CHUNK_SIZE + 1;
+              const endQ = Math.min((p + 1) * CHUNK_SIZE, totalQ);
+              const isChapterLast = p === numParts - 1;
+              const isSubjectBoss = isLastChapter && isChapterLast;
+
+              const unitNum = chap.chapter_number || chapIdx + 1;
+              const levelCode = String(globalLevelCounter++).padStart(2, '0');
+
+              let partTitle = `${chap.title} • Part ${p + 1}`;
+              if (numParts === 1) {
+                partTitle = chap.title;
+              } else if (isChapterLast) {
+                partTitle = `${chap.title} • Mastery Drill`;
+              }
+
+              generatedNodes.push({
+                id: `chap-${chap.id}-p${p + 1}`,
+                code: levelCode,
+                title: partTitle,
+                subtitle: `${endQ - startQ + 1} Questions • Practice Q${startQ}-Q${endQ}`,
+                iconType: isSubjectBoss ? 'trophy' : (isChapterLast ? 'trophy' : icons[(globalLevelCounter - 1) % icons.length]),
+                xpReward: 20 + p * 5,
+                gemsReward: 10 + p * 2,
+                testId: targetTestId,
+                offset: p * CHUNK_SIZE,
+                limit: CHUNK_SIZE,
+                isBoss: isChapterLast,
+                unit: unitNum,
+                unitTitle: `Unit ${unitNum} • ${chap.title}`,
+                themeColor: isSubjectBoss ? '#f59e0b' : colors[(unitNum - 1) % colors.length],
+              });
+            }
           });
 
           setDbNodes(generatedNodes);
@@ -410,7 +437,9 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
 
   const startLesson = (node: LessonNode) => {
     playButtonClick();
-    router.push(`/test/${node.testId}?nodeId=${node.id}&subject=${activeSubject}&title=${encodeURIComponent(node.title)}`);
+    const offset = node.offset ?? 0;
+    const limit = node.limit ?? 5;
+    router.push(`/test/${node.testId}?nodeId=${node.id}&subject=${activeSubject}&title=${encodeURIComponent(node.title)}&offset=${offset}&limit=${limit}`);
   };
 
   // Winding Coordinates
