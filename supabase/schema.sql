@@ -485,7 +485,67 @@ CREATE POLICY "Users can manage their own quests"
   WITH CHECK (auth.uid() = user_id);
 
 -- ========================================================
--- 14. HIGH-PERFORMANCE INDEXES
+-- 14. SUPABASE STORAGE BUCKETS & POLICIES (Avatars & Files)
+-- ========================================================
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('avatars', 'avatars', true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('attachments', 'attachments', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Storage RLS
+DROP POLICY IF EXISTS "Avatar images are publicly accessible" ON storage.objects;
+DROP POLICY IF EXISTS "Users can upload their own avatar" ON storage.objects;
+DROP POLICY IF EXISTS "Users can update their own avatar" ON storage.objects;
+
+CREATE POLICY "Avatar images are publicly accessible"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'avatars' OR bucket_id = 'attachments');
+
+CREATE POLICY "Users can upload their own avatar"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'avatars' AND auth.uid() IS NOT NULL);
+
+CREATE POLICY "Users can update their own avatar"
+  ON storage.objects FOR UPDATE
+  USING (bucket_id = 'avatars' AND auth.uid() IS NOT NULL);
+
+-- ========================================================
+-- 15. RPC FUNCTIONS (Leaderboards & Admin Promotion)
+-- ========================================================
+
+-- Fast ranked leaderboard function
+CREATE OR REPLACE FUNCTION public.get_leaderboard(p_limit INT DEFAULT 50)
+RETURNS TABLE (
+  rank BIGINT,
+  id UUID,
+  name TEXT,
+  username TEXT,
+  avatar_url TEXT,
+  xp_points INT,
+  streak_days INT,
+  league_tier TEXT,
+  target_board TEXT
+) AS $$
+  SELECT 
+    ROW_NUMBER() OVER (ORDER BY p.xp_points DESC, p.streak_days DESC) AS rank,
+    p.id,
+    p.name,
+    p.username,
+    p.avatar_url,
+    p.xp_points,
+    p.streak_days,
+    p.league_tier,
+    p.target_board
+  FROM public.profiles p
+  ORDER BY p.xp_points DESC, p.streak_days DESC
+  LIMIT p_limit;
+$$ LANGUAGE sql STABLE SECURITY DEFINER;
+
+-- ========================================================
+-- 16. HIGH-PERFORMANCE INDEXES
 -- ========================================================
 CREATE INDEX IF NOT EXISTS idx_profiles_username ON public.profiles(username);
 CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
@@ -503,15 +563,32 @@ CREATE INDEX IF NOT EXISTS idx_results_subject ON public.user_test_results(subje
 CREATE INDEX IF NOT EXISTS idx_bookmarks_user ON public.bookmarks(user_id);
 CREATE INDEX IF NOT EXISTS idx_quests_user ON public.user_quests(user_id, expires_at);
 
+-- Enable Realtime for live peer feeds & gamification
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'profiles') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.profiles;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'activity_feed') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.activity_feed;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'user_cheers') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.user_cheers;
+  END IF;
+EXCEPTION WHEN OTHERS THEN
+  NULL; -- Realtime publication might not exist in all self-hosted environments
+END $$;
+
 -- ========================================================
--- 15. SAMPLE DATA SEEDING (Idempotent)
+-- 17. COMPLETE ALL-SUBJECTS SAMPLE SEEDING (Idempotent)
 -- ========================================================
 
--- Seed Subjects
+-- Seed All 6 Class 12 Core Subjects
 INSERT INTO public.subjects (id, title, category, icon, color, bg_color, total_chapters) VALUES
 ('physics', 'Physics (Class 12)', 'Science Stream', 'bolt', 'text-[#7c3aed]', 'bg-[#7c3aed]/10', 14),
 ('chemistry', 'Chemistry (Class 12)', 'Science Stream', 'science', 'text-[#059669]', 'bg-[#059669]/10', 16),
-('maths', 'Mathematics (Class 12)', 'Science Stream', 'functions', 'text-[#ea580c]', 'bg-[#ea580c]/10', 13),
+('mathematics', 'Mathematics (Class 12)', 'Science Stream', 'functions', 'text-[#ea580c]', 'bg-[#ea580c]/10', 13),
+('maths', 'Mathematics (Alias)', 'Science Stream', 'functions', 'text-[#ea580c]', 'bg-[#ea580c]/10', 13),
 ('biology', 'Biology (Class 12)', 'Science Stream', 'eco', 'text-[#16a34a]', 'bg-[#16a34a]/10', 16),
 ('english', 'English Core (Class 12)', 'Language & Arts', 'menu_book', 'text-[#475569]', 'bg-[#475569]/10', 12),
 ('hindi', 'Hindi Core (Class 12)', 'Language & Arts', 'translate', 'text-[#dc2626]', 'bg-[#dc2626]/10', 12)
@@ -547,16 +624,26 @@ INSERT INTO public.chapters (id, subject_id, chapter_number, title, question_cou
 (22, 'chemistry', 8, 'Aldehydes, Ketones and Carboxylic Acids', 16),
 (23, 'chemistry', 9, 'Amines', 14),
 (24, 'chemistry', 10, 'Biomolecules', 12),
-(25, 'maths', 1, 'Relations and Functions', 14),
-(26, 'maths', 2, 'Inverse Trigonometric Functions', 12),
-(27, 'maths', 3, 'Matrices', 15),
-(28, 'maths', 4, 'Determinants', 15),
-(29, 'maths', 5, 'Continuity and Differentiability', 16),
-(30, 'maths', 6, 'Applications of Derivatives', 16),
-(31, 'maths', 7, 'Integrals', 18),
-(32, 'maths', 8, 'Differential Equations', 15),
-(33, 'maths', 9, 'Vector Algebra', 14),
-(34, 'maths', 10, 'Three Dimensional Geometry', 15)
+(25, 'mathematics', 1, 'Relations and Functions', 14),
+(26, 'mathematics', 2, 'Inverse Trigonometric Functions', 12),
+(27, 'mathematics', 3, 'Matrices', 15),
+(28, 'mathematics', 4, 'Determinants', 15),
+(29, 'mathematics', 5, 'Continuity and Differentiability', 16),
+(30, 'mathematics', 6, 'Applications of Derivatives', 16),
+(31, 'mathematics', 7, 'Integrals', 18),
+(32, 'mathematics', 8, 'Differential Equations', 15),
+(33, 'mathematics', 9, 'Vector Algebra', 14),
+(34, 'mathematics', 10, 'Three Dimensional Geometry', 15),
+(35, 'biology', 1, 'Sexual Reproduction in Flowering Plants', 16),
+(36, 'biology', 2, 'Human Reproduction', 16),
+(37, 'biology', 3, 'Reproductive Health', 12),
+(38, 'biology', 4, 'Principles of Inheritance and Variation', 18),
+(39, 'biology', 5, 'Molecular Basis of Inheritance', 18),
+(40, 'english', 1, 'The Last Lesson (Flamingo)', 12),
+(41, 'english', 2, 'Lost Spring (Flamingo)', 12),
+(42, 'english', 3, 'Deep Water (Flamingo)', 12),
+(43, 'hindi', 1, 'Aatmparichay (Harivansh Rai Bachchan)', 12),
+(44, 'hindi', 2, 'Patang (Alok Dhanwa)', 12)
 ON CONFLICT (id) DO UPDATE SET
   subject_id = EXCLUDED.subject_id,
   chapter_number = EXCLUDED.chapter_number,
@@ -568,7 +655,7 @@ INSERT INTO public.tests (id, title, subject_id, duration_minutes, total_questio
 ('1', 'Electric Charges & Fields Mock Test', 'physics', 30, 5, 20, 7),
 ('2', 'Electrostatic Potential & Capacitance', 'physics', 25, 5, 20, 7),
 ('3', 'Organic Chemistry Functional Groups', 'chemistry', 30, 5, 20, 7),
-('4', 'Calculus: Derivatives & Integrals', 'maths', 40, 5, 20, 7),
+('4', 'Calculus: Derivatives & Integrals', 'mathematics', 40, 5, 20, 7),
 ('5', 'Genetics & Molecular Basis of Inheritance', 'biology', 35, 5, 20, 7),
 ('6', 'Flamingo Prose & Reading Comprehension', 'english', 30, 5, 20, 7)
 ON CONFLICT (id) DO UPDATE SET
@@ -579,13 +666,32 @@ ON CONFLICT (id) DO UPDATE SET
   total_marks = EXCLUDED.total_marks,
   passing_marks = EXCLUDED.passing_marks;
 
--- Seed Questions for Test 1 (Physics)
+-- Seed Questions for Test 1 (Physics - Current Electricity & Potentiometer)
 INSERT INTO public.questions (id, test_id, question_number, question_text, option_a, option_b, option_c, option_d, correct_answer, explanation, admin_notes) VALUES
 (1, '1', 1, 'In a potentiometer arrangement, a cell of emf 1.25 V gives a balance point at 35.0 cm length of the wire. If the cell is replaced by another cell and the balance point shifts to 63.0 cm, what is the emf of the second cell?', '2.25 V', '2.50 V', '1.75 V', '3.00 V', 0, 'Using potentiometer principle: E1 / E2 = l1 / l2. E2 = 1.25 * (63.0 / 35.0) = 1.25 * 1.8 = 2.25 V.', 'Standard NCERT Class 12 Current Electricity'),
 (2, '1', 2, 'A storage battery of emf 8.0 V and internal resistance 0.5 Ω is being charged by a 120 V dc supply using a series resistor of 15.5 Ω. What is the terminal voltage of the battery during charging?', '11.5 V', '8.0 V', '12.0 V', '15.5 V', 0, 'Charging current I = (V_supply - E) / (R + r) = (120 - 8)/(15.5 + 0.5) = 112/16 = 7 A. Terminal voltage V = E + I*r = 8.0 + 7 * 0.5 = 11.5 V.', 'Important circuit problem'),
 (3, '1', 3, 'The resistivity of a semiconductor wire depends on which of the following physical variables?', 'Its length', 'Its area of cross-section', 'Its temperature', 'The shape of cross-section', 2, 'Resistivity (ρ) is an intrinsic material property. For semiconductors, it depends exponentially on temperature due to carrier excitation.', 'NCERT theoretical question'),
 (4, '1', 4, 'Two charges of +3 µC and -3 µC are placed 20 cm apart in vacuum. What is the electric potential at the midpoint of the line joining the two charges?', 'Zero', '2.7 × 10⁵ V', '5.4 × 10⁵ V', '1.35 × 10⁵ V', 0, 'Electric potential is a scalar sum: V = k*q1/r + k*q2/r. At midpoint r = 10 cm, V = k(+3µC - 3µC)/0.1 = 0 V.', 'Dipole equatorial line / midpoint potential'),
-(5, '1', 5, 'A circular coil of 30 turns and radius 8.0 cm carrying a current of 6.0 A is suspended vertically in a uniform horizontal magnetic field of magnitude 1.0 T. What is the magnetic dipole moment of the coil?', '3.62 A·m²', '0.36 A·m²', '7.24 A·m²', '1.81 A·m²', 0, 'Magnetic dipole moment M = N * I * A = 30 * 6.0 * (π * 0.08²) = 180 * (3.1416 * 0.0064) = 3.62 A·m².', 'NCERT Chapter 4')
+(5, '1', 5, 'A circular coil of 30 turns and radius 8.0 cm carrying a current of 6.0 A is suspended vertically in a uniform horizontal magnetic field of magnitude 1.0 T. What is the magnetic dipole moment of the coil?', '3.62 A·m²', '0.36 A·m²', '7.24 A·m²', '1.81 A·m²', 0, 'Magnetic dipole moment M = N * I * A = 30 * 6.0 * (π * 0.08²) = 180 * (3.1416 * 0.0064) = 3.62 A·m².', 'NCERT Chapter 4'),
+
+-- Seed Questions for Test 2 (Physics - Electrostatics & Capacitance)
+(6, '2', 1, 'A 600 pF capacitor is charged by a 200 V supply. It is then disconnected from the supply and connected to another uncharged 600 pF capacitor. How much electrostatic energy is lost in the process?', '6.0 × 10⁻⁶ J', '12.0 × 10⁻⁶ J', '3.0 × 10⁻⁶ J', 'Zero', 0, 'Energy loss ΔU = 0.5 * (C1 * C2 / (C1 + C2)) * (V1 - V2)² = 0.5 * (600 * 600 / 1200) * 10⁻¹² * (200 - 0)² = 150 * 10⁻¹² * 40000 = 6.0 × 10⁻⁶ J.', 'Capacitor energy sharing problem'),
+(7, '2', 2, 'What is the capacitance of a parallel plate capacitor if the area of each plate is 6 × 10⁻³ m² and the distance between plates is 3 mm in air? (ε₀ = 8.85 × 10⁻¹² F/m)', '17.7 pF', '35.4 pF', '8.85 pF', '1.77 pF', 0, 'C = ε₀ * A / d = (8.854 × 10⁻¹² * 6 × 10⁻³) / (3 × 10⁻³) = 17.7 × 10⁻¹² F = 17.7 pF.', 'Formula: C = ε0*A/d'),
+(8, '2', 3, 'When a dielectric slab of dielectric constant K is inserted completely between the plates of an isolated charged capacitor, the electrostatic potential difference across the plates:', 'Increases by factor K', 'Decreases by factor K', 'Remains unchanged', 'Becomes zero', 1, 'Since the capacitor is isolated, charge Q remains constant. Capacitance becomes K*C0, therefore voltage V = Q/(K*C0) = V0/K (decreases by factor K).', 'Dielectric theory'),
+
+-- Seed Questions for Test 3 (Chemistry - Solutions & Kinetics)
+(9, '3', 1, 'Which colligative property is widely preferred for determining the molar mass of polymers, proteins, and biomolecules?', 'Elevation in boiling point', 'Depression in freezing point', 'Osmotic pressure', 'Relative lowering of vapour pressure', 2, 'Osmotic pressure measurement is carried out at room temperature and the molarity of the solution is used instead of molality. It provides significant values even for dilute macromolecular solutions.', 'Class 12 Solutions NCERT'),
+(10, '3', 2, 'The rate constant of a first order reaction is 0.005 min⁻¹. What is its half-life (t₁/₂)?', '138.6 min', '69.3 min', '277.2 min', '13.86 min', 0, 'For first order reaction, t₁/₂ = 0.693 / k = 0.693 / 0.005 = 138.6 min.', 'Chemical Kinetics rate calculation'),
+
+-- Seed Questions for Test 4 (Mathematics - Calculus)
+(11, '4', 1, 'What is the derivative of f(x) = sin⁻¹(2x / (1 + x²)) with respect to x for |x| < 1?', '2 / (1 + x²)', '1 / (1 + x²)', '2x / (1 + x²)', '-2 / (1 + x²)', 0, 'Substitute x = tan θ, then 2x/(1+x²) = sin(2θ). So f(x) = 2θ = 2 tan⁻¹(x). Derivative d/dx [2 tan⁻¹(x)] = 2 / (1 + x²).', 'Standard inverse trigonometric substitution'),
+(12, '4', 2, 'Evaluate the definite integral ∫ from 0 to π/2 of (sin⁴ x / (sin⁴ x + cos⁴ x)) dx:', 'π / 4', 'π / 2', 'π', '0', 0, 'Using property ∫_0^a f(x)dx = ∫_0^a f(a-x)dx, I + I = ∫_0^(π/2) 1 dx = π/2 => 2I = π/2 => I = π/4.', 'Classic King Property of Definite Integrals'),
+
+-- Seed Questions for Test 5 (Biology - Genetics)
+(13, '5', 1, 'Which principle of Mendelian inheritance cannot be applied to genes that exhibit complete genetic linkage on the same chromosome?', 'Law of Segregation', 'Law of Dominance', 'Law of Independent Assortment', 'Law of Purity of Gametes', 2, 'The Law of Independent Assortment applies only to genes located on different non-homologous chromosomes or far apart on the same chromosome.', 'Mendelian Genetics'),
+
+-- Seed Questions for Test 6 (English Core - Flamingo)
+(14, '6', 1, 'In the story "The Last Lesson" by Alphonse Daudet, what did M. Hamel write on the blackboard in large letters at the conclusion of his class?', '"Vive La France!"', '"Adieu Mes Amis"', '"Courage et Honneur"', '"Liberté, Égalité, Fraternité"', 0, 'At the end of the lesson, M. Hamel turned to the blackboard, took a piece of chalk, and wrote as large as he could: "Vive La France!" (Long Live France!).', 'Chapter 1 Flamingo')
 ON CONFLICT (id) DO UPDATE SET
   test_id = EXCLUDED.test_id,
   question_number = EXCLUDED.question_number,
@@ -602,7 +708,7 @@ SELECT setval(pg_get_serial_sequence('public.chapters', 'id'), COALESCE((SELECT 
 SELECT setval(pg_get_serial_sequence('public.questions', 'id'), COALESCE((SELECT MAX(id) FROM public.questions), 1));
 
 -- ========================================================
--- ADMIN PROMOTION HELPER:
--- Run this in Supabase SQL Editor to grant admin powers to your email:
---   UPDATE public.profiles SET is_admin = true WHERE email = 'your@email.com';
+-- ADMIN PROMOTION INSTRUCTIONS:
+-- To grant administrator privileges to any user account:
+--   UPDATE public.profiles SET is_admin = true WHERE email = 'your-email@example.com';
 -- ========================================================
