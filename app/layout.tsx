@@ -158,7 +158,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         />
       </head>
-      <body className="bg-[#f4fafd] text-[#161d1f] antialiased selection:bg-[#ede9fe] selection:text-[#6d28d9]">
+      <body className="bg-[#faf6f0] text-[#161d1f] antialiased selection:bg-[#ede9fe] selection:text-[#6d28d9]">
         <UserProvider>
           <AuthGuard>
             <TestProvider>
