@@ -15,7 +15,7 @@ export const viewport: Viewport = {
   themeColor: '#7c3aed',
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nainixone.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://one.nainix.me';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -91,6 +91,9 @@ export const metadata: Metadata = {
     icon: '/icon.png',
     shortcut: '/favicon.ico',
     apple: '/apple-icon.png',
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || process.env.GOOGLE_SITE_VERIFICATION || '',
   },
 };
 
