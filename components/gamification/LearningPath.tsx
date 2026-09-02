@@ -30,14 +30,14 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     {
       id: 'phy-1',
       code: '01',
-      title: 'Stretching',
-      subtitle: '10 minutes',
+      title: 'Questions 01 – 05',
+      subtitle: '5 Questions',
       iconType: 'brain',
       xpReward: 25,
       gemsReward: 10,
       testId: '1',
       unit: 1,
-      unitTitle: 'DAY 9',
+      unitTitle: 'CHAPTER 1 • ELECTRIC CHARGES',
       themeColor: '#10b981',
       offset: 0,
       limit: 5,
@@ -45,14 +45,14 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     {
       id: 'phy-2',
       code: '02',
-      title: 'Meditation',
-      subtitle: '10 minutes',
+      title: 'Questions 06 – 10',
+      subtitle: '5 Questions',
       iconType: 'atom',
       xpReward: 25,
       gemsReward: 10,
       testId: '1',
       unit: 1,
-      unitTitle: 'DAY 9',
+      unitTitle: 'CHAPTER 1 • ELECTRIC CHARGES',
       themeColor: '#10b981',
       offset: 5,
       limit: 5,
@@ -60,14 +60,14 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     {
       id: 'phy-3',
       code: '03',
-      title: 'Warm up',
+      title: 'Questions 11 – 15',
       subtitle: '5 Questions',
       iconType: 'circuit',
       xpReward: 30,
       gemsReward: 15,
       testId: '1',
       unit: 2,
-      unitTitle: 'DAY 10',
+      unitTitle: 'CHAPTER 2 • POTENTIAL & FLUX',
       themeColor: '#ff6937',
       offset: 10,
       limit: 5,
@@ -75,14 +75,14 @@ const LESSON_PATH: Record<string, LessonNode[]> = {
     {
       id: 'phy-4',
       code: '04',
-      title: 'Morning Workout',
-      subtitle: '10 minutes',
+      title: 'Questions 16 – 20',
+      subtitle: '5 Questions',
       iconType: 'atom',
       xpReward: 30,
       gemsReward: 15,
       testId: '2',
       unit: 2,
-      unitTitle: 'DAY 10',
+      unitTitle: 'CHAPTER 2 • POTENTIAL & FLUX',
       themeColor: '#3b82f6',
       offset: 0,
       limit: 5,
@@ -160,18 +160,13 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
               const unitNum = chap.chapter_number || chapIdx + 1;
               const levelCode = String(globalLevelCounter++).padStart(2, '0');
 
-              let partTitle = `${chap.title} • Part ${p + 1}`;
-              if (numParts === 1) {
-                partTitle = chap.title;
-              } else if (isChapterLast) {
-                partTitle = `${chap.title} • Final Review`;
-              }
+              const partTitle = `Questions ${String(startQ).padStart(2, '0')} – ${String(endQ).padStart(2, '0')}`;
 
               generatedNodes.push({
                 id: `chap-${chap.id}-p${p + 1}`,
                 code: levelCode,
                 title: partTitle,
-                subtitle: `5 Questions • Q${startQ}-Q${endQ}`,
+                subtitle: `${endQ - startQ + 1} Questions`,
                 iconType: 'brain',
                 xpReward: 25 + p * 5,
                 gemsReward: 10 + p * 2,
@@ -180,7 +175,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
                 limit: CHUNK_SIZE,
                 isBoss: isChapterLast,
                 unit: unitNum,
-                unitTitle: `DAY ${unitNum * 5 + p}`,
+                unitTitle: `CHAPTER ${unitNum} • ${chap.title.toUpperCase()}`,
                 themeColor: '#ff6937',
               });
             }
@@ -250,8 +245,8 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
 
   // Exact coordinates matching the uploaded reference image
   const CONTAINER_WIDTH = 340;
-  const ROW_HEIGHT = 155;
-  const Y_OFFSET = 70;
+  const ROW_HEIGHT = 160;
+  const Y_OFFSET = 100;
 
   // Alternating Node Center points:
   // Node 0: Right (x: 285)
@@ -266,7 +261,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
   };
 
   const nodePoints: Point[] = nodes.map((_, i) => getNodePoint(i));
-  const totalTrackHeight = Y_OFFSET + (nodes.length - 1) * ROW_HEIGHT + 110;
+  const totalTrackHeight = Y_OFFSET + (nodes.length - 1) * ROW_HEIGHT + 120;
 
   const getSPath = (p1: Point, p2: Point) => {
     const midY = (p1.y + p2.y) / 2;
@@ -397,7 +392,7 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
 
       {/* ─── Winding Pathway Canvas (Exact S-Curve from Reference) ─── */}
       <div
-        className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-4 z-10"
+        className="w-full max-w-[340px] sm:max-w-[360px] mx-auto relative mt-2 z-10"
         style={{ height: `${totalTrackHeight}px` }}
       >
         {/* SVG Path Tracks (Solid Green + Dashed Dark Road) */}
@@ -448,13 +443,13 @@ export const LearningPath: React.FC<LearningPathProps> = ({ initialSubject = 'ph
             >
               {/* Day / Unit Divider Embedded on Track */}
               {showDayDivider && (
-                <div className="absolute -top-12 left-0 right-0 flex items-center justify-center gap-2 pointer-events-none">
-                  <div className="w-12 h-[1.5px] border-t-2 border-dashed border-slate-300" />
-                  <span className="text-[11px] font-black tracking-widest text-[#ff6937] flex items-center gap-1 uppercase">
+                <div className="absolute -top-14 left-0 right-0 flex items-center justify-center gap-2 pointer-events-none px-4">
+                  <div className="flex-1 h-[1.5px] border-t-2 border-dashed border-slate-300" />
+                  <span className="text-[10px] font-black tracking-wider text-[#ff6937] flex items-center gap-1 uppercase bg-[#faf6f0] px-3 py-1 rounded-full border border-orange-200/80 shadow-2xs">
                     <span className="text-amber-500">⚡</span>
-                    <span>{node.unitTitle || `DAY ${node.unit * 5}`}</span>
+                    <span className="truncate max-w-[200px]">{node.unitTitle || `DAY ${node.unit * 5}`}</span>
                   </span>
-                  <div className="w-12 h-[1.5px] border-t-2 border-dashed border-slate-300" />
+                  <div className="flex-1 h-[1.5px] border-t-2 border-dashed border-slate-300" />
                 </div>
               )}
 

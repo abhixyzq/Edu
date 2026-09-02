@@ -39,61 +39,63 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
-      {/* ─── Top Ultra-Premium Header ─── */}
-      <header className="sticky top-0 z-40 w-full bg-white/85 backdrop-blur-xl border-b border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] select-none transition-all">
-        <div className="max-w-md mx-auto px-4 py-2.5 flex items-center justify-between gap-2">
-          
-          {/* Brand Text Logo */}
-          <Link
-            href="/"
-            onClick={handleTabClick}
-            className="cursor-pointer active:scale-95 transition-transform"
-          >
-            <BrandLogo size="md" />
-          </Link>
-
-          {/* Gamified Live Stats Capsules */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+      {/* ─── Top Ultra-Premium Header (Hidden on '/' to show dedicated Learn Header) ─── */}
+      {pathname !== '/' && (
+        <header className="sticky top-0 z-40 w-full bg-white/85 backdrop-blur-xl border-b border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] select-none transition-all">
+          <div className="max-w-md mx-auto px-4 py-2.5 flex items-center justify-between gap-2">
             
-            {/* 1. Gems Capsule */}
+            {/* Brand Text Logo */}
             <Link
-              href="/shop"
+              href="/"
               onClick={handleTabClick}
-              className="px-2.5 py-1 rounded-2xl bg-cyan-50/80 hover:bg-cyan-100/90 border border-cyan-200/80 flex items-center gap-1.5 transition-all active:scale-95 shadow-[0_2px_8px_rgba(6,182,212,0.12)] group"
-              title="Your Gems"
+              className="cursor-pointer active:scale-95 transition-transform"
             >
-              <GemIcon size={18} className="group-hover:scale-115 transition-transform" />
-              <span className="text-xs font-black text-cyan-900">{user.gems}</span>
+              <BrandLogo size="md" />
             </Link>
 
-            {/* 2. Lives / Hearts Capsule */}
-            <Link
-              href="/shop"
-              onClick={handleTabClick}
-              className="px-2.5 py-1 rounded-2xl bg-rose-50/80 hover:bg-rose-100/90 border border-rose-200/80 flex items-center gap-1.5 transition-all active:scale-95 shadow-[0_2px_8px_rgba(244,63,94,0.12)] group"
-              title="Your Lives"
-            >
-              <HeartLifeIcon size={18} className="group-hover:scale-115 transition-transform" />
-              <span className="text-xs font-black text-rose-900">
-                {user.infiniteHeartsUntil && Date.now() < user.infiniteHeartsUntil ? '∞' : user.hearts}
-              </span>
-            </Link>
+            {/* Gamified Live Stats Capsules */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              
+              {/* 1. Gems Capsule */}
+              <Link
+                href="/shop"
+                onClick={handleTabClick}
+                className="px-2.5 py-1 rounded-2xl bg-cyan-50/80 hover:bg-cyan-100/90 border border-cyan-200/80 flex items-center gap-1.5 transition-all active:scale-95 shadow-[0_2px_8px_rgba(6,182,212,0.12)] group"
+                title="Your Gems"
+              >
+                <GemIcon size={18} className="group-hover:scale-115 transition-transform" />
+                <span className="text-xs font-black text-cyan-900">{user.gems}</span>
+              </Link>
 
-            {/* 3. Streak Capsule */}
-            <Link
-              href="/profile"
-              onClick={handleTabClick}
-              className="px-2.5 py-1 rounded-2xl bg-amber-50/80 hover:bg-amber-100/90 border border-amber-200/80 flex items-center gap-1.5 transition-all active:scale-95 shadow-[0_2px_8px_rgba(245,158,11,0.12)] group"
-              title="Daily Streak"
-            >
-              <StreakFlameIcon size={18} className="group-hover:scale-115 transition-transform" />
-              <span className="text-xs font-black text-amber-900">{user.streakDays}</span>
-            </Link>
+              {/* 2. Lives / Hearts Capsule */}
+              <Link
+                href="/shop"
+                onClick={handleTabClick}
+                className="px-2.5 py-1 rounded-2xl bg-rose-50/80 hover:bg-rose-100/90 border border-rose-200/80 flex items-center gap-1.5 transition-all active:scale-95 shadow-[0_2px_8px_rgba(244,63,94,0.12)] group"
+                title="Your Lives"
+              >
+                <HeartLifeIcon size={18} className="group-hover:scale-115 transition-transform" />
+                <span className="text-xs font-black text-rose-900">
+                  {user.infiniteHeartsUntil && Date.now() < user.infiniteHeartsUntil ? '∞' : user.hearts}
+                </span>
+              </Link>
+
+              {/* 3. Streak Capsule */}
+              <Link
+                href="/profile"
+                onClick={handleTabClick}
+                className="px-2.5 py-1 rounded-2xl bg-amber-50/80 hover:bg-amber-100/90 border border-amber-200/80 flex items-center gap-1.5 transition-all active:scale-95 shadow-[0_2px_8px_rgba(245,158,11,0.12)] group"
+                title="Daily Streak"
+              >
+                <StreakFlameIcon size={18} className="group-hover:scale-115 transition-transform" />
+                <span className="text-xs font-black text-amber-900">{user.streakDays}</span>
+              </Link>
+
+            </div>
 
           </div>
-
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* ─── Floating Modern Luxury Bottom Dock ─── */}
       <div className="fixed bottom-0 left-0 w-full z-40 pointer-events-none pb-safe">
