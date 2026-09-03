@@ -13,12 +13,11 @@ export function SecurityGuard() {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = (e.key ?? '').toLowerCase();
       
-      // Block F12, PrintScreen, Ctrl+C, Ctrl+X, Ctrl+U, Ctrl+S, Ctrl+A, Ctrl+P, Ctrl++, Ctrl+-, Ctrl+0
+      // Block F12, Ctrl+U, Ctrl+S
       if (
         e.key === 'F12' ||
-        e.key === 'PrintScreen' ||
-        (e.ctrlKey && (key === 'c' || key === 'x' || key === 'u' || key === 's' || key === 'a' || key === 'p' || key === '=' || key === '-' || key === '+' || key === '0')) ||
-        (e.ctrlKey && e.shiftKey && (key === 'i' || key === 'j' || key === 'c'))
+        (e.ctrlKey && (key === 'u' || key === 's')) ||
+        (e.ctrlKey && e.shiftKey && (key === 'i' || key === 'j'))
       ) {
         e.preventDefault();
         e.stopPropagation();
