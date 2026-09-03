@@ -107,35 +107,45 @@ export function DuolingoQuizClient() {
         }
 
         // 3. Transform questions to UI format
-        if (isMounted && qData && qData.length > 0) {
-          const KEY_MAP = ['A', 'B', 'C', 'D'];
-          const formatted: Question[] = qData.map((q: any) => {
-            let ansLetter = 'A';
-            if (typeof q.correct_answer === 'number') {
-              ansLetter = KEY_MAP[q.correct_answer] || 'A';
-            } else {
-              ansLetter = String(q.correct_answer).trim().toUpperCase();
-            }
+        if (isMounted) {
+          let roundQuestions: Question[] = [];
 
-            return {
-              id: q.id,
-              questionText: q.question_text,
-              options: [
-                { key: 'A', text: q.option_a },
-                { key: 'B', text: q.option_b },
-                { key: 'C', text: q.option_c || 'None of these' },
-                { key: 'D', text: q.option_d || 'All of the above' },
-              ],
-              correctAnswer: ansLetter,
-              marks: 4,
-              explanation: q.explanation || '',
-              subject: subjectId,
-            };
-          });
+          if (qData && qData.length > 0) {
+            const KEY_MAP = ['A', 'B', 'C', 'D'];
+            const formatted: Question[] = qData.map((q: any) => {
+              let ansLetter = 'A';
+              if (typeof q.correct_answer === 'number') {
+                ansLetter = KEY_MAP[q.correct_answer] || 'A';
+              } else {
+                ansLetter = String(q.correct_answer).trim().toUpperCase();
+              }
 
-          // Extract exact 5-question round chunk for this level node
-          const chunked = formatted.slice(offset, offset + limit);
-          const roundQuestions = chunked.length > 0 ? chunked : formatted.slice(0, Math.min(limit, 5));
+              return {
+                id: q.id,
+                questionText: q.question_text,
+                options: [
+                  { key: 'A', text: q.option_a },
+                  { key: 'B', text: q.option_b },
+                  { key: 'C', text: q.option_c || 'None of these' },
+                  { key: 'D', text: q.option_d || 'All of the above' },
+                ],
+                correctAnswer: ansLetter,
+                marks: 4,
+                explanation: q.explanation || '',
+                subject: subjectId,
+              };
+            });
+
+            const chunked = formatted.slice(offset, offset + limit);
+            roundQuestions = chunked.length > 0 ? chunked : formatted.slice(0, Math.min(limit, 5));
+          } else {
+            // Offline / DB fallback so test NEVER gets stuck on blank screen
+            const fallbackList = MOCK_QUESTIONS.filter((q) => q.subject.toLowerCase() === subjectId.toLowerCase());
+            const finalFallback = fallbackList.length > 0 ? fallbackList : MOCK_QUESTIONS;
+            const startIdx = offset % finalFallback.length;
+            const chunked = finalFallback.slice(startIdx, startIdx + limit);
+            roundQuestions = chunked.length > 0 ? chunked : finalFallback.slice(0, Math.min(limit, 5));
+          }
 
           setQuestions(roundQuestions);
           if (typeof window !== 'undefined') {
@@ -144,8 +154,14 @@ export function DuolingoQuizClient() {
             } catch {}
           }
         }
-      } catch {
-        // preserve cache or state
+      } catch (err) {
+        console.warn('Quiz load error, falling back to mock questions:', err);
+        const fallbackList = MOCK_QUESTIONS.filter((q) => q.subject.toLowerCase() === subjectId.toLowerCase());
+        const finalFallback = fallbackList.length > 0 ? fallbackList : MOCK_QUESTIONS;
+        const startIdx = offset % finalFallback.length;
+        const chunked = finalFallback.slice(startIdx, startIdx + limit);
+        const roundQuestions = chunked.length > 0 ? chunked : finalFallback.slice(0, Math.min(limit, 5));
+        setQuestions(roundQuestions);
       } finally {
         if (isMounted) setLoadingQuestions(false);
       }
@@ -257,13 +273,19 @@ export function DuolingoQuizClient() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedKey, isAnswerChecked]);
 
-  // If Loading or Hydrating, render a clean skeleton placeholder with NO dummy questions
-  if (!mounted || questions.length === 0) {
+  // If Loading or Hydrating, render a clean skeleton placeholder with visible exit button
+  if (!mounted || (loadingQuestions && questions.length === 0)) {
     return (
-      <div className="fixed inset-0 w-full h-[100dvh] bg-white flex flex-col justify-between p-6 sm:p-10 font-sans select-none">
+      <div className="fixed inset-0 w-full h-[100dvh] bg-white flex flex-col justify-between p-6 sm:p-10 font-sans select-none z-50">
         {/* Top Header Placeholder */}
         <div className="w-full flex items-center justify-between border-b border-slate-100 pb-4 max-w-2xl mx-auto">
-          <div className="w-8 h-8 rounded-full bg-slate-100 animate-pulse" />
+          <Link
+            href="/"
+            className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors"
+            title="Exit to Learn"
+          >
+            <span className="material-symbols-outlined text-[22px]">close</span>
+          </Link>
           <div className="w-48 h-3.5 rounded-full bg-slate-100 animate-pulse mx-4" />
           <div className="w-16 h-6 rounded-full bg-slate-100 animate-pulse" />
         </div>
