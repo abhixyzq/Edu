@@ -410,7 +410,20 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       if (!isSupabaseConfigured) {
         persistLocalSession(name.trim(), email.trim().toLowerCase(), targetBoard, 320, 150, 5, cleanUsername);
-        setUser((prev) => ({ ...prev, name: name.trim(), username: cleanUsername, email: email.trim().toLowerCase(), targetBoard, isLoggedIn: true }));
+        setUser((prev) => ({
+          ...prev,
+          name: name.trim(),
+          username: cleanUsername,
+          email: email.trim().toLowerCase(),
+          targetBoard,
+          xp: 320,
+          gems: 150,
+          hearts: 5,
+          streakDays: 1,
+          level: Math.floor(320 / 100) + 1,
+          leagueTier: getLeagueByXP(320).name,
+          isLoggedIn: true,
+        }));
         return { success: true };
       }
 
@@ -445,6 +458,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         username: cleanUsername,
         email: email.trim().toLowerCase(),
         targetBoard,
+        xp: 320,
+        gems: 150,
+        hearts: 5,
+        streakDays: 1,
+        level: Math.floor(320 / 100) + 1,
+        leagueTier: getLeagueByXP(320).name,
         isLoggedIn: true,
       }));
 
@@ -464,7 +483,19 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const name = rawId.includes('@') ? rawId.split('@')[0] : rawId;
         const cleanUser = sanitizeUsername(name);
         persistLocalSession(name, rawId.includes('@') ? rawId : `${cleanUser}@nainixone.prep`, 'cbse', 320, 150, 5, cleanUser);
-        setUser((prev) => ({ ...prev, name, username: cleanUser, email: rawId, isLoggedIn: true }));
+        setUser((prev) => ({
+          ...prev,
+          name,
+          username: cleanUser,
+          email: rawId,
+          xp: 320,
+          gems: 150,
+          hearts: 5,
+          streakDays: 1,
+          level: Math.floor(320 / 100) + 1,
+          leagueTier: getLeagueByXP(320).name,
+          isLoggedIn: true,
+        }));
         return { success: true };
       }
 
