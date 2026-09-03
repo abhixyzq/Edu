@@ -57,8 +57,13 @@ export function DuolingoQuizClient() {
   const [mascotMood, setMascotMood] = useState<MascotMood>('idle');
   const [screenShake, setScreenShake] = useState(false);
 
+  // Lock body scroll during quiz, restore on unmount
   useEffect(() => {
     setMounted(true);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, []);
 
   // Dynamic Supabase Question Loading with 5-Question Round Slicing
@@ -274,9 +279,10 @@ export function DuolingoQuizClient() {
   }, [selectedKey, isAnswerChecked]);
 
   // If Loading or Hydrating, render a clean skeleton placeholder with visible exit button
+  // NOTE: Do NOT use `fixed inset-0` here — it blocks the Navbar bottom dock after navigation
   if (!mounted || (loadingQuestions && questions.length === 0)) {
     return (
-      <div className="fixed inset-0 w-full h-[100dvh] bg-white flex flex-col justify-between p-6 sm:p-10 font-sans select-none z-50">
+      <div className="w-full min-h-[100dvh] bg-white flex flex-col justify-between p-6 sm:p-10 font-sans select-none">
         {/* Top Header Placeholder */}
         <div className="w-full flex items-center justify-between border-b border-slate-100 pb-4 max-w-2xl mx-auto">
           <Link
