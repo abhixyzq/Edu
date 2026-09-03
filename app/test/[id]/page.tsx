@@ -1,5 +1,5 @@
-import React, { Suspense } from 'react';
-import { DuolingoQuizClient } from '@/components/gamification/DuolingoQuizClient';
+import React from 'react';
+import { TestPageClient } from '@/components/gamification/TestPageClient';
 
 export function generateStaticParams() {
   const ids = Array.from({ length: 100 }, (_, i) => ({ id: (i + 1).toString() }));
@@ -17,15 +17,5 @@ export function generateStaticParams() {
 }
 
 export default function TestPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#f4fafd]">
-          <div className="w-10 h-10 border-4 border-[#ff8c42] border-t-transparent rounded-full animate-spin" />
-        </div>
-      }
-    >
-      <DuolingoQuizClient />
-    </Suspense>
-  );
+  return <TestPageClient />;
 }
