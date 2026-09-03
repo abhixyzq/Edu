@@ -27,7 +27,10 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
       <img
         src="/images/nainix_logo.png"
         alt="nainixONE Logo"
-        className={`${heightClasses[size]} w-auto object-contain transition-transform duration-200 group-hover:scale-105 active:scale-95 drop-shadow-xs`}
+        className={`${heightClasses[size]} w-auto object-contain transition-transform duration-200 group-hover:scale-105 active:scale-95 drop-shadow-2xs`}
+        style={{
+          filter: isDark ? 'invert(1) hue-rotate(180deg)' : 'none',
+        }}
       />
     </div>
   );
