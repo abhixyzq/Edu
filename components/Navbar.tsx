@@ -102,8 +102,8 @@ export const Navbar: React.FC = () => {
       )}
 
       {/* ─── Floating Modern Luxury Bottom Dock ─── */}
-      <div className="fixed bottom-0 left-0 w-full z-40 pointer-events-none pb-safe">
-        <nav className="max-w-md mx-auto pointer-events-auto bg-white/95 backdrop-blur-2xl border-t border-slate-200/80 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] px-2 py-1 select-none">
+      <div className="fixed bottom-0 left-0 w-full z-50 pointer-events-none pb-safe">
+        <nav className="max-w-md mx-auto pointer-events-auto bg-white border-t border-slate-200/90 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] px-2 py-1 select-none">
           <div className="flex items-center justify-around h-14">
             {bottomTabs.map((tab) => {
               const isActive = pathname === tab.href;
